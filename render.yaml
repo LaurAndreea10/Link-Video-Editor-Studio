@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: link-video-editor-studio
+    runtime: docker
+    plan: starter
+    autoDeploy: true

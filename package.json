@@ -1,5 +1,5 @@
 {
-  "name": "link-video-automation",
+  "name": "link-video-editor-studio",
   "version": "1.0.0",
   "description": "HTML + Node.js + Playwright + FFmpeg automation for product demo videos",
   "main": "server.js",
@@ -11,9 +11,7 @@
   },
   "dependencies": {
     "express": "^4.21.2",
+    "playwright": "^1.53.0",
     "uuid": "^11.1.0"
-  },
-  "devDependencies": {
-    "playwright": "^1.54.2"
   }
 }
