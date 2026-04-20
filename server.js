@@ -31,35 +31,43 @@ app.get('/api/presets', (_req, res) => {
 });
 
 app.post('/api/render', async (req, res) => {
-  const jobId = uuidv4();
-  const payload = req.body || {};
+  try {
+    const jobId = uuidv4();
+    const payload = req.body || {};
 
-  const config = {
-    ...payload,
-    jobId
-  };
-
-  const paths = getJobPaths(jobId);
-  await fs.writeFile(paths.requestJson, JSON.stringify(config, null, 2), 'utf8');
-
-  res.json({
-    ok: true,
-    jobId,
-    status: 'queued',
-    requestPath: paths.requestJson,
-    statusUrl: `/api/render/${jobId}`,
-    outputBaseUrl: `/output/${jobId}`
-  });
-
-  runAutomation(config).catch(async (error) => {
-    const failStatus = {
-      ok: false,
-      jobId,
-      state: 'failed',
-      error: error instanceof Error ? error.message : String(error)
+    const config = {
+      ...payload,
+      jobId
     };
-    await fs.writeFile(paths.statusJson, JSON.stringify(failStatus, null, 2), 'utf8');
-  });
+
+    const paths = getJobPaths(jobId);
+    await fs.mkdir(paths.baseDir, { recursive: true });
+    await fs.writeFile(paths.requestJson, JSON.stringify(config, null, 2), 'utf8');
+
+    res.json({
+      ok: true,
+      jobId,
+      status: 'queued',
+      requestPath: paths.requestJson,
+      statusUrl: `/api/render/${jobId}`,
+      outputBaseUrl: `/output/${jobId}`
+    });
+
+    runAutomation(config).catch(async (error) => {
+      const failStatus = {
+        ok: false,
+        jobId,
+        state: 'failed',
+        error: error instanceof Error ? error.message : String(error)
+      };
+      await fs.writeFile(paths.statusJson, JSON.stringify(failStatus, null, 2), 'utf8');
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
 });
 
 app.get('/api/render/:jobId', async (req, res) => {
