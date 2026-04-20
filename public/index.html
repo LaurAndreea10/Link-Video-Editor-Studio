@@ -65,6 +65,10 @@
         <label for="workflowNotes">Workflow (pre-roll + de evitat)</label>
         <textarea id="workflowNotes" class="mono" readonly></textarea>
       </div>
+      <div class="field">
+        <label for="backendUrl">Backend URL (opțional pentru GitHub Pages)</label>
+        <input id="backendUrl" placeholder="http://localhost:3000" />
+      </div>
 
       <div class="grid2">
         <div class="field">
@@ -148,10 +152,44 @@
     let presets = [];
     let pollHandle = null;
 
+    function getApiBase() {
+      return $('backendUrl').value.trim().replace(/\/+$/, '');
+    }
+
+    function apiUrl(path) {
+      const base = getApiBase();
+      return base ? `${base}${path}` : path;
+    }
+
+    async function parseJsonSafe(res) {
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch (_error) {
+        return { ok: false, error: `Răspuns invalid (${res.status})`, raw: text.slice(0, 180) };
+      }
+    }
+
+    async function apiFetch(path, options = {}) {
+      const res = await fetch(apiUrl(path), options);
+      const data = await parseJsonSafe(res);
+      if (!res.ok) {
+        const message = data?.error || `HTTP ${res.status}`;
+        throw new Error(message);
+      }
+      return data;
+    }
+
     async function loadPresets() {
-      const res = await fetch('/api/presets');
-      const data = await res.json();
-      presets = data.presets || [];
+      try {
+        const data = await apiFetch('/api/presets');
+        presets = data.presets || [];
+      } catch (_error) {
+        const localRes = await fetch('./presets.json');
+        const localData = await parseJsonSafe(localRes);
+        presets = localData.presets || [];
+        setStatus('Backend indisponibil. Am încărcat preset-urile locale (mod demo static).');
+      }
     }
 
     function applyPreset(index) {
@@ -201,18 +239,26 @@
     }
 
     async function healthCheck() {
-      const res = await fetch('/api/health');
-      const data = await res.json();
-      setStatus(JSON.stringify(data, null, 2));
+      try {
+        const data = await apiFetch('/api/health');
+        setStatus(JSON.stringify(data, null, 2));
+      } catch (error) {
+        setStatus(`Health check eșuat: ${error.message}\nTip: completează "Backend URL" (ex: http://localhost:3000).`);
+      }
     }
 
     async function poll(jobId) {
       if (pollHandle) clearInterval(pollHandle);
       pollHandle = setInterval(async () => {
-        const res = await fetch(`/api/render/${jobId}`);
-        const data = await res.json();
-        setStatus(JSON.stringify(data, null, 2));
-        if (['completed', 'failed'].includes(data.state)) {
+        try {
+          const data = await apiFetch(`/api/render/${jobId}`);
+          setStatus(JSON.stringify(data, null, 2));
+          if (['completed', 'failed'].includes(data.state)) {
+            clearInterval(pollHandle);
+            pollHandle = null;
+          }
+        } catch (error) {
+          setStatus(`Polling oprit: ${error.message}`);
           clearInterval(pollHandle);
           pollHandle = null;
         }
@@ -222,16 +268,15 @@
     async function runJob() {
       try {
         const payload = payloadFromForm();
-        const res = await fetch('/api/render', {
+        const data = await apiFetch('/api/render', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        const data = await res.json();
         setStatus(JSON.stringify(data, null, 2));
         await poll(data.jobId);
       } catch (error) {
-        setStatus(`Eroare: ${error.message}`);
+        setStatus(`Eroare: ${error.message}\nTip: pe GitHub Pages trebuie un backend separat (ex: local/Render).`);
       }
     }
 
@@ -240,6 +285,16 @@
     $('loadPreset3').addEventListener('click', () => applyPreset(2));
     $('runBtn').addEventListener('click', runJob);
     $('healthBtn').addEventListener('click', healthCheck);
+
+    $('backendUrl').addEventListener('change', () => {
+      localStorage.setItem('backendUrl', $('backendUrl').value.trim());
+    });
+
+    $('backendUrl').value = localStorage.getItem('backendUrl') || '';
+
+    if (location.hostname.endsWith('github.io') && !$('backendUrl').value) {
+      setStatus('Ești pe GitHub Pages (static). Completează "Backend URL" pentru health/render.');
+    }
 
     loadPresets().then(() => { if (presets[0]) applyPreset(0); });
   </script>
