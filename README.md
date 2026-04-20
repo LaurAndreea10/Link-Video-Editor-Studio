@@ -52,6 +52,14 @@ http://localhost:3000
 - `.github/workflows/render-video.yml` — randare manuală (`workflow_dispatch`) cu input-uri `clip_url`, `clip_title`, `duration`
 - `.github/workflows/release-pack.yml` — generează ZIP și îl publică în Release pentru tag-uri `v*`
 
+## Activare GitHub Pages + randare MP4 din Actions
+
+1. În GitHub repo: **Settings → Pages**.
+2. La **Source**, selectezi **GitHub Actions**.
+3. Faci push pe branch-ul `main` (workflow-ul `Deploy Pages` pornește automat).
+4. Când vrei un MP4 artifact, intri în tab-ul **Actions** și rulezi manual workflow-ul **Render Video**.
+5. După finalizare, descarci artifact-ul `rendered-video-<run_id>` din run summary.
+
 ## Randare manuală în Actions
 
 1. Deschizi tab-ul **Actions**.
