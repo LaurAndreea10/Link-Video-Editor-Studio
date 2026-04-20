@@ -35,6 +35,23 @@ Deschide apoi:
 http://localhost:3000
 ```
 
+## Deploy pe Render (Web Service)
+
+Repo-ul include acum configurare minimă pentru Render:
+
+- `Dockerfile` bazat pe imaginea Playwright + instalare `ffmpeg`
+- `render.yaml` pentru Web Service Docker
+- endpoint de health check la `GET /health`
+
+Pași rapizi:
+
+1. În Render: **New → Web Service**
+2. Conectezi repo-ul GitHub
+3. Render detectează `render.yaml` + Docker runtime
+4. Opțional setezi `Health Check Path` la `/health`
+
+> Notă: GitHub Pages nu poate rula backend Node/Playwright/FFmpeg. Aplicația trebuie hostată ca Web Service.
+
 ## Flux
 
 - UI-ul din `public/index.html` trimite payload-ul la `POST /api/render`

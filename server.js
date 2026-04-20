@@ -18,6 +18,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use('/output', express.static(path.join(__dirname, 'output')));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/health', (_req, res) => {
+  res.status(200).json({ ok: true });
+});
+
 app.get('/api/health', async (_req, res) => {
   res.json({ ok: true, presets: presets.length });
 });
@@ -73,5 +77,5 @@ app.get('*', (_req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Link Video Automation listening on http://localhost:${PORT}`);
+  console.log(`Server running on ${PORT}`);
 });
