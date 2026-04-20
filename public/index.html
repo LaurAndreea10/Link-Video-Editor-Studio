@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link Video Automation</title>
+  <style>
+    :root { --bg:#0b1020; --panel:#111a31; --panel2:#182344; --text:#edf3ff; --muted:#a8b5d8; --line:rgba(255,255,255,.09); --accent:#7c9cff; --accent2:#8ef0d6; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top left,#162349 0,#0b1020 50%,#060a12 100%); color:var(--text); padding:24px; }
+    .app { max-width:1500px; margin:0 auto; display:grid; grid-template-columns:420px 1fr; gap:20px; }
+    .panel { background:rgba(17,26,49,.92); border:1px solid var(--line); border-radius:20px; padding:18px; backdrop-filter:blur(10px); }
+    h1,h2,h3,p { margin:0; }
+    .stack { display:grid; gap:14px; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .field { display:grid; gap:6px; }
+    label { font-size:.82rem; color:var(--muted); }
+    input, textarea, select { width:100%; background:#091122; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px; font:inherit; }
+    textarea { min-height:110px; resize:vertical; }
+    button { cursor:pointer; border:0; border-radius:14px; padding:12px 14px; font-weight:700; }
+    .primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#061229; }
+    .secondary { background:rgba(255,255,255,.06); color:var(--text); border:1px solid var(--line); }
+    .hero { display:flex; justify-content:space-between; gap:20px; align-items:start; }
+    .muted { color:var(--muted); line-height:1.5; }
+    .badge { display:inline-block; padding:8px 11px; border-radius:999px; background:rgba(255,255,255,.07); border:1px solid var(--line); font-size:.78rem; }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; }
+    .shots { display:grid; gap:10px; }
+    .shot { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:12px; }
+    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; }
+    .status { min-height:160px; background:#091122; border:1px solid var(--line); border-radius:16px; padding:14px; }
+    .ok { color:#8ef0d6; }
+    @media (max-width:1100px){ .app{ grid-template-columns:1fr; } .grid2{ grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="panel stack">
+      <div class="hero">
+        <div>
+          <h1>Link Video Automation</h1>
+          <p class="muted">Bagi linkul, rulezi shot-urile automat cu Playwright, capturezi video nativ și exporți MP4 final cu FFmpeg.</p>
+        </div>
+        <span class="badge">Node.js + Playwright + FFmpeg</span>
+      </div>
+
+      <div class="toolbar">
+        <button class="secondary" id="loadPreset1">Preset 1</button>
+        <button class="secondary" id="loadPreset2">Preset 2</button>
+      </div>
+
+      <div class="field">
+        <label for="name">Nume proiect</label>
+        <input id="name" placeholder="Ex: Alpis Fusion CRM Premium" />
+      </div>
+      <div class="field">
+        <label for="url">URL</label>
+        <input id="url" placeholder="https://exemplu.ro" />
+      </div>
+      <div class="field">
+        <label for="message">Mesaj vizual</label>
+        <textarea id="message" placeholder="Descriere scurtă pentru clip"></textarea>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label for="width">Viewport width</label>
+          <input id="width" type="number" value="1280" />
+        </div>
+        <div class="field">
+          <label for="height">Viewport height</label>
+          <input id="height" type="number" value="720" />
+        </div>
+        <div class="field">
+          <label for="outRes">Output resolution</label>
+          <select id="outRes">
+            <option>1280x720</option>
+            <option>1920x1080</option>
+            <option>854x480</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fpsFinal">FPS final</label>
+          <select id="fpsFinal">
+            <option>24</option>
+            <option>25</option>
+            <option>30</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="crf">CRF</label>
+          <select id="crf">
+            <option>18</option>
+            <option>20</option>
+            <option>23</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="preset">Preset FFmpeg</label>
+          <select id="preset">
+            <option>veryfast</option>
+            <option>faster</option>
+            <option>fast</option>
+            <option>medium</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="shots">Shot-uri (JSON)</label>
+        <textarea id="shots" class="mono"></textarea>
+      </div>
+
+      <div class="toolbar">
+        <button class="primary" id="runBtn">Rulează automatizarea</button>
+        <button class="secondary" id="healthBtn">Health check</button>
+      </div>
+
+      <p class="muted">Tipuri suportate pentru shots: <span class="mono">wait, click, hover, type, press, drag, scroll, fillSmart, evaluate</span>.</p>
+    </section>
+
+    <section class="panel stack">
+      <div>
+        <h2>Status job</h2>
+        <p class="muted">După pornire, interfața face polling și îți afișează linkurile spre fișierele generate.</p>
+      </div>
+      <div id="status" class="status mono">Ready.</div>
+      <div>
+        <h3>Ajutor pentru shots JSON</h3>
+        <div class="shots">
+          <div class="shot mono">{ "type": "wait", "ms": 1500 }</div>
+          <div class="shot mono">{ "type": "click", "selector": "button", "textContains": "Tasks" }</div>
+          <div class="shot mono">{ "type": "type", "selector": "textarea", "text": "Idee scurtă", "delay": 90 }</div>
+          <div class="shot mono">{ "type": "press", "keys": "Control+K" }</div>
+          <div class="shot mono">{ "type": "drag", "source": ".card", "target": ".column:nth-child(2)" }</div>
+          <div class="shot mono">{ "type": "scroll", "pixels": 250, "speedPxPerSecond": 180 }</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let presets = [];
+    let pollHandle = null;
+
+    async function loadPresets() {
+      const res = await fetch('/api/presets');
+      const data = await res.json();
+      presets = data.presets || [];
+    }
+
+    function applyPreset(index) {
+      const preset = presets[index];
+      if (!preset) return;
+      $('name').value = preset.name;
+      $('url').value = preset.url;
+      $('message').value = `Demo automat pentru ${preset.name}`;
+      $('width').value = preset.viewport.width;
+      $('height').value = preset.viewport.height;
+      $('outRes').value = preset.output.outputResolution;
+      $('fpsFinal').value = String(preset.output.fpsFinal);
+      $('crf').value = String(preset.output.crf);
+      $('preset').value = preset.output.preset || 'veryfast';
+      $('shots').value = JSON.stringify(preset.shots, null, 2);
+    }
+
+    function payloadFromForm() {
+      return {
+        name: $('name').value.trim(),
+        url: $('url').value.trim(),
+        message: $('message').value.trim(),
+        viewport: {
+          width: Number($('width').value || 1280),
+          height: Number($('height').value || 720)
+        },
+        output: {
+          outputResolution: $('outRes').value,
+          fpsFinal: Number($('fpsFinal').value || 24),
+          crf: Number($('crf').value || 18),
+          preset: $('preset').value
+        },
+        shots: JSON.parse($('shots').value || '[]')
+      };
+    }
+
+    function setStatus(text) {
+      $('status').textContent = text;
+    }
+
+    async function healthCheck() {
+      const res = await fetch('/api/health');
+      const data = await res.json();
+      setStatus(JSON.stringify(data, null, 2));
+    }
+
+    async function poll(jobId) {
+      if (pollHandle) clearInterval(pollHandle);
+      pollHandle = setInterval(async () => {
+        const res = await fetch(`/api/render/${jobId}`);
+        const data = await res.json();
+        setStatus(JSON.stringify(data, null, 2));
+        if (['completed', 'failed'].includes(data.state)) {
+          clearInterval(pollHandle);
+          pollHandle = null;
+        }
+      }, 1500);
+    }
+
+    async function runJob() {
+      try {
+        const payload = payloadFromForm();
+        const res = await fetch('/api/render', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        setStatus(JSON.stringify(data, null, 2));
+        await poll(data.jobId);
+      } catch (error) {
+        setStatus(`Eroare: ${error.message}`);
+      }
+    }
+
+    $('loadPreset1').addEventListener('click', () => applyPreset(0));
+    $('loadPreset2').addEventListener('click', () => applyPreset(1));
+    $('runBtn').addEventListener('click', runJob);
+    $('healthBtn').addEventListener('click', healthCheck);
+
+    loadPresets().then(() => { if (presets[0]) applyPreset(0); });
+  </script>
+</body>
+</html>
