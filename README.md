@@ -70,6 +70,15 @@ http://localhost:3000
    - `duration`
 4. Descarci artifact-ul `rendered-video-<run_id>` din run summary.
 
+### Notițe importante despre `render-video.yml`
+
+- Trigger-ul `push.tags` nu are input-uri interactive în GitHub Actions. Din acest motiv, workflow-ul folosește valori fallback (`https://example.com`, `Tagged render`, `40`) când pornește din push pe tag.
+- Pentru clipuri reale (URL + titlu + durată corectă), rulează workflow-ul din **Actions → Render Video → Run workflow** (trigger `workflow_dispatch`).
+- Dacă vrei mai multe shot-uri reale, înlocuiește blocul `plan.json` generat în workflow cu planul exportat din aplicație.
+- Artifactele de workflow și release assets sunt mecanisme diferite și pot coexista fără probleme:
+  - artifactul este atașat rulării din Actions;
+  - release asset-ul este atașat release-ului/tag-ului.
+
 ## Deploy pe Render (Web Service)
 
 Repo-ul include configurare minimă pentru Render:
