@@ -106,6 +106,11 @@ npm run render:plan -- output-plan.json custom-job-id
 { "type": "click", "selector": "button", "textContains": "Tasks", "timeoutMs": 6000 }
 ```
 
+### clickOptional
+```json
+{ "type": "clickOptional", "selector": ["button", "[role=\"button\"]"], "textContains": ["Skip", "Close"], "timeoutMs": 1200 }
+```
+
 ### hover
 ```json
 { "type": "hover", "selector": ".card" }
@@ -119,6 +124,11 @@ npm run render:plan -- output-plan.json custom-job-id
 ### press
 ```json
 { "type": "press", "keys": "Control+K" }
+```
+
+### pressAny
+```json
+{ "type": "pressAny", "keys": ["Control+K", "Meta+K"] }
 ```
 
 ### drag
