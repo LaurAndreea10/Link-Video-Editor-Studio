@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="description" content="Link Video Editor Studio pentru GitHub Pages: plan, deck, exporturi și automation pack pentru Playwright + FFmpeg." />
+  <title>Link Video Editor Studio</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="stylesheet" href="./assets/app.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar panel">
+      <div class="brand-wrap">
+        <div class="logo"></div>
+        <div>
+          <h1>Link Video Editor Studio</h1>
+          <p>GitHub-native workspace pentru planuri de demo, exporturi și automation pack.</p>
+        </div>
+      </div>
+      <div class="status-row">
+        <a class="status-pill" href="./?preset=alpis-fusion">Preset demo</a>
+        <a class="status-pill" href="https://github.com/${GITHUB_REPOSITORY:-LaurAndreea10/Link-Video-Editor-Studio}/actions" target="_blank" rel="noreferrer">Actions</a>
+        <a class="status-pill" href="https://github.com/${GITHUB_REPOSITORY:-LaurAndreea10/Link-Video-Editor-Studio}/releases" target="_blank" rel="noreferrer">Releases</a>
+      </div>
+    </header>
+
+    <div class="app">
+      <aside class="sidebar panel">
+        <section class="section">
+          <div class="section-title">
+            <h2>Input principal</h2>
+            <span class="badge success">GitHub Pages</span>
+          </div>
+          <div class="field">
+            <label for="projectUrl">Link proiect</label>
+            <input id="projectUrl" type="url" placeholder="https://exemplu.ro/demo" />
+          </div>
+          <div class="field">
+            <label for="projectName">Nume produs</label>
+            <input id="projectName" type="text" placeholder="Ex: Alpis Fusion CRM Premium" />
+          </div>
+          <div class="field">
+            <label for="visualMessage">Mesaj vizual</label>
+            <textarea id="visualMessage" placeholder="Ex: Produsul are profunzime, toate modulele sunt integrate și fluide."></textarea>
+          </div>
+          <div class="field">
+            <label for="duration">Durată țintă</label>
+            <select id="duration">
+              <option value="20">20 sec</option>
+              <option value="30">30 sec</option>
+              <option value="35">35 sec</option>
+              <option value="40" selected>40 sec</option>
+              <option value="45">45 sec</option>
+              <option value="60">60 sec</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>Configurație captură</h2>
+            <span class="badge">OBS + encode</span>
+          </div>
+          <div class="grid-2" id="configGrid"></div>
+          <div class="hint">Valorile recomandate sunt preselectate. În automation pack ajung și setările finale de export.</div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>Reguli de regie</h2>
+            <span class="badge warn">Silent demo</span>
+          </div>
+          <div class="chips" id="directionRules"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            <h2>Acțiuni</h2>
+            <span class="badge">Workspace</span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="generateBtn">Generează materialele</button>
+            <button class="btn btn-secondary" id="loadPresetBtn">Încarcă preseturile</button>
+            <button class="btn btn-secondary" id="copySummaryBtn">Copiază sumarul</button>
+            <button class="btn btn-secondary" id="downloadJsonBtn">Descarcă JSON</button>
+            <button class="btn btn-secondary" id="downloadPptxBtn">Descarcă PPTX</button>
+            <button class="btn btn-secondary" id="downloadHtmlBtn">Descarcă raport HTML</button>
+            <button class="btn btn-secondary" id="downloadAutomationBtn">Descarcă Automation Pack</button>
+            <button class="btn btn-secondary" id="copyCliBtn">Copiază comenzi CLI</button>
+            <button class="btn btn-secondary" id="shareLinkBtn">Copiază link share</button>
+            <button class="btn btn-danger" id="resetBtn">Reset</button>
+          </div>
+        </section>
+
+        <p class="footer-note">Aplicația rulează 100% în browser pe GitHub Pages. Randarea reală video rămâne în GitHub Actions sau local prin Automation Pack.</p>
+      </aside>
+
+      <main class="main">
+        <section class="hero panel">
+          <div class="hero-top">
+            <div>
+              <h2>Workspace pentru demo-uri video, exporturi și workflow GitHub.</h2>
+              <p>Poți genera planul complet în browser, îl poți salva local, partaja prin URL și îl poți trimite în GitHub Actions sau în Automation Pack pentru captură reală.</p>
+            </div>
+            <div class="hero-badges">
+              <span class="badge success">PWA-ready</span>
+              <span class="badge">Local autosave</span>
+              <span class="badge">Actions-friendly</span>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat"><div class="k" id="statShots">0</div><div class="l">Shot-uri</div></div>
+            <div class="stat"><div class="k" id="statSlides">0</div><div class="l">Slide-uri</div></div>
+            <div class="stat"><div class="k" id="statDescriptions">0</div><div class="l">Descrieri</div></div>
+            <div class="stat"><div class="k" id="statClips">0</div><div class="l">Clipuri</div></div>
+          </div>
+          <div class="status-board">
+            <div class="status-card">
+              <h3>Persistență locală</h3>
+              <p id="storageStatus">Workspace-ul se salvează automat în browser.</p>
+            </div>
+            <div class="status-card">
+              <h3>Workflow GitHub</h3>
+              <p id="githubStatus">Folosește workflow-ul <code>Render Video</code> din Actions pentru o rulare manuală.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="workbench">
+          <div class="panel pane">
+            <div class="toolbar">
+              <div>
+                <h3>Clipuri și timeline</h3>
+                <p class="hint">Preseturile sunt încărcate din JSON. Poți crea și clipuri custom.</p>
+              </div>
+              <div class="tabs" id="clipTabs"></div>
+            </div>
+            <div class="clip-list" id="clipList"></div>
+          </div>
+
+          <div class="panel pane">
+            <div class="toolbar">
+              <div>
+                <h3>Preview & output</h3>
+                <p class="hint">Unele site-uri blochează iframe. Linkul direct rămâne întotdeauna disponibil.</p>
+              </div>
+              <div class="tabs">
+                <button class="tab active" data-view="timeline">Timeline</button>
+                <button class="tab" data-view="slides">Slides</button>
+                <button class="tab" data-view="descriptions">Descrieri</button>
+                <button class="tab" data-view="summary">Sumar</button>
+                <button class="tab" data-view="voiceover">Voice-over</button>
+                <button class="tab" data-view="export">Export</button>
+              </div>
+            </div>
+
+            <div id="previewWrap">
+              <div class="preview-note" id="previewNote">Adaugă un proiect sau încarcă preseturile pentru a genera materialele.</div>
+              <iframe class="preview hidden" id="sitePreview" title="Site preview"></iframe>
+            </div>
+
+            <div id="view-timeline" class="view-block"><div class="timeline" id="timeline"></div></div>
+            <div id="view-slides" class="view-block hidden"><div class="slide-deck" id="slides"></div></div>
+            <div id="view-descriptions" class="view-block hidden"><div class="output-box" id="descriptions"></div></div>
+            <div id="view-summary" class="view-block hidden"><div class="output-box" id="summary"></div></div>
+            <div id="view-voiceover" class="view-block hidden"><div class="output-box" id="voiceover"></div></div>
+            <div id="view-export" class="view-block hidden"><div class="output-box mono" id="exportBox"></div></div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="./assets/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+[
+  {
+    "id": "alpis-fusion",
+    "title": "CLIP 1 — Alpis Fusion CRM Premium",
+    "shortTitle": "Alpis Fusion CRM Premium",
+    "duration": 40,
+    "url": "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
+    "message": "Acest produs are profunzime. 18 module integrate, command palette, flow builder, facturare completă — totul fluid într-un singur ecran.",
+    "preroll": [
+      "Deschide URL-ul.",
+      "Așteaptă hero screen-ul cu orbs-urile animate să se încarce complet.",
+      "Dacă pornește tour-ul ghidat, trece-l rapid sau oprește-l.",
+      "Generează date demo dacă aplicația pornește goală.",
+      "Poziționează-te pe view-ul Dashboard cu KPI-uri vizibile."
+    ],
+    "avoid": [
+      "Nu demonstra dark/light theme toggle.",
+      "Nu deschide Settings sau Export.",
+      "Nu scrie text lung în formulare."
+    ],
+    "shots": [
+      { "time": "00:00 – 00:04", "action": "Stai pe Dashboard. KPI cards, sparkline și live ticker rămân în cadru.", "purpose": "Prima impresie: produsul e viu." },
+      { "time": "00:04 – 00:06", "action": "Hover pe un KPI card pentru tooltip sau detaliu contextual.", "purpose": "Interactiv, nu static." },
+      { "time": "00:06 – 00:10", "action": "Apasă Ctrl sau Cmd + K. Command palette se deschide. Tastează încet clien și intră pe Clienți.", "purpose": "Power-user features." },
+      { "time": "00:10 – 00:14", "action": "În lista Clienți, hover pe un client până apare preview card cu scoring și programări.", "purpose": "UX atent la detaliu." },
+      { "time": "00:14 – 00:18", "action": "Click pe un client. Se deschide detail panel lateral cu timeline, deals și mesaje. Stai 2 secunde.", "purpose": "Structură bogată de date." },
+      { "time": "00:18 – 00:20", "action": "Închide panel-ul și apasă P pentru Pipeline.", "purpose": "Keyboard navigation fluent." },
+      { "time": "00:20 – 00:26", "action": "În Kanban pipeline, mută un deal Lead către Contacted și lasă animația să se consume.", "purpose": "Core CRM functionality." },
+      { "time": "00:26 – 00:30", "action": "Apasă B pentru Bookings. Creează booking nou. Dacă există conflict, arată badge-ul de warning.", "purpose": "Booking conflict detection." },
+      { "time": "00:30 – 00:34", "action": "Din booking, generează factură și intră în Print Invoice PDF. Stai o clipă și închide fereastra.", "purpose": "Flux complet end-to-end." },
+      { "time": "00:34 – 00:38", "action": "Apasă A pentru Automatizări. Arată flow builder-ul vizual și rămâi 2 secunde.", "purpose": "Complexitate bine organizată." },
+      { "time": "00:38 – 00:40", "action": "Revino cu scroll ușor spre Dashboard pentru închidere circulară.", "purpose": "Final coerent, revenim la start." }
+    ]
+  },
+  {
+    "id": "clientflow-saas",
+    "title": "CLIP 2 — ClientFlow SaaS",
+    "shortTitle": "ClientFlow SaaS",
+    "duration": 30,
+    "url": "https://laurandreea10.github.io/ClientFlow-SaaS-CRM-task-manager-automation-suite/",
+    "message": "Mobile-first, rapid, un singur ecran pentru freelancers — clienți + task-uri + invoicing + availability generator, fără fragmentare.",
+    "preroll": [
+      "Deschide URL-ul.",
+      "Redimensionează fereastra la 1280×720 pentru consistență.",
+      "Asigură-te că există date demo: minim 3 clienți și 5 task-uri.",
+      "Poziționează-te pe Dashboard."
+    ],
+    "avoid": [
+      "Nu intra în Client Portal simulat.",
+      "Nu scrie texte lungi în Content Studio."
+    ],
+    "shots": [
+      { "time": "00:00 – 00:03", "action": "Stai pe Dashboard, cu modulele principale în sidebar sau nav.", "purpose": "Prima impresie: claritate." },
+      { "time": "00:03 – 00:07", "action": "Intră în Tasks și schimbă statusul unui task cu un singur click.", "purpose": "Task management rapid." },
+      { "time": "00:07 – 00:11", "action": "Intră în Calendar, arată grid-ul lunar și hover pe o zi mai încărcată.", "purpose": "Vizibilitate operațională." },
+      { "time": "00:11 – 00:15", "action": "Intră în Clients și deschide detaliul unui client cu contact, notes și task-uri asociate.", "purpose": "Client-centric view." },
+      { "time": "00:15 – 00:19", "action": "Intră în Invoicing, deschide preview-ul și apasă Export PDF.", "purpose": "Billing inclus în același produs." },
+      { "time": "00:19 – 00:23", "action": "Intră în Availability Generator și folosește sample sau upload logo pentru a genera posterul.", "purpose": "Feature diferențiator vizual." },
+      { "time": "00:23 – 00:27", "action": "Intră în Content Studio, scrie o idee scurtă, selectează o platformă și generează caption.", "purpose": "Produsul merge dincolo de CRM." },
+      { "time": "00:27 – 00:30", "action": "Comută limba RO și EN și lasă interfața să se schimbe instant.", "purpose": "Polish final, bilingv." }
+    ]
+  },
+  {
+    "id": "alpis-impact-path",
+    "title": "CLIP 3 — Alpis Impact Path",
+    "shortTitle": "Alpis Impact Path",
+    "duration": 35,
+    "url": "https://github.com/LaurAndreea10/ALPIS-ImpactPath",
+    "message": "Transformare UX pură: un mesaj static devine un parcurs ghidat, cu progres vizibil și CTA contextual.",
+    "preroll": [
+      "Deschide demo-ul live sau fallback GitHub dacă nu există Pages.",
+      "Resetează parcursul la început: pas 1 din N și 0% progres.",
+      "Dacă ai versiunea statică veche, o poți folosi câteva secunde la început pentru contrast."
+    ],
+    "avoid": [
+      "Nu scrolla pe pagină statică lungă mai mult de 3 secunde.",
+      "Nu sări peste pași.",
+      "Nu adăuga subtitluri on-screen."
+    ],
+    "shots": [
+      { "time": "00:00 – 00:04", "action": "Opțional: arată foarte rapid versiunea statică veche, lungă și fără progres.", "purpose": "Contrast clar cu noua abordare." },
+      { "time": "00:04 – 00:08", "action": "Treci la versiunea interactivă. Pas 1 din N și bara la 0% trebuie să fie vizibile.", "purpose": "Focus pe un singur pas." },
+      { "time": "00:08 – 00:13", "action": "Apasă Continuă la pasul 1 și lasă progresul să sară spre 20%.", "purpose": "Feedback imediat." },
+      { "time": "00:13 – 00:18", "action": "Pe pasul 2, arată o selecție sau un input scurt și continuă până spre 40%.", "purpose": "Ritm controlat." },
+      { "time": "00:18 – 00:23", "action": "Pe pasul 3, arată o micro-interacțiune diferită, mai vizuală, apoi continuă.", "purpose": "Varietate, nu doar click-uri." },
+      { "time": "00:23 – 00:28", "action": "Pe pasul 4, aproape de final, arată un punct de decizie dacă există.", "purpose": "Userul este deja investit." },
+      { "time": "00:28 – 00:32", "action": "Ajungi la pasul final. Progres 100%. CTA-ul principal apare contextual. Stai 1 secundă.", "purpose": "Payoff logic la final." },
+      { "time": "00:32 – 00:35", "action": "Click pe CTA-ul final și arată starea de confirmare sau thank-you.", "purpose": "Închidere satisfăcătoare." }
+    ]
+  }
+]
