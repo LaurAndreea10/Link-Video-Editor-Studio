@@ -3,19 +3,35 @@ name: Render Video
 on:
   workflow_dispatch:
     inputs:
+      tag:
+        description: "Tag release existent sau nou, ex: v1.0.0"
+        required: true
+        type: string
       clip_url:
-        description: URL for demo capture
+        description: "URL demo"
         required: true
         type: string
       clip_title:
-        description: Human-readable title
+        description: "Titlu clip"
         required: true
         type: string
       duration:
-        description: Approximate duration in seconds
+        description: "Durată"
         required: true
         default: "40"
         type: string
+      create_release_if_missing:
+        description: "Creează release dacă nu există"
+        required: false
+        default: true
+        type: boolean
+
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
 
 jobs:
   render:
@@ -25,6 +41,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve vars
+        id: vars
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+            CLIP_URL="${{ github.event.inputs.clip_url }}"
+            CLIP_TITLE="${{ github.event.inputs.clip_title }}"
+            DURATION="${{ github.event.inputs.duration }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+            CLIP_URL="https://example.com"
+            CLIP_TITLE="Tagged render"
+            DURATION="40"
+          fi
+
+          SAFE_TITLE="$(echo "$CLIP_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//')"
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "clip_url=$CLIP_URL" >> "$GITHUB_OUTPUT"
+          echo "clip_title=$CLIP_TITLE" >> "$GITHUB_OUTPUT"
+          echo "duration=$DURATION" >> "$GITHUB_OUTPUT"
+          echo "safe_title=$SAFE_TITLE" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure tag exists
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag exists: $TAG"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag "$TAG"
+            git push origin "$TAG"
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -36,47 +92,147 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Init package
+        run: |
+          npm init -y
+          npm install playwright
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
-      - name: Create rendering plan
+      - name: Write plan.json
+        shell: bash
         run: |
-          cat > output-plan.json <<'JSON'
+          cat > plan.json <<EOF
           {
-            "name": "${{ github.event.inputs.clip_title }}",
-            "url": "${{ github.event.inputs.clip_url }}",
-            "message": "Workflow dispatch run #${{ github.run_number }}",
-            "viewport": {
-              "width": 1920,
-              "height": 1080
+            "meta": {
+              "title": "${{ steps.vars.outputs.clip_title }}",
+              "shortTitle": "${{ steps.vars.outputs.clip_title }}",
+              "url": "${{ steps.vars.outputs.clip_url }}",
+              "duration": ${{ steps.vars.outputs.duration }},
+              "generatedAt": "${{ github.run_id }}"
             },
-            "output": {
+            "config": {
+              "canvasResolution": "1920x1080",
               "outputResolution": "1280x720",
-              "fpsFinal": 24,
-              "crf": 18,
-              "preset": "veryfast"
+              "finalFps": "24",
+              "crf": "18"
             },
+            "preroll": [
+              "Deschide URL-ul.",
+              "Așteaptă să se încarce complet.",
+              "Poziționează-te pe view-ul principal."
+            ],
             "shots": [
               {
-                "type": "wait",
-                "ms": 3000
-              },
-              {
-                "type": "wait",
-                "ms": 1000
+                "index": 1,
+                "time": "00:00 – 00:04",
+                "action": "Ține dashboard-ul în cadru.",
+                "purpose": "Prima impresie.",
+                "actions": [
+                  { "type": "wait", "ms": 2500 }
+                ]
               }
             ]
           }
-          JSON
+          EOF
 
-      - name: Render video from plan
-        run: node scripts/run-plan.mjs output-plan.json workflow-${{ github.run_id }}
+      - name: Write runner.mjs
+        shell: bash
+        run: |
+          cat > runner.mjs <<'EOF'
+          import fs from "fs";
+          import path from "path";
+          import { chromium } from "playwright";
+          import { execFile } from "child_process";
+          import { promisify } from "util";
 
-      - name: Upload render artifacts
+          const execFileAsync = promisify(execFile);
+          const plan = JSON.parse(fs.readFileSync("./plan.json", "utf8"));
+
+          const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+          async function transcode(inputPath, outputPath, fps, crf, resolution) {
+            const [w, h] = String(resolution || "1280x720").split("x");
+            await execFileAsync("ffmpeg", [
+              "-y",
+              "-i", inputPath,
+              "-vf", `fps=${fps},scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2`,
+              "-c:v", "libx264",
+              "-profile:v", "high",
+              "-crf", String(crf || 18),
+              "-pix_fmt", "yuv420p",
+              "-movflags", "+faststart",
+              outputPath
+            ]);
+          }
+
+          const outDir = path.resolve("./output");
+          fs.mkdirSync(outDir, { recursive: true });
+
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext({
+            viewport: { width: 1920, height: 1080 },
+            recordVideo: {
+              dir: outDir,
+              size: { width: 1920, height: 1080 }
+            }
+          });
+
+          const page = await context.newPage();
+          await page.goto(plan.meta.url, { waitUntil: "networkidle" });
+          await sleep(3000);
+
+          for (const shot of plan.shots) {
+            for (const action of shot.actions) {
+              if (action.type === "wait") {
+                await sleep(action.ms || 1000);
+              }
+            }
+          }
+
+          const video = page.video();
+          await context.close();
+          await browser.close();
+
+          const rawPath = await video.path();
+          const finalPath = path.join(outDir, "final.mp4");
+
+          await transcode(
+            rawPath,
+            finalPath,
+            plan.config.finalFps || 24,
+            plan.config.crf || 18,
+            plan.config.outputResolution || "1280x720"
+          );
+
+          console.log("Done:", finalPath);
+          EOF
+
+      - name: Run render
+        run: node runner.mjs
+
+      - name: Rename output for release
+        shell: bash
+        run: |
+          mkdir -p release
+          cp output/final.mp4 "release/${{ steps.vars.outputs.safe_title }}-${{ steps.vars.outputs.tag }}.mp4"
+
+      - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rendered-video-${{ github.run_id }}
-          path: output/workflow-${{ github.run_id }}/
+          name: rendered-video-${{ steps.vars.outputs.safe_title }}-${{ steps.vars.outputs.tag }}
+          path: release/*.mp4
+
+      - name: Publish MP4 to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          generate_release_notes: true
+          append_body: true
+          body: |
+            Automated render generated by GitHub Actions.
+            Clip: ${{ steps.vars.outputs.clip_title }}
+            Source: ${{ steps.vars.outputs.clip_url }}
+          files: |
+            release/*.mp4
