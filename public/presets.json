@@ -1,0 +1,745 @@
+{
+  "presets": [
+    {
+      "name": "CLIP 1 — Alpis Fusion CRM Premium",
+      "durationSeconds": 40,
+      "url": "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
+      "message": "Acest produs are profunzime: 18 module integrate, command palette, flow builder și facturare completă într-un singur ecran.",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "output": {
+        "encoder": "libx264",
+        "crf": 18,
+        "fpsCapture": 30,
+        "fpsFinal": 24,
+        "canvasResolution": "1920x1080",
+        "outputResolution": "1280x720",
+        "preset": "veryfast"
+      },
+      "preRoll": [
+        "Deschide URL-ul și așteaptă hero screen-ul cu orbs-urile animate.",
+        "Dacă pornește turul ghidat: skip/close rapid ca să ajungi pe dashboard.",
+        "Generează date demo dacă aplicația pornește goală și poziționează-te pe Dashboard cu KPI-uri vizibile."
+      ],
+      "avoid": [
+        "Nu comuta dark/light theme.",
+        "Nu intra în Settings/Export.",
+        "Nu scrie texte lungi în formulare."
+      ],
+      "shots": [
+        {
+          "type": "wait",
+          "ms": 2200,
+          "note": "00:00-00:04 dashboard idle cu KPI-uri animate"
+        },
+        {
+          "type": "clickOptional",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "a"
+          ],
+          "textContains": [
+            "Skip",
+            "Sari",
+            "Închide",
+            "Close"
+          ],
+          "timeoutMs": 1200
+        },
+        {
+          "type": "clickOptional",
+          "selector": [
+            "button",
+            "[role=\"button\"]"
+          ],
+          "textContains": [
+            "Demo data",
+            "Generează date",
+            "Generate"
+          ],
+          "timeoutMs": 1500
+        },
+        {
+          "type": "clickOptional",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Dashboard"
+          ],
+          "timeoutMs": 1500
+        },
+        {
+          "type": "wait",
+          "ms": 1700
+        },
+        {
+          "type": "hover",
+          "selector": [
+            "[data-kpi-card]",
+            ".kpi-card",
+            ".metric-card",
+            ".card"
+          ],
+          "timeoutMs": 7000,
+          "note": "00:04-00:06 hover KPI pentru tooltip"
+        },
+        {
+          "type": "wait",
+          "ms": 1200
+        },
+        {
+          "type": "pressAny",
+          "keys": [
+            "Meta+K",
+            "Control+K"
+          ],
+          "note": "00:06-00:10 command palette"
+        },
+        {
+          "type": "wait",
+          "ms": 600
+        },
+        {
+          "type": "type",
+          "selector": [
+            "input[type=\"search\"]",
+            "input",
+            "[contenteditable=\"true\"]"
+          ],
+          "text": "clien",
+          "delay": 170
+        },
+        {
+          "type": "wait",
+          "ms": 700
+        },
+        {
+          "type": "press",
+          "keys": "Enter"
+        },
+        {
+          "type": "wait",
+          "ms": 2600
+        },
+        {
+          "type": "hover",
+          "selector": [
+            "[data-client-row]",
+            ".client-row",
+            "tbody tr",
+            ".list-item"
+          ],
+          "timeoutMs": 7000,
+          "note": "00:10-00:14 hover client preview"
+        },
+        {
+          "type": "wait",
+          "ms": 1600
+        },
+        {
+          "type": "click",
+          "selector": [
+            "[data-client-row]",
+            ".client-row",
+            "tbody tr",
+            ".list-item"
+          ],
+          "timeoutMs": 7000,
+          "note": "00:14-00:18 open client detail panel"
+        },
+        {
+          "type": "wait",
+          "ms": 2100
+        },
+        {
+          "type": "press",
+          "keys": "Escape"
+        },
+        {
+          "type": "wait",
+          "ms": 500
+        },
+        {
+          "type": "press",
+          "keys": "P",
+          "note": "00:18-00:20 pipeline shortcut"
+        },
+        {
+          "type": "wait",
+          "ms": 1600
+        },
+        {
+          "type": "drag",
+          "source": "[draggable=\"true\"], .deal-card, .kanban-card",
+          "target": ".kanban-column:nth-child(2), [data-column=\"contacted\"]",
+          "timeoutMs": 8000,
+          "note": "00:20-00:26 drag deal între coloane"
+        },
+        {
+          "type": "wait",
+          "ms": 1200
+        },
+        {
+          "type": "press",
+          "keys": "B",
+          "note": "00:26-00:30 bookings"
+        },
+        {
+          "type": "wait",
+          "ms": 1000
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]"
+          ],
+          "textContains": [
+            "Creează booking nou",
+            "Create booking",
+            "booking"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 700
+        },
+        {
+          "type": "fillSmart",
+          "values": [
+            "Demo Client",
+            "26/05/2026",
+            "10:00",
+            "Consultanță rapidă"
+          ]
+        },
+        {
+          "type": "wait",
+          "ms": 1000
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]"
+          ],
+          "textContains": [
+            "fact",
+            "invoice",
+            "⊡"
+          ],
+          "timeoutMs": 7000,
+          "note": "00:30-00:34 generare factură"
+        },
+        {
+          "type": "wait",
+          "ms": 900
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]"
+          ],
+          "textContains": [
+            "Print Invoice PDF",
+            "Print",
+            "PDF"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1300
+        },
+        {
+          "type": "press",
+          "keys": "Escape"
+        },
+        {
+          "type": "wait",
+          "ms": 600
+        },
+        {
+          "type": "press",
+          "keys": "A",
+          "note": "00:34-00:38 automatizări / flow builder"
+        },
+        {
+          "type": "wait",
+          "ms": 2200
+        },
+        {
+          "type": "clickOptional",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Dashboard"
+          ],
+          "timeoutMs": 1500
+        },
+        {
+          "type": "scroll",
+          "pixels": -180,
+          "speedPxPerSecond": 180,
+          "note": "00:38-00:40 revenire finală"
+        }
+      ]
+    },
+    {
+      "name": "CLIP 2 — ClientFlow SaaS",
+      "durationSeconds": 30,
+      "url": "https://laurandreea10.github.io/ClientFlow-SaaS-CRM-task-manager-automation-suite/",
+      "message": "Mobile-first, rapid, cu tasks + calendar + clients + invoicing + availability + content studio într-un singur flux.",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "output": {
+        "encoder": "libx264",
+        "crf": 18,
+        "fpsCapture": 30,
+        "fpsFinal": 24,
+        "canvasResolution": "1920x1080",
+        "outputResolution": "1280x720",
+        "preset": "veryfast"
+      },
+      "preRoll": [
+        "Deschide URL-ul în 1280x720.",
+        "Asigură date demo (min 3 clienți, 5 task-uri).",
+        "Plecăm din Dashboard."
+      ],
+      "avoid": [
+        "Nu intra în Client Portal simulat.",
+        "Nu scrie texte lungi în Content Studio."
+      ],
+      "shots": [
+        {
+          "type": "wait",
+          "ms": 3000,
+          "note": "Dashboard intro"
+        },
+        {
+          "type": "click",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Tasks",
+            "Task"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1500
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            ".status-badge",
+            "select"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1400
+        },
+        {
+          "type": "click",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Calendar"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1600
+        },
+        {
+          "type": "hover",
+          "selector": [
+            ".calendar-day",
+            "[data-day]",
+            "td"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1400
+        },
+        {
+          "type": "click",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Clients",
+            "Client"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1400
+        },
+        {
+          "type": "click",
+          "selector": [
+            "[data-client-row]",
+            ".client-row",
+            "tbody tr",
+            ".list-item"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1800
+        },
+        {
+          "type": "click",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Invoic",
+            "Factur"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1400
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]"
+          ],
+          "textContains": [
+            "Export PDF",
+            "PDF"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1600
+        },
+        {
+          "type": "click",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Availability",
+            "Dispon"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1300
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]"
+          ],
+          "textContains": [
+            "sample",
+            "Use sample"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1700
+        },
+        {
+          "type": "click",
+          "selector": [
+            "a",
+            "button",
+            "[role=\"tab\"]"
+          ],
+          "textContains": [
+            "Content",
+            "Studio"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1100
+        },
+        {
+          "type": "type",
+          "selector": [
+            "textarea",
+            "input"
+          ],
+          "text": "Idee: ofertă rapidă pentru lead-uri calde",
+          "delay": 80
+        },
+        {
+          "type": "wait",
+          "ms": 600
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "label"
+          ],
+          "textContains": [
+            "Instagram",
+            "LinkedIn"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 700
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]"
+          ],
+          "textContains": [
+            "Generează",
+            "Generate"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1600
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "label"
+          ],
+          "textContains": [
+            "EN",
+            "RO"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1500
+        }
+      ]
+    },
+    {
+      "name": "CLIP 3 — Alpis Impact Path",
+      "durationSeconds": 35,
+      "url": "https://laurandreea10.github.io/ALPIS-ImpactPath/",
+      "message": "Parcurs interactiv step-by-step: progres vizibil și CTA contextual la final.",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "output": {
+        "encoder": "libx264",
+        "crf": 18,
+        "fpsCapture": 30,
+        "fpsFinal": 24,
+        "canvasResolution": "1920x1080",
+        "outputResolution": "1280x720",
+        "preset": "veryfast"
+      },
+      "preRoll": [
+        "Deschide demo-ul live.",
+        "Resetează parcursul la pasul 1 din N (0%).",
+        "Dacă există variantă statică, arată doar 2-3 secunde pentru contrast."
+      ],
+      "avoid": [
+        "Nu scroll lung pe pagină statică.",
+        "Nu sări peste pași.",
+        "Nu adăuga subtitluri on-screen."
+      ],
+      "shots": [
+        {
+          "type": "wait",
+          "ms": 2500,
+          "note": "Intro/contrast scurt"
+        },
+        {
+          "type": "clickOptional",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "a"
+          ],
+          "textContains": [
+            "Start",
+            "Începe",
+            "Reset"
+          ],
+          "timeoutMs": 1600
+        },
+        {
+          "type": "wait",
+          "ms": 1300
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "a"
+          ],
+          "textContains": [
+            "Continuă",
+            "Continue",
+            "Next"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1800
+        },
+        {
+          "type": "clickOptional",
+          "selector": [
+            "label",
+            "button",
+            "[role=\"button\"]",
+            "input[type=\"radio\"] + *"
+          ],
+          "timeoutMs": 1300
+        },
+        {
+          "type": "wait",
+          "ms": 600
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "a"
+          ],
+          "textContains": [
+            "Continuă",
+            "Continue",
+            "Next"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1800
+        },
+        {
+          "type": "clickOptional",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            ".option",
+            ".choice"
+          ],
+          "timeoutMs": 1300
+        },
+        {
+          "type": "wait",
+          "ms": 700
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "a"
+          ],
+          "textContains": [
+            "Continuă",
+            "Continue",
+            "Next"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1800
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "a"
+          ],
+          "textContains": [
+            "Continuă",
+            "Continue",
+            "Next"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 1800
+        },
+        {
+          "type": "click",
+          "selector": [
+            "button",
+            "[role=\"button\"]",
+            "a"
+          ],
+          "textContains": [
+            "CTA",
+            "Finalizează",
+            "Submit",
+            "Trimite",
+            "Get Started"
+          ],
+          "timeoutMs": 7000
+        },
+        {
+          "type": "wait",
+          "ms": 2200
+        }
+      ]
+    }
+  ]
+}
