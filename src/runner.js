@@ -89,14 +89,31 @@ async function wait(ms) {
 
 async function findLocator(page, step) {
   const timeout = step.timeoutMs || 5000;
-  if (step.textContains) {
-    const locator = page.locator(step.selector || 'button, a, [role="button"], [role="tab"]').filter({ hasText: step.textContains }).first();
-    await locator.waitFor({ state: 'visible', timeout });
-    return locator;
+  const selectors = Array.isArray(step.selector) ? step.selector : [step.selector || 'button, a, [role="button"], [role="tab"]'];
+  const terms = Array.isArray(step.textContains) ? step.textContains : (step.textContains ? [step.textContains] : []);
+
+  for (const selector of selectors) {
+    if (terms.length > 0) {
+      for (const term of terms) {
+        const locator = page.locator(selector).filter({ hasText: term }).first();
+        try {
+          await locator.waitFor({ state: 'visible', timeout });
+          return locator;
+        } catch {
+          // try next selector/text combination
+        }
+      }
+    } else {
+      const locator = page.locator(selector).first();
+      try {
+        await locator.waitFor({ state: 'visible', timeout });
+        return locator;
+      } catch {
+        // try next selector
+      }
+    }
   }
-  const locator = page.locator(step.selector).first();
-  await locator.waitFor({ state: 'visible', timeout });
-  return locator;
+  throw new Error(`Locator not found for selector=${JSON.stringify(step.selector)} textContains=${JSON.stringify(step.textContains)}`);
 }
 
 async function runStep(page, step, jobId) {
@@ -124,6 +141,31 @@ async function runStep(page, step, jobId) {
     }
     case 'press': {
       await page.keyboard.press(step.keys);
+      return;
+    }
+    case 'pressAny': {
+      const keys = Array.isArray(step.keys) ? step.keys : [];
+      if (keys.length === 0) throw new Error('pressAny requires a keys array.');
+      let lastError = null;
+      for (const combo of keys) {
+        try {
+          await page.keyboard.press(combo);
+          return;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+      throw new Error(`pressAny failed for combos ${keys.join(', ')}: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
+    }
+    case 'clickOptional': {
+      const timeout = step.timeoutMs || 1200;
+      try {
+        const locator = await findLocator(page, { ...step, timeoutMs: timeout });
+        await locator.click({ timeout });
+        await appendLog(jobId, `Optional click executed for ${JSON.stringify(step.textContains || step.selector)}`);
+      } catch {
+        await appendLog(jobId, `Optional click skipped for ${JSON.stringify(step.textContains || step.selector)}`);
+      }
       return;
     }
     case 'drag': {

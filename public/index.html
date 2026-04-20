@@ -46,6 +46,7 @@
       <div class="toolbar">
         <button class="secondary" id="loadPreset1">Preset 1</button>
         <button class="secondary" id="loadPreset2">Preset 2</button>
+        <button class="secondary" id="loadPreset3">Preset 3</button>
       </div>
 
       <div class="field">
@@ -59,6 +60,10 @@
       <div class="field">
         <label for="message">Mesaj vizual</label>
         <textarea id="message" placeholder="Descriere scurtă pentru clip"></textarea>
+      </div>
+      <div class="field">
+        <label for="workflowNotes">Workflow (pre-roll + de evitat)</label>
+        <textarea id="workflowNotes" class="mono" readonly></textarea>
       </div>
 
       <div class="grid2">
@@ -115,7 +120,7 @@
         <button class="secondary" id="healthBtn">Health check</button>
       </div>
 
-      <p class="muted">Tipuri suportate pentru shots: <span class="mono">wait, click, hover, type, press, drag, scroll, fillSmart, evaluate</span>.</p>
+      <p class="muted">Tipuri suportate pentru shots: <span class="mono">wait, click, clickOptional, hover, type, press, pressAny, drag, scroll, fillSmart, evaluate</span>.</p>
     </section>
 
     <section class="panel stack">
@@ -155,6 +160,14 @@
       $('name').value = preset.name;
       $('url').value = preset.url;
       $('message').value = `Demo automat pentru ${preset.name}`;
+      const notes = [
+        'PRE-ROLL:',
+        ...(preset.preRoll || []).map((x) => `- ${x}`),
+        '',
+        'DE EVITAT:',
+        ...(preset.avoid || []).map((x) => `- ${x}`)
+      ];
+      $('workflowNotes').value = notes.join('\n');
       $('width').value = preset.viewport.width;
       $('height').value = preset.viewport.height;
       $('outRes').value = preset.output.outputResolution;
@@ -224,6 +237,7 @@
 
     $('loadPreset1').addEventListener('click', () => applyPreset(0));
     $('loadPreset2').addEventListener('click', () => applyPreset(1));
+    $('loadPreset3').addEventListener('click', () => applyPreset(2));
     $('runBtn').addEventListener('click', runJob);
     $('healthBtn').addEventListener('click', healthCheck);
 
