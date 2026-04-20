@@ -7,21 +7,13 @@ on:
         description: "Tag release existent sau nou, ex: v1.0.0"
         required: true
         type: string
-      clip_url:
-        description: "URL demo"
-        required: true
-        type: string
-      clip_title:
-        description: "Titlu clip"
-        required: true
-        type: string
-      duration:
-        description: "Durată"
-        required: true
-        default: "40"
+      plan_path:
+        description: "Opțional: cale explicită către plan JSON din repo"
+        required: false
+        default: ""
         type: string
       create_release_if_missing:
-        description: "Creează release dacă nu există"
+        description: "Creează tag/release dacă nu există"
         required: false
         default: true
         type: boolean
@@ -44,35 +36,28 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve vars
+      - name: Resolve tag
         id: vars
         shell: bash
         run: |
+          set -euo pipefail
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TAG="${{ github.event.inputs.tag }}"
-            CLIP_URL="${{ github.event.inputs.clip_url }}"
-            CLIP_TITLE="${{ github.event.inputs.clip_title }}"
-            DURATION="${{ github.event.inputs.duration }}"
           else
             TAG="${GITHUB_REF_NAME}"
-            CLIP_URL="https://example.com"
-            CLIP_TITLE="Tagged render"
-            DURATION="40"
           fi
 
-          SAFE_TITLE="$(echo "$CLIP_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//')"
-
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "clip_url=$CLIP_URL" >> "$GITHUB_OUTPUT"
-          echo "clip_title=$CLIP_TITLE" >> "$GITHUB_OUTPUT"
-          echo "duration=$DURATION" >> "$GITHUB_OUTPUT"
-          echo "safe_title=$SAFE_TITLE" >> "$GITHUB_OUTPUT"
 
       - name: Ensure tag exists
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.create_release_if_missing == 'true' }}
         shell: bash
         run: |
+          set -euo pipefail
+
           TAG="${{ steps.vars.outputs.tag }}"
+
           if git rev-parse "$TAG" >/dev/null 2>&1; then
             echo "Tag exists: $TAG"
           else
@@ -82,146 +67,106 @@ jobs:
             git push origin "$TAG"
           fi
 
+      - name: Detect committed plan file
+        id: planfile
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          INPUT_PLAN="${{ github.event.inputs.plan_path || '' }}"
+          PLAN_FILE=""
+
+          # 0) Dacă userul a dat explicit un path la workflow_dispatch, îl folosim
+          if [ -n "${INPUT_PLAN}" ]; then
+            if [ -f "${INPUT_PLAN}" ]; then
+              PLAN_FILE="${INPUT_PLAN}"
+            else
+              echo "Fișierul specificat nu există: ${INPUT_PLAN}"
+              exit 1
+            fi
+          fi
+
+          # 1) Caută un plan modificat în commitul/tag-ul curent
+          if [ -z "${PLAN_FILE}" ]; then
+            PLAN_FILE="$(git diff-tree --no-commit-id --name-only -r HEAD \
+              | grep -E '(^|/)(plan\.json|.*\.plan\.json|output-plan\.json)$' \
+              | head -n 1 || true)"
+          fi
+
+          # 2) Preferă foldere convenționale dacă nu s-a găsit nimic în commitul curent
+          if [ -z "${PLAN_FILE}" ]; then
+            PLAN_FILE="$(git ls-files \
+              | grep -E '^(plans/.*(plan\.json|\.plan\.json)|.*(/plan\.json|\.plan\.json)|output-plan\.json)$' \
+              | head -n 1 || true)"
+          fi
+
+          if [ -z "${PLAN_FILE}" ]; then
+            echo "Nu am găsit niciun plan JSON în repo."
+            echo "Folosește unul dintre numele/path-urile:"
+            echo "  - plans/latest.plan.json"
+            echo "  - orice *.plan.json"
+            echo "  - plan.json"
+            echo "  - output-plan.json"
+            exit 1
+          fi
+
+          BASENAME="$(basename "${PLAN_FILE}")"
+          STEM="${BASENAME%.json}"
+          SAFE_NAME="$(echo "${STEM}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//')"
+
+          echo "Plan detectat: ${PLAN_FILE}"
+          echo "path=${PLAN_FILE}" >> "$GITHUB_OUTPUT"
+          echo "safe_name=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Show detected plan
+        shell: bash
+        run: |
+          echo "Using plan: ${{ steps.planfile.outputs.path }}"
+          ls -l "${{ steps.planfile.outputs.path }}"
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
       - name: Install FFmpeg
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
 
-      - name: Init package
-        run: |
-          npm init -y
-          npm install playwright
+      - name: Install dependencies
+        run: npm ci
 
       - name: Install Chromium
         run: npx playwright install chromium
 
-      - name: Write plan.json
+      - name: Validate detected plan
         shell: bash
         run: |
-          cat > plan.json <<EOF
-          {
-            "meta": {
-              "title": "${{ steps.vars.outputs.clip_title }}",
-              "shortTitle": "${{ steps.vars.outputs.clip_title }}",
-              "url": "${{ steps.vars.outputs.clip_url }}",
-              "duration": ${{ steps.vars.outputs.duration }},
-              "generatedAt": "${{ github.run_id }}"
-            },
-            "config": {
-              "canvasResolution": "1920x1080",
-              "outputResolution": "1280x720",
-              "finalFps": "24",
-              "crf": "18"
-            },
-            "preroll": [
-              "Deschide URL-ul.",
-              "Așteaptă să se încarce complet.",
-              "Poziționează-te pe view-ul principal."
-            ],
-            "shots": [
-              {
-                "index": 1,
-                "time": "00:00 – 00:04",
-                "action": "Ține dashboard-ul în cadru.",
-                "purpose": "Prima impresie.",
-                "actions": [
-                  { "type": "wait", "ms": 2500 }
-                ]
-              }
-            ]
-          }
-          EOF
+          node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('${{ steps.planfile.outputs.path }}','utf8')); console.log('Plan JSON valid')"
 
-      - name: Write runner.mjs
+      - name: Run render from detected plan
         shell: bash
         run: |
-          cat > runner.mjs <<'EOF'
-          import fs from "fs";
-          import path from "path";
-          import { chromium } from "playwright";
-          import { execFile } from "child_process";
-          import { promisify } from "util";
+          node scripts/run-plan.mjs "${{ steps.planfile.outputs.path }}" "${{ steps.planfile.outputs.safe_name }}-${{ steps.vars.outputs.tag }}"
 
-          const execFileAsync = promisify(execFile);
-          const plan = JSON.parse(fs.readFileSync("./plan.json", "utf8"));
-
-          const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-          async function transcode(inputPath, outputPath, fps, crf, resolution) {
-            const [w, h] = String(resolution || "1280x720").split("x");
-            await execFileAsync("ffmpeg", [
-              "-y",
-              "-i", inputPath,
-              "-vf", `fps=${fps},scale=${w}:${h}:force_original_aspect_ratio=decrease,pad=${w}:${h}:(ow-iw)/2:(oh-ih)/2`,
-              "-c:v", "libx264",
-              "-profile:v", "high",
-              "-crf", String(crf || 18),
-              "-pix_fmt", "yuv420p",
-              "-movflags", "+faststart",
-              outputPath
-            ]);
-          }
-
-          const outDir = path.resolve("./output");
-          fs.mkdirSync(outDir, { recursive: true });
-
-          const browser = await chromium.launch({ headless: true });
-          const context = await browser.newContext({
-            viewport: { width: 1920, height: 1080 },
-            recordVideo: {
-              dir: outDir,
-              size: { width: 1920, height: 1080 }
-            }
-          });
-
-          const page = await context.newPage();
-          await page.goto(plan.meta.url, { waitUntil: "networkidle" });
-          await sleep(3000);
-
-          for (const shot of plan.shots) {
-            for (const action of shot.actions) {
-              if (action.type === "wait") {
-                await sleep(action.ms || 1000);
-              }
-            }
-          }
-
-          const video = page.video();
-          await context.close();
-          await browser.close();
-
-          const rawPath = await video.path();
-          const finalPath = path.join(outDir, "final.mp4");
-
-          await transcode(
-            rawPath,
-            finalPath,
-            plan.config.finalFps || 24,
-            plan.config.crf || 18,
-            plan.config.outputResolution || "1280x720"
-          );
-
-          console.log("Done:", finalPath);
-          EOF
-
-      - name: Run render
-        run: node runner.mjs
+      - name: Ensure rendered MP4 exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f output/final.mp4
 
       - name: Rename output for release
         shell: bash
         run: |
           mkdir -p release
-          cp output/final.mp4 "release/${{ steps.vars.outputs.safe_title }}-${{ steps.vars.outputs.tag }}.mp4"
+          cp output/final.mp4 "release/${{ steps.planfile.outputs.safe_name }}-${{ steps.vars.outputs.tag }}.mp4"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rendered-video-${{ steps.vars.outputs.safe_title }}-${{ steps.vars.outputs.tag }}
+          name: rendered-video-${{ steps.planfile.outputs.safe_name }}-${{ steps.vars.outputs.tag }}
           path: release/*.mp4
 
       - name: Publish MP4 to GitHub Release
@@ -232,7 +177,7 @@ jobs:
           append_body: true
           body: |
             Automated render generated by GitHub Actions.
-            Clip: ${{ steps.vars.outputs.clip_title }}
-            Source: ${{ steps.vars.outputs.clip_url }}
+
+            Plan source: `${{ steps.planfile.outputs.path }}`
           files: |
             release/*.mp4
