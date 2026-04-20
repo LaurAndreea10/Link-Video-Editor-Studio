@@ -1,0 +1,82 @@
+name: Render Video
+
+on:
+  workflow_dispatch:
+    inputs:
+      clip_url:
+        description: URL for demo capture
+        required: true
+        type: string
+      clip_title:
+        description: Human-readable title
+        required: true
+        type: string
+      duration:
+        description: Approximate duration in seconds
+        required: true
+        default: "40"
+        type: string
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Create rendering plan
+        run: |
+          cat > output-plan.json <<'JSON'
+          {
+            "name": "${{ github.event.inputs.clip_title }}",
+            "url": "${{ github.event.inputs.clip_url }}",
+            "message": "Workflow dispatch run #${{ github.run_number }}",
+            "viewport": {
+              "width": 1920,
+              "height": 1080
+            },
+            "output": {
+              "outputResolution": "1280x720",
+              "fpsFinal": 24,
+              "crf": 18,
+              "preset": "veryfast"
+            },
+            "shots": [
+              {
+                "type": "wait",
+                "ms": 3000
+              },
+              {
+                "type": "wait",
+                "ms": 1000
+              }
+            ]
+          }
+          JSON
+
+      - name: Render video from plan
+        run: node scripts/run-plan.mjs output-plan.json workflow-${{ github.run_id }}
+
+      - name: Upload render artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-video-${{ github.run_id }}
+          path: output/workflow-${{ github.run_id }}/

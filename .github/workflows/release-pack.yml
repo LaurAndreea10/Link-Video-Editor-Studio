@@ -1,0 +1,36 @@
+name: Release Pack
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build automation bundle
+        run: |
+          mkdir -p dist
+          zip -r dist/link-video-editor-studio.zip \
+            public src server.js package.json README.md .github/workflows
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-pack
+          path: dist/link-video-editor-studio.zip
+
+      - name: Publish release asset
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/link-video-editor-studio.zip
+          generate_release_notes: true

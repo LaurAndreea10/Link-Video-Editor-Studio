@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "install:browsers": "playwright install chromium"
+    "install:browsers": "playwright install chromium",
+    "validate": "node scripts/validate-inline-scripts.mjs public/index.html",
+    "render:plan": "node scripts/run-plan.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
