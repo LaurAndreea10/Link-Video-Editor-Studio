@@ -1,0 +1,129 @@
+name: Release App and Assets
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag pentru release, ex: v1.0.0"
+        required: true
+        type: string
+      create_tag_if_missing:
+        description: "Creează tag-ul dacă nu există"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve tag
+        id: vars
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved tag: $TAG"
+
+      - name: Create tag if missing
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.create_tag_if_missing == 'true' }}
+        shell: bash
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists: $TAG"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag "$TAG"
+            git push origin "$TAG"
+          fi
+
+      - name: Prepare release files
+        shell: bash
+        run: |
+          mkdir -p release
+
+          cp index.html release/index.html || true
+          cp manifest.webmanifest release/manifest.webmanifest || true
+          cp service-worker.js release/service-worker.js || true
+          cp README.md release/README.md || true
+
+          if [ -d assets ]; then
+            cp -r assets release/assets
+          fi
+
+          if [ -d .github/workflows ]; then
+            mkdir -p release/github-workflows
+            cp .github/workflows/*.yml release/github-workflows/ 2>/dev/null || true
+          fi
+
+          zip -r release/site-bundle.zip release/index.html release/assets release/manifest.webmanifest release/service-worker.js release/README.md release/github-workflows
+
+      - name: Create automation-pack template zip
+        shell: bash
+        run: |
+          mkdir -p automation-pack
+          cat > automation-pack/README.md <<'EOF'
+          # Automation Pack
+
+          Acest pachet este destinat rulării locale pentru captură Playwright + FFmpeg.
+
+          ## Instalare
+          npm install
+          npx playwright install chromium
+
+          ## Rulare
+          npm start
+          EOF
+
+          cat > automation-pack/package.json <<'EOF'
+          {
+            "name": "link-video-editor-automation-pack",
+            "version": "1.0.0",
+            "private": true,
+            "type": "module",
+            "scripts": {
+              "start": "node runner.mjs"
+            },
+            "dependencies": {
+              "playwright": "^1.53.0"
+            }
+          }
+          EOF
+
+          cat > automation-pack/runner.mjs <<'EOF'
+          console.log("Adaugă aici runner-ul exportat din aplicație sau un plan.json personalizat.");
+          EOF
+
+          zip -r release/automation-pack-template.zip automation-pack
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            release/site-bundle.zip
+            release/automation-pack-template.zip
+            release/index.html
+            release/manifest.webmanifest
+            release/service-worker.js
+            README.md
