@@ -79,6 +79,17 @@ http://localhost:3000
   - artifactul este atașat rulării din Actions;
   - release asset-ul este atașat release-ului/tag-ului.
 
+
+## Troubleshooting GitHub Pages
+
+Dacă pagina publicată nu se deschide, verifică în această ordine:
+
+1. **Settings → Pages → Source = GitHub Actions**
+2. Rulează manual workflow-ul **Deploy Pages** din tab-ul **Actions** (sau fă un push nou pe `main`).
+3. După deploy, fă **hard refresh** în browser (`Ctrl+Shift+R` / `Cmd+Shift+R`).
+
+Workflow-ul de Pages pregătește acum întregul conținut din `public/` (inclusiv `presets.json`) și publică artifactul pentru deploy.
+
 ## Deploy pe Render (Web Service)
 
 Repo-ul include configurare minimă pentru Render:
