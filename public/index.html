@@ -186,6 +186,76 @@
       line-height: 1.5;
     }
 
+    .trust-list, .onboarding-steps {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.5;
+      display: grid;
+      gap: 4px;
+    }
+
+    .readiness-card {
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(8,12,24,.7);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .readiness-k {
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .readiness-k.good { color: var(--good); }
+    .readiness-k.warn { color: var(--warn); }
+    .readiness-k.bad { color: var(--danger); }
+
+    .storyboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .story-frame {
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: linear-gradient(160deg, rgba(124,156,255,.15), rgba(137,240,213,.08));
+      min-height: 84px;
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+      align-content: space-between;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    .story-frame:nth-child(2) { animation-delay: .3s; }
+    .story-frame:nth-child(3) { animation-delay: .6s; }
+    .story-frame:nth-child(4) { animation-delay: .9s; }
+
+    .story-time {
+      font-size: .68rem;
+      color: var(--accent-2);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .story-text {
+      font-size: .72rem;
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateY(0); opacity: .92; }
+      50% { transform: translateY(-2px); opacity: 1; }
+    }
+
     .actions {
       display: grid;
       gap: 10px;
@@ -684,6 +754,25 @@
             <option value="60">60 sec</option>
           </select>
         </div>
+        <div class="field">
+          <label for="styleTemplate">Template stil</label>
+          <select id="styleTemplate">
+            <option value="saas-clean" selected>SaaS clean</option>
+            <option value="launch-teaser">Launch teaser</option>
+            <option value="investor-deck">Investor / product deck</option>
+            <option value="social-reel">Social reel</option>
+            <option value="tutorial">Tutorial</option>
+            <option value="enterprise-polished">Enterprise polished</option>
+          </select>
+        </div>
+        <div class="readiness-card">
+          <div class="section-title">
+            <h2>Project readiness</h2>
+            <span class="badge" id="readinessTag">Scanează inputul</span>
+          </div>
+          <div id="readinessScore" class="readiness-k">--</div>
+          <div class="hint" id="readinessHint">Completează URL, nume și obiectiv pentru un scor mai bun.</div>
+        </div>
       </section>
 
       <section class="section">
@@ -721,6 +810,12 @@
       </section>
 
       <p class="footer-note">Pagina este gândită pentru GitHub Pages ca interfață statică premium. Generează planuri, deck-uri și exporturi locale, iar pentru captură MP4 reală folosești workflow-ul din repo sau Automation Pack-ul rulat local cu Playwright + FFmpeg.</p>
+      <ul class="trust-list">
+        <li>No backend required.</li>
+        <li>Runs locally în browser.</li>
+        <li>API key-ul tău nu ajunge pe serverul nostru.</li>
+        <li>GitHub Pages compatible.</li>
+      </ul>
     </aside>
 
     <main class="main">
@@ -735,7 +830,13 @@
         <div class="hero-actions">
           <button class="btn btn-primary" id="heroGenerateBtn" type="button">Generează demo-ul</button>
           <button class="btn btn-ghost" id="heroPresetBtn" type="button">Vezi exemple presetate</button>
+          <button class="btn btn-secondary" id="heroOneClickBtn" type="button">Rulează demo 1-click</button>
         </div>
+        <ol class="onboarding-steps">
+          <li>Pune URL-ul.</li>
+          <li>Alege stil + durată.</li>
+          <li>Generează și exportă.</li>
+        </ol>
         <div class="stat-row">
           <div class="stat"><div class="k" id="statShots">0</div><div class="l">Shot-uri generate</div></div>
           <div class="stat"><div class="k" id="statSlides">0</div><div class="l">Slide-uri generate</div></div>
@@ -774,6 +875,7 @@
 
           <div id="previewWrap">
             <div class="preview-note" id="previewNote">Adaugă un proiect sau încarcă preseturile pentru a genera materialele.</div>
+            <div class="storyboard" id="storyboard"></div>
             <iframe class="preview hidden" id="sitePreview" title="Site preview"></iframe>
           </div>
 
@@ -825,6 +927,15 @@
       finalFps: "24"
     };
 
+    const styleTemplates = {
+      "saas-clean": "SaaS clean: ritm calm, focus pe UI, payoff clar.",
+      "launch-teaser": "Launch teaser: dinamic, hook rapid, CTA vizibil.",
+      "investor-deck": "Investor/product deck: impact pe metrici și claritate narativă.",
+      "social-reel": "Social reel: secvențe scurte, contrast, momentum.",
+      "tutorial": "Tutorial: pași explicați, zoom-uri utile, flow didactic.",
+      "enterprise-polished": "Enterprise polished: ton premium, tranziții line, încredere."
+    };
+
     const directionRules = [
       "Niciodată mai mult de 3 acțiuni pe secundă.",
       "Pauză după fiecare acțiune majoră.",
@@ -854,6 +965,7 @@
     const $ = (id) => document.getElementById(id);
     const preview = $("sitePreview");
     const previewNote = $("previewNote");
+    const storyboard = $("storyboard");
 
     function escapeHtml(str) {
       return String(str ?? "").replace(/[&<>"']/g, (m) => ({
@@ -945,6 +1057,40 @@
       const cfg = {};
       Object.keys(optionSets).forEach((key) => { cfg[key] = $(key).value; });
       return cfg;
+    }
+
+    function computeReadiness() {
+      const url = $("projectUrl").value.trim();
+      const productName = $("projectName").value.trim();
+      const objective = $("objective").value.trim();
+      const duration = Number($("duration").value);
+      let score = 35;
+      const hints = [];
+
+      if (safeParseUrl(url)) score += 30;
+      else hints.push("URL invalid sau lipsă.");
+
+      if (productName.length >= 3) score += 15;
+      else hints.push("Adaugă numele produsului.");
+
+      if (objective.length >= 20) score += 15;
+      else hints.push("Obiectivul demo e prea vag.");
+
+      if (duration >= 30 && duration <= 45) score += 5;
+      else hints.push("Durata optimă recomandată: 30–45 sec.");
+
+      return { score: Math.max(0, Math.min(100, score)), hints };
+    }
+
+    function renderReadiness() {
+      const { score, hints } = computeReadiness();
+      const scoreEl = $("readinessScore");
+      const tagEl = $("readinessTag");
+      const hintEl = $("readinessHint");
+      scoreEl.textContent = `${score}/100`;
+      scoreEl.className = "readiness-k " + (score >= 80 ? "good" : score >= 60 ? "warn" : "bad");
+      tagEl.textContent = score >= 80 ? "Ready to generate" : score >= 60 ? "Needs tweaks" : "Needs input";
+      hintEl.textContent = hints.length ? hints.join(" ") : "Input foarte bun. Poți genera acum.";
     }
 
     function setButtonLoading(btn, isLoading, loadingLabel) {
@@ -1613,6 +1759,12 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         $("summary").textContent = "";
         $("voiceover").textContent = "";
         $("exportBox").textContent = "";
+        storyboard.innerHTML = `
+          <article class="story-frame"><div class="story-time">00-08s</div><div class="story-text">Hook vizual + context produs.</div></article>
+          <article class="story-frame"><div class="story-time">08-20s</div><div class="story-text">Feature principal și dovadă de valoare.</div></article>
+          <article class="story-frame"><div class="story-time">20-32s</div><div class="story-text">Workflow real + diferențiatori.</div></article>
+          <article class="story-frame"><div class="story-time">32-40s</div><div class="story-text">Payoff final + CTA.</div></article>
+        `;
         preview.classList.add("hidden");
         previewNote.classList.remove("hidden", "err", "ok");
         previewNote.textContent = "Adaugă un proiect sau încarcă preseturile pentru a genera materialele.";
@@ -1656,6 +1808,12 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
       $("summary").textContent = summary;
       $("voiceover").textContent = voiceover;
       $("exportBox").textContent = exportText;
+      storyboard.innerHTML = (clip.shots || []).slice(0, 4).map((shot) => `
+        <article class="story-frame">
+          <div class="story-time">${escapeHtml(shot.time)}</div>
+          <div class="story-text">${escapeHtml(shot.action)}</div>
+        </article>
+      `).join("");
 
       if (clip.url) {
         preview.classList.remove("hidden");
@@ -1679,6 +1837,7 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
       renderClipTabs();
       renderClipList();
       renderSelectedClip();
+      renderReadiness();
     }
 
     // ====================================================================
@@ -1744,6 +1903,15 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
       $("generateBtn").addEventListener("click", (e) => handleGenerate(e.currentTarget));
       $("heroGenerateBtn").addEventListener("click", (e) => handleGenerate(e.currentTarget));
 
+      const oneClickDemo = () => {
+        $("projectUrl").value = "https://demo.acme-crm.com/dashboard";
+        $("projectName").value = "Acme CRM";
+        $("objective").value = `Demo ${styleTemplates[$("styleTemplate").value]} Arată pipeline, activitate echipă și payoff pe viteză de închidere.`;
+        $("duration").value = "40";
+        renderReadiness();
+        handleGenerate($("heroOneClickBtn"));
+      };
+
       const triggerPresets = () => {
         state.clips = JSON.parse(JSON.stringify(presetClips));
         state.selectedClipId = state.clips[0] ? state.clips[0].id : null;
@@ -1753,6 +1921,7 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
 
       $("loadPresetBtn").addEventListener("click", triggerPresets);
       $("heroPresetBtn").addEventListener("click", triggerPresets);
+      $("heroOneClickBtn").addEventListener("click", oneClickDemo);
 
       // Mode toggle
       $("modeMockBtn").addEventListener("click", () => setMode("mock"));
@@ -1830,6 +1999,7 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         $("projectName").value = "";
         $("objective").value = "";
         $("duration").value = "40";
+        $("styleTemplate").value = "saas-clean";
         renderAll();
         toast("Editorul a fost resetat.", "ok");
       });
@@ -1848,6 +2018,11 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         if (e.target.matches("select") && e.target.id !== "aiModel" && e.target.id !== "duration") {
           renderSelectedClip();
         }
+      });
+
+      ["projectUrl", "projectName", "objective", "duration", "styleTemplate"].forEach((id) => {
+        $(id).addEventListener("input", renderReadiness);
+        $(id).addEventListener("change", renderReadiness);
       });
     }
 
@@ -1884,6 +2059,7 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
     renderDirectionRules();
     attachEvents();
     updateModeUI();
+    renderReadiness();
     renderAll();
     setActiveView("timeline");
     runSelfTests();
