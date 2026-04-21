@@ -3,383 +3,949 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Link Video Automation</title>
+  <title>Link Video Editor Studio</title>
   <style>
-    :root { --bg:#0b1020; --panel:#111a31; --panel2:#182344; --text:#edf3ff; --muted:#a8b5d8; --line:rgba(255,255,255,.09); --accent:#7c9cff; --accent2:#8ef0d6; }
+    :root {
+      --bg: #08101f;
+      --bg-2: #0d152b;
+      --panel: rgba(16, 24, 45, 0.88);
+      --panel-2: rgba(22, 33, 61, 0.92);
+      --line: rgba(255,255,255,0.08);
+      --text: #edf3ff;
+      --muted: #9eb0d8;
+      --accent: #7c9cff;
+      --accent-2: #89f0d5;
+      --good: #78efab;
+      --warn: #ffd36c;
+      --danger: #ff8f8f;
+      --radius: 20px;
+      --shadow: 0 24px 80px rgba(0,0,0,.35);
+    }
+
     * { box-sizing: border-box; }
-    body { margin:0; font-family:Inter,system-ui,sans-serif; background:radial-gradient(circle at top left,#162349 0,#0b1020 50%,#060a12 100%); color:var(--text); padding:24px; }
-    .app { max-width:1500px; margin:0 auto; display:grid; grid-template-columns:420px 1fr; gap:20px; }
-    .panel { background:rgba(17,26,49,.92); border:1px solid var(--line); border-radius:20px; padding:18px; backdrop-filter:blur(10px); }
-    h1,h2,h3,p { margin:0; }
-    .stack { display:grid; gap:14px; }
-    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .field { display:grid; gap:6px; }
-    label { font-size:.82rem; color:var(--muted); }
-    input, textarea, select { width:100%; background:#091122; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px; font:inherit; }
-    textarea { min-height:110px; resize:vertical; }
-    button { cursor:pointer; border:0; border-radius:14px; padding:12px 14px; font-weight:700; }
-    .primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#061229; }
-    .secondary { background:rgba(255,255,255,.06); color:var(--text); border:1px solid var(--line); }
-    .hero { display:flex; justify-content:space-between; gap:20px; align-items:start; }
-    .muted { color:var(--muted); line-height:1.5; }
-    .badge { display:inline-block; padding:8px 11px; border-radius:999px; background:rgba(255,255,255,.07); border:1px solid var(--line); font-size:.78rem; }
-    .toolbar { display:flex; gap:10px; flex-wrap:wrap; }
-    .shots { display:grid; gap:10px; }
-    .shot { background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:12px; }
-    .mono { font-family: ui-monospace, Menlo, Consolas, monospace; white-space: pre-wrap; }
-    .status { min-height:160px; background:#091122; border:1px solid var(--line); border-radius:16px; padding:14px; }
-    .ok { color:#8ef0d6; }
-    @media (max-width:1100px){ .app{ grid-template-columns:1fr; } .grid2{ grid-template-columns:1fr; } }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124,156,255,.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(137,240,213,.12), transparent 25%),
+        linear-gradient(180deg, #0a1122 0%, #070d1a 100%);
+      color: var(--text);
+    }
+
+    body { padding: 24px; }
+    h1, h2, h3, h4, p { margin: 0; }
+    button, input, select, textarea { font: inherit; }
+    a { color: var(--accent-2); }
+
+    .app {
+      max-width: 1620px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 400px minmax(0,1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      max-height: calc(100vh - 48px);
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 4px 4px 8px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 16px 38px rgba(124,156,255,.28);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 11px;
+      background: rgba(7,12,25,.8);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+
+    .brand h1 { font-size: 1.08rem; }
+    .brand p { color: var(--muted); font-size: .9rem; margin-top: 3px; }
+
+    .section {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-title h2 { font-size: .98rem; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: .78rem;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      width: fit-content;
+    }
+
+    .badge.success { color: #08140e; background: rgba(120,239,171,.95); border-color: transparent; }
+    .badge.warn { color: #241705; background: rgba(255,211,108,.95); border-color: transparent; }
+
+    .field { display: grid; gap: 6px; }
+    .field label { color: var(--muted); font-size: .82rem; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      color: var(--text);
+      background: rgba(8,12,24,.9);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 11px 12px;
+      outline: none;
+      transition: .16s ease;
+    }
+
+    .field textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: rgba(124,156,255,.75);
+      box-shadow: 0 0 0 4px rgba(124,156,255,.13);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.07);
+      font-size: .78rem;
+      color: var(--text);
+    }
+
+    .hint, .footer-note {
+      color: var(--muted);
+      font-size: .79rem;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .12s ease, opacity .12s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      color: #071225;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 40px rgba(124,156,255,.26);
+    }
+    .btn-secondary {
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .btn-danger {
+      color: #fff;
+      background: rgba(255,143,143,.14);
+      border: 1px solid rgba(255,143,143,.28);
+    }
+
+    .main {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero::before, .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      filter: blur(80px);
+      opacity: .22;
+      pointer-events: none;
+    }
+
+    .hero::before { background: #7c9cff; top: -40px; right: -70px; }
+    .hero::after { background: #89f0d5; bottom: -80px; left: -60px; }
+
+    .hero-top {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.4rem, 2vw, 2.1rem);
+      line-height: 1.08;
+      max-width: 860px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 920px;
+      line-height: 1.55;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 14px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .stat .k { font-size: 1.2rem; font-weight: 800; }
+    .stat .l { color: var(--muted); font-size: .82rem; }
+
+    .workbench {
+      display: grid;
+      grid-template-columns: minmax(0,1.12fr) minmax(380px,.88fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .pane {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tab {
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab.active {
+      background: linear-gradient(135deg, rgba(124,156,255,.25), rgba(137,240,213,.18));
+      border-color: rgba(124,156,255,.38);
+    }
+
+    .clip-list { display: grid; gap: 10px; }
+
+    .clip-card {
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.045);
+      border-radius: 16px;
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+      cursor: pointer;
+      transition: .15s ease;
+    }
+
+    .clip-card:hover { transform: translateY(-1px); border-color: rgba(124,156,255,.35); }
+    .clip-card.active { border-color: rgba(137,240,213,.5); box-shadow: inset 0 0 0 1px rgba(137,240,213,.18); }
+
+    .clip-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .clip-title { font-weight: 800; }
+    .clip-meta { color: var(--muted); font-size: .83rem; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: .76rem;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .preview-note, .output-box {
+      border-radius: 16px;
+      padding: 14px;
+      line-height: 1.55;
+    }
+
+    .preview-note {
+      background: rgba(255,211,108,.12);
+      border: 1px solid rgba(255,211,108,.24);
+      color: #ffe6a8;
+      font-size: .87rem;
+    }
+
+    .output-box {
+      min-height: 120px;
+      white-space: pre-wrap;
+      overflow: auto;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(8,12,24,.9);
+    }
+
+    iframe.preview {
+      width: 100%;
+      min-height: 420px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      background: #fff;
+    }
+
+    .timeline { display: grid; gap: 10px; }
+
+    .shot {
+      display: grid;
+      grid-template-columns: 102px minmax(0,1fr);
+      gap: 12px;
+      background: rgba(255,255,255,.045);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .time {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(124,156,255,.16);
+      border: 1px solid rgba(124,156,255,.22);
+      font-weight: 700;
+      font-size: .82rem;
+    }
+
+    .shot h4 { font-size: .95rem; margin-bottom: 4px; }
+    .shot p { color: var(--muted); font-size: .9rem; line-height: 1.48; }
+
+    .slide-deck {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 12px;
+    }
+
+    .slide {
+      min-height: 190px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .slide-num {
+      width: fit-content;
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: .73rem;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+    }
+
+    .slide ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .84rem; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: static; max-height: none; }
+      .workbench { grid-template-columns: 1fr; }
+      .stat-row { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 14px; }
+      .grid-2, .stat-row, .shot { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
   <div class="app">
-    <section class="panel stack">
-      <div class="hero">
+    <aside class="sidebar panel">
+      <div class="brand">
+        <div class="logo"></div>
         <div>
-          <h1>Link Video Automation</h1>
-          <p class="muted">Bagi linkul, rulezi shot-urile automat cu Playwright, capturezi video nativ și exporți MP4 final cu FFmpeg.</p>
+          <h1>Link Video Editor Studio</h1>
+          <p>Generator premium de demo video, deck și automation pack pornind de la un URL.</p>
         </div>
-        <span class="badge">Node.js + Playwright + FFmpeg</span>
       </div>
 
-      <div class="toolbar">
-        <button class="secondary" id="loadPreset1">Preset 1</button>
-        <button class="secondary" id="loadPreset2">Preset 2</button>
-        <button class="secondary" id="loadPreset3">Preset 3</button>
-      </div>
-
-      <div class="field">
-        <label for="name">Nume proiect</label>
-        <input id="name" placeholder="Ex: Alpis Fusion CRM Premium" />
-      </div>
-      <div class="field">
-        <label for="url">URL</label>
-        <input id="url" placeholder="https://exemplu.ro" />
-      </div>
-      <div class="field">
-        <label for="message">Mesaj vizual</label>
-        <textarea id="message" placeholder="Descriere scurtă pentru clip"></textarea>
-      </div>
-      <div class="field">
-        <label for="workflowNotes">Workflow (pre-roll + de evitat)</label>
-        <textarea id="workflowNotes" class="mono" readonly></textarea>
-      </div>
-      <div class="field">
-        <label for="backendUrl">Backend URL (opțional pentru GitHub Pages)</label>
-        <input id="backendUrl" placeholder="http://localhost:3000" />
-      </div>
-
-      <div class="grid2">
-        <div class="field">
-          <label for="width">Viewport width</label>
-          <input id="width" type="number" value="1280" />
+      <section class="section">
+        <div class="section-title">
+          <h2>Input principal</h2>
+          <span class="badge success">Workflow-centric</span>
         </div>
         <div class="field">
-          <label for="height">Viewport height</label>
-          <input id="height" type="number" value="720" />
+          <label for="projectUrl">Link proiect</label>
+          <input id="projectUrl" type="url" placeholder="https://exemplu.ro/demo" />
         </div>
         <div class="field">
-          <label for="outRes">Output resolution</label>
-          <select id="outRes">
-            <option>1280x720</option>
-            <option>1920x1080</option>
-            <option>854x480</option>
+          <label for="projectName">Nume produs</label>
+          <input id="projectName" type="text" placeholder="Ex: Alpis Fusion CRM Premium" />
+        </div>
+        <div class="field">
+          <label for="visualMessage">Mesaj vizual</label>
+          <textarea id="visualMessage" placeholder="Ex: produsul transmite claritate, profunzime și fluiditate într-un singur flow."></textarea>
+        </div>
+        <div class="field">
+          <label for="duration">Durată țintă</label>
+          <select id="duration">
+            <option value="20">20 sec</option>
+            <option value="30">30 sec</option>
+            <option value="35">35 sec</option>
+            <option value="40" selected>40 sec</option>
+            <option value="45">45 sec</option>
+            <option value="60">60 sec</option>
           </select>
         </div>
-        <div class="field">
-          <label for="fpsFinal">FPS final</label>
-          <select id="fpsFinal">
-            <option>24</option>
-            <option>25</option>
-            <option>30</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="crf">CRF</label>
-          <select id="crf">
-            <option>18</option>
-            <option>20</option>
-            <option>23</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="preset">Preset FFmpeg</label>
-          <select id="preset">
-            <option>veryfast</option>
-            <option>faster</option>
-            <option>fast</option>
-            <option>medium</option>
-          </select>
-        </div>
-      </div>
+      </section>
 
-      <div class="field">
-        <label for="shots">Shot-uri (JSON)</label>
-        <textarea id="shots" class="mono"></textarea>
-      </div>
-
-      <div class="toolbar">
-        <button class="primary" id="runBtn">Rulează automatizarea</button>
-        <button class="secondary" id="healthBtn">Health check</button>
-        <button class="secondary" id="exportPlanBtn">Export plan</button>
-      </div>
-
-      <p class="muted">Tipuri suportate pentru shots: <span class="mono">wait, click, clickOptional, hover, type, press, pressAny, drag, scroll, fillSmart, evaluate</span>.</p>
-    </section>
-
-    <section class="panel stack">
-      <div>
-        <h2>Status job</h2>
-        <p class="muted">După pornire, interfața face polling și îți afișează linkurile spre fișierele generate.</p>
-      </div>
-      <div id="status" class="status mono">Ready.</div>
-      <div>
-        <h3>Ajutor pentru shots JSON</h3>
-        <div class="shots">
-          <div class="shot mono">{ "type": "wait", "ms": 1500 }</div>
-          <div class="shot mono">{ "type": "click", "selector": "button", "textContains": "Tasks" }</div>
-          <div class="shot mono">{ "type": "type", "selector": "textarea", "text": "Idee scurtă", "delay": 90 }</div>
-          <div class="shot mono">{ "type": "press", "keys": "Control+K" }</div>
-          <div class="shot mono">{ "type": "drag", "source": ".card", "target": ".column:nth-child(2)" }</div>
-          <div class="shot mono">{ "type": "scroll", "pixels": 250, "speedPxPerSecond": 180 }</div>
+      <section class="section">
+        <div class="section-title">
+          <h2>Configurație captură</h2>
+          <span class="badge">OBS + encode plan</span>
         </div>
-      </div>
-    </section>
+        <div class="grid-2" id="configGrid"></div>
+        <div class="hint">Valorile sunt preselectate pentru un export web curat, stil SaaS reel.</div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Reguli de regie</h2>
+          <span class="badge warn">Silent product demo</span>
+        </div>
+        <div class="chips" id="directionRules"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Acțiuni</h2>
+          <span class="badge">Generare instant</span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" id="generateBtn">Generează prezentarea, demo-ul și descrierile</button>
+          <button class="btn btn-secondary" id="loadPresetBtn">Încarcă clipuri presetate</button>
+          <button class="btn btn-secondary" id="copySummaryBtn">Copiază sumarul proiectului</button>
+          <button class="btn btn-secondary" id="downloadJsonBtn">Descarcă JSON</button>
+          <button class="btn btn-secondary" id="downloadHtmlBtn">Descarcă raport HTML</button>
+          <button class="btn btn-secondary" id="downloadAutomationBtn">Descarcă Automation Pack</button>
+          <button class="btn btn-secondary" id="copyCliBtn">Copiază comenzi CLI</button>
+          <button class="btn btn-danger" id="resetBtn">Reset</button>
+        </div>
+      </section>
+
+      <p class="footer-note">100% front-end. Generează planul, deck-ul, descrierile și exporturile. Pentru captură MP4 reală ai nevoie de backend sau rulare locală cu Playwright + FFmpeg.</p>
+    </aside>
+
+    <main class="main">
+      <section class="hero panel">
+        <div class="hero-top">
+          <div>
+            <h2>Editor video pe bază de link, orientat pe produs, pentru demo-uri silențioase și prezentări rapide.</h2>
+            <p>Introduci URL-ul, alegi configurația, iar aplicația generează un plan complet: pre-roll, shot list, deck, descrieri automate, sumar pentru recruiter și pachet de automatizare pentru captură locală.</p>
+          </div>
+          <div class="badge success">Ready for product reels</div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="k" id="statShots">0</div><div class="l">Shot-uri generate</div></div>
+          <div class="stat"><div class="k" id="statSlides">0</div><div class="l">Slide-uri generate</div></div>
+          <div class="stat"><div class="k" id="statDescriptions">0</div><div class="l">Descrieri produse</div></div>
+          <div class="stat"><div class="k" id="statClips">0</div><div class="l">Clipuri în proiect</div></div>
+        </div>
+      </section>
+
+      <section class="workbench">
+        <div class="panel pane">
+          <div class="toolbar">
+            <div>
+              <h3>Clipuri și timeline</h3>
+              <p class="hint">Selectează un clip pentru a vedea preview-ul, shot list-ul și materialele generate.</p>
+            </div>
+            <div class="tabs" id="clipTabs"></div>
+          </div>
+          <div class="clip-list" id="clipList"></div>
+        </div>
+
+        <div class="panel pane">
+          <div class="toolbar">
+            <div>
+              <h3>Preview & output</h3>
+              <p class="hint">Preview live dacă pagina permite iframe; altfel primești link-ul și planul.</p>
+            </div>
+            <div class="tabs">
+              <button class="tab active" data-view="timeline">Timeline</button>
+              <button class="tab" data-view="slides">Slides</button>
+              <button class="tab" data-view="descriptions">Descrieri</button>
+              <button class="tab" data-view="summary">Sumar</button>
+              <button class="tab" data-view="voiceover">Voice-over</button>
+              <button class="tab" data-view="export">Export</button>
+            </div>
+          </div>
+
+          <div id="previewWrap">
+            <div class="preview-note" id="previewNote">Adaugă un proiect sau încarcă preseturile pentru a genera materialele.</div>
+            <iframe class="preview hidden" id="sitePreview" title="Site preview"></iframe>
+          </div>
+
+          <div id="view-timeline" class="view-block"><div class="timeline" id="timeline"></div></div>
+          <div id="view-slides" class="view-block hidden"><div class="slide-deck" id="slides"></div></div>
+          <div id="view-descriptions" class="view-block hidden"><div class="output-box" id="descriptions"></div></div>
+          <div id="view-summary" class="view-block hidden"><div class="output-box" id="summary"></div></div>
+          <div id="view-voiceover" class="view-block hidden"><div class="output-box" id="voiceover"></div></div>
+          <div id="view-export" class="view-block hidden"><div class="output-box mono" id="exportBox"></div></div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
+    const optionSets = {
+      outputMode: ["Simple", "Advanced", "Advanced+"],
+      recordingFormat: ["mp4", "mkv", "mov"],
+      encoder: ["x264", "NVENC (NVIDIA)", "QuickSync (Intel)"],
+      rateControl: ["CRF", "VBR", "CBR"],
+      crf: ["16", "18", "20", "23"],
+      canvasResolution: ["1920x1080", "1600x900", "1280x720"],
+      outputResolution: ["1280x720", "1920x1080", "854x480"],
+      fps: ["24", "25", "30", "60"],
+      finalFps: ["24", "25", "30"]
+    };
+
+    const defaults = {
+      outputMode: "Advanced+",
+      recordingFormat: "mp4",
+      encoder: "x264",
+      rateControl: "CRF",
+      crf: "18",
+      canvasResolution: "1920x1080",
+      outputResolution: "1280x720",
+      fps: "30",
+      finalFps: "24"
+    };
+
+    const directionRules = [
+      "Niciodată mai mult de 3 acțiuni pe secundă.",
+      "Pauză după fiecare acțiune majoră.",
+      "Niciodată scroll rapid.",
+      "Nu închide modalele instant.",
+      "Nu scrie texte lungi în formulare.",
+      "Arată payoff-ul vizual înainte de final."
+    ];
+
+    const presetClips = [
+      {
+        id: crypto.randomUUID(),
+        title: "CLIP 1 — Alpis Fusion CRM Premium",
+        shortTitle: "Alpis Fusion CRM Premium",
+        duration: 40,
+        url: "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
+        message: "Acest produs are profunzime și workflow fluid într-un singur ecran.",
+        preroll: ["Deschide URL-ul.", "Așteaptă încărcarea completă.", "Poziționează-te pe dashboard."],
+        avoid: ["Nu intra în setări.", "Nu scrie text lung."],
+        shots: [
+          { time: "00:00 – 00:04", action: "Stai pe Dashboard.", purpose: "Prima impresie." },
+          { time: "00:04 – 00:08", action: "Hover pe un KPI card.", purpose: "Interactivitate." },
+          { time: "00:08 – 00:12", action: "Intră în Clienți.", purpose: "Structură de date." },
+          { time: "00:12 – 00:18", action: "Deschide un client și panelul lateral.", purpose: "Bogăție funcțională." }
+        ]
+      },
+      {
+        id: crypto.randomUUID(),
+        title: "CLIP 2 — ClientFlow SaaS",
+        shortTitle: "ClientFlow SaaS",
+        duration: 30,
+        url: "https://laurandreea10.github.io/ClientFlow-SaaS-CRM-task-manager-automation-suite/",
+        message: "Un singur ecran pentru task-uri, clienți și invoicing.",
+        preroll: ["Deschide URL-ul.", "Asigură date demo.", "Poziționează-te pe Dashboard."],
+        avoid: ["Nu intra în zone secundare."],
+        shots: [
+          { time: "00:00 – 00:03", action: "Stai pe Dashboard.", purpose: "Claritate." },
+          { time: "00:03 – 00:07", action: "Schimbă statusul unui task.", purpose: "Task workflow." },
+          { time: "00:07 – 00:12", action: "Intră în Calendar.", purpose: "Vizibilitate." }
+        ]
+      }
+    ];
+
+    const state = { clips: [], selectedClipId: null, activeView: "timeline" };
     const $ = (id) => document.getElementById(id);
-    let presets = [];
-    let pollHandle = null;
+    const preview = $("sitePreview");
+    const previewNote = $("previewNote");
 
-    function getApiBase() {
-      return $('backendUrl').value.trim().replace(/\/+$/, '');
+    function escapeHtml(str) {
+      return String(str ?? "").replace(/[&<>"']/g, (m) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
     }
 
-    function apiUrl(path) {
-      const base = getApiBase();
-      return base ? `${base}${path}` : path;
+    function buildConfigGrid() {
+      const grid = $("configGrid");
+      grid.innerHTML = Object.keys(optionSets).map((key) => {
+        const label = key.replace(/([A-Z])/g, " $1").replace(/^./, c => c.toUpperCase());
+        return `<div class="field"><label for="${key}">${label}</label><select id="${key}">${optionSets[key].map(v => `<option ${v===defaults[key]?"selected":""}>${escapeHtml(v)}</option>`).join("")}</select></div>`;
+      }).join("");
     }
 
-    async function parseJsonSafe(res) {
-      const text = await res.text();
-      try {
-        return JSON.parse(text);
-      } catch (_error) {
-        return { ok: false, error: `Răspuns invalid (${res.status})`, raw: text.slice(0, 180) };
-      }
+    function renderDirectionRules() {
+      $("directionRules").innerHTML = directionRules.map(rule => `<span class="chip">${escapeHtml(rule)}</span>`).join("");
     }
 
-    async function apiFetch(path, options = {}) {
-      const res = await fetch(apiUrl(path), options);
-      const data = await parseJsonSafe(res);
-      if (!res.ok) {
-        const message = data?.error || `HTTP ${res.status}`;
-        throw new Error(message);
-      }
-      return data;
+    function formatConfig() {
+      const cfg = {};
+      Object.keys(optionSets).forEach(k => cfg[k] = $(k).value);
+      return cfg;
     }
 
-    async function loadPresets() {
-      try {
-        const data = await apiFetch('/api/presets');
-        presets = data.presets || [];
-      } catch (_error) {
-        const localRes = await fetch('./presets.json');
-        const localData = await parseJsonSafe(localRes);
-        presets = localData.presets || [];
-        setStatus('Backend indisponibil. Am încărcat preset-urile locale (mod demo static).');
-      }
+    function createClipFromInputs() {
+      const title = $("projectName").value.trim() || "Clip nou generat";
+      const url = $("projectUrl").value.trim();
+      const message = $("visualMessage").value.trim() || "Produsul este fluid și convingător vizual.";
+      const duration = Number($("duration").value || 40);
+      return {
+        id: crypto.randomUUID(),
+        title: `CLIP CUSTOM — ${title}`,
+        shortTitle: title,
+        url,
+        message,
+        duration,
+        preroll: ["Deschide URL-ul.", "Așteaptă încărcarea.", "Poziționează-te pe view-ul principal."],
+        avoid: ["Nu scrie text lung.", "Nu intra în zone fără payoff vizual."],
+        shots: [
+          { time: "00:00 – 00:04", action: "Ține ecranul principal în cadru.", purpose: "Prima impresie." },
+          { time: "00:04 – 00:08", action: "Hover pe o componentă relevantă.", purpose: "Interactivitate." },
+          { time: "00:08 – 00:14", action: `Intră în zona principală a produsului din ${url}.`, purpose: "Structură și flow." },
+          { time: "00:14 – 00:20", action: "Arată un detail panel sau modal.", purpose: "Bogăție de informație." }
+        ]
+      };
     }
 
-    function applyPreset(index) {
-      const preset = presets[index];
-      if (!preset) return;
-      $('name').value = preset.name;
-      $('url').value = preset.url;
-      $('message').value = `Demo automat pentru ${preset.name}`;
-      const notes = [
-        'PRE-ROLL:',
-        ...(preset.preRoll || []).map((x) => `- ${x}`),
-        '',
-        'DE EVITAT:',
-        ...(preset.avoid || []).map((x) => `- ${x}`)
+    function getSelectedClip() {
+      return state.clips.find(c => c.id === state.selectedClipId) || null;
+    }
+
+    function generateSlides(clip) {
+      return [
+        { title: "Hook vizual", bullets: [`Produs: ${clip.shortTitle}`, `Durată demo: ${clip.duration} sec`, `Promisiune: ${clip.message}`] },
+        { title: "Pre-roll", bullets: clip.preroll },
+        { title: "Ce evităm", bullets: clip.avoid }
       ];
-      $('workflowNotes').value = notes.join('\n');
-      $('width').value = preset.viewport.width;
-      $('height').value = preset.viewport.height;
-      $('outRes').value = preset.output.outputResolution;
-      $('fpsFinal').value = String(preset.output.fpsFinal);
-      $('crf').value = String(preset.output.crf);
-      $('preset').value = preset.output.preset || 'veryfast';
-      $('shots').value = JSON.stringify(preset.shots, null, 2);
     }
 
-    function payloadFromForm() {
-      return {
-        name: $('name').value.trim(),
-        url: $('url').value.trim(),
-        message: $('message').value.trim(),
-        viewport: {
-          width: Number($('width').value || 1280),
-          height: Number($('height').value || 720)
-        },
-        output: {
-          outputResolution: $('outRes').value,
-          fpsFinal: Number($('fpsFinal').value || 24),
-          crf: Number($('crf').value || 18),
-          preset: $('preset').value
-        },
-        shots: JSON.parse($('shots').value || '[]')
-      };
+    function generateDescriptions(clip) {
+      return [
+        `1) Descriere recruiter\n${clip.shortTitle} comunică un produs matur și ușor de urmărit.`,
+        `2) Descriere portofoliu\nDemo silențios, orientat pe valoarea vizuală a produsului.`,
+        `3) Descriere social\nSilent product reel pentru ${clip.shortTitle}.`,
+        `4) Notă tehnică\nIdeal pentru export web și outreach.`
+      ].join("\n\n");
     }
 
-    function slugify(value) {
-      return String(value || 'latest')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '') || 'latest';
+    function generateSummary(clip, config) {
+      return [
+        `PROIECT: ${clip.title}`,
+        `URL: ${clip.url}`,
+        `DURATĂ: ${clip.duration} secunde`,
+        `MESAJ VIZUAL: ${clip.message}`,
+        "",
+        "CONFIG",
+        JSON.stringify(config, null, 2)
+      ].join("\n");
     }
 
-    function parseNumber(value, fallback) {
-      const number = Number(value);
-      return Number.isFinite(number) ? number : fallback;
+    function generateVoiceover(clip) {
+      return `Acesta este ${clip.shortTitle}. Demo-ul pune accent pe claritate, ritm și payoff vizual.`;
     }
 
-    function buildPlanFromForm() {
-      const projectName = $('name').value.trim() || 'latest';
-      const url = $('url').value.trim();
-      const viewportWidth = parseNumber($('width').value, 1280);
-      const viewportHeight = parseNumber($('height').value, 720);
-      const outputResolution = $('outRes').value || '1280x720';
-      const fpsFinal = parseNumber($('fpsFinal').value, 24);
-      const crf = parseNumber($('crf').value, 18);
-      const preset = $('preset').value || 'veryfast';
-      const shotsRaw = $('shots').value.trim() || '[]';
+    function generateExport(clip, config) {
+      return [
+        "# Encode final sugerat",
+        `ffmpeg -i input.${config.recordingFormat} -c:v libx264 -crf ${config.crf} output-final.mp4`,
+        "",
+        JSON.stringify({ clip, config }, null, 2)
+      ].join("\n");
+    }
 
-      if (!url) {
-        throw new Error('URL-ul este obligatoriu.');
+    function renderClipTabs() {
+      $("clipTabs").innerHTML = state.clips.map((clip, i) => `<button class="tab ${clip.id===state.selectedClipId?"active":""}" data-clip-id="${clip.id}">${i+1}. ${escapeHtml(clip.shortTitle)}</button>`).join("") || `<span class="hint">Niciun clip încă.</span>`;
+    }
+
+    function renderClipList() {
+      $("clipList").innerHTML = state.clips.map((clip) => `
+        <article class="clip-card ${clip.id===state.selectedClipId?"active":""}" data-clip-id="${clip.id}">
+          <div class="clip-head">
+            <div>
+              <div class="clip-title">${escapeHtml(clip.title)}</div>
+              <div class="clip-meta">${clip.duration}s · ${escapeHtml(clip.url)}</div>
+            </div>
+            <span class="badge">${clip.shots.length} shot-uri</span>
+          </div>
+          <div class="pill-row">
+            <span class="pill">Pre-roll: ${clip.preroll.length}</span>
+            <span class="pill">Slides: 3</span>
+            <span class="pill">Silent demo</span>
+          </div>
+          <p class="hint">${escapeHtml(clip.message)}</p>
+        </article>
+      `).join("");
+    }
+
+    function updateStats(slides, descriptions) {
+      const totalShots = state.clips.reduce((sum, clip) => sum + clip.shots.length, 0);
+      $("statShots").textContent = totalShots;
+      $("statSlides").textContent = slides ? slides.length : 0;
+      $("statDescriptions").textContent = descriptions ? descriptions.split("\n\n").length : 0;
+      $("statClips").textContent = state.clips.length;
+    }
+
+    function renderSelectedClip() {
+      const clip = getSelectedClip();
+      if (!clip) {
+        $("timeline").innerHTML = `<div class="preview-note">Nu există încă un clip selectat.</div>`;
+        $("slides").innerHTML = "";
+        $("descriptions").textContent = "";
+        $("summary").textContent = "";
+        $("voiceover").textContent = "";
+        $("exportBox").textContent = "";
+        preview.classList.add("hidden");
+        previewNote.classList.remove("hidden");
+        previewNote.textContent = "Adaugă un proiect sau încarcă preseturile pentru a genera materialele.";
+        updateStats(null, "");
+        return;
       }
 
-      let shots;
-      try {
-        shots = JSON.parse(shotsRaw);
-      } catch (_error) {
-        throw new Error('Shots JSON nu este valid.');
+      const config = formatConfig();
+      const slides = generateSlides(clip);
+      const descriptions = generateDescriptions(clip);
+      const summary = generateSummary(clip, config);
+      const voiceover = generateVoiceover(clip);
+      const exportText = generateExport(clip, config);
+
+      $("timeline").innerHTML = [
+        `<div class="preview-note"><strong>Pre-roll</strong><br>${clip.preroll.map((item, i) => `${i+1}. ${escapeHtml(item)}`).join("<br>")}</div>`,
+        ...clip.shots.map((shot) => `<article class="shot"><div><span class="time">${escapeHtml(shot.time)}</span></div><div><h4>${escapeHtml(shot.action)}</h4><p>${escapeHtml(shot.purpose)}</p></div></article>`)
+      ].join("");
+
+      $("slides").innerHTML = slides.map((slide, i) => `<article class="slide"><span class="slide-num">Slide ${i+1}</span><h4>${escapeHtml(slide.title)}</h4><ul>${slide.bullets.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul></article>`).join("");
+      $("descriptions").textContent = descriptions;
+      $("summary").textContent = summary;
+      $("voiceover").textContent = voiceover;
+      $("exportBox").textContent = exportText;
+
+      if (clip.url) {
+        preview.classList.remove("hidden");
+        previewNote.classList.remove("hidden");
+        previewNote.innerHTML = `Preview-ul depinde de politica site-ului țintă. Dacă pagina blochează iframe, deschide-o direct: <a href="${escapeHtml(clip.url)}" target="_blank" rel="noreferrer">${escapeHtml(clip.url)}</a>.`;
+        preview.src = clip.url;
       }
 
-      if (!Array.isArray(shots)) {
-        throw new Error('Shots JSON trebuie să fie un array.');
-      }
+      updateStats(slides, descriptions);
+    }
 
-      return {
-        filename: `plans/${slugify(projectName)}.plan.json`,
-        data: {
-          url,
-          viewport: {
-            width: viewportWidth,
-            height: viewportHeight
-          },
-          output: {
-            outputResolution,
-            fpsFinal,
-            crf,
-            preset
-          },
-          shots
+    function setActiveView(view) {
+      state.activeView = view;
+      document.querySelectorAll("[data-view]").forEach(btn => btn.classList.toggle("active", btn.dataset.view === view));
+      document.querySelectorAll(".view-block").forEach(block => block.classList.add("hidden"));
+      document.getElementById(`view-${view}`)?.classList.remove("hidden");
+    }
+
+    function renderAll() {
+      renderClipTabs();
+      renderClipList();
+      renderSelectedClip();
+    }
+
+    function toast(message) {
+      previewNote.classList.remove("hidden");
+      previewNote.textContent = message;
+    }
+
+    function downloadFile(filename, content, mime) {
+      const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function slugify(str) {
+      return String(str || "clip").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "clip";
+    }
+
+    function attachEvents() {
+      $("generateBtn").addEventListener("click", () => {
+        const url = $("projectUrl").value.trim();
+        if (!url) return toast("Adaugă un link valid.");
+        state.clips.unshift(createClipFromInputs());
+        state.selectedClipId = state.clips[0].id;
+        renderAll();
+      });
+
+      $("loadPresetBtn").addEventListener("click", () => {
+        state.clips = JSON.parse(JSON.stringify(presetClips));
+        state.selectedClipId = state.clips[0]?.id || null;
+        renderAll();
+        toast("Am încărcat clipurile presetate.");
+      });
+
+      $("copySummaryBtn").addEventListener("click", async () => {
+        const clip = getSelectedClip();
+        if (!clip) return toast("Nu există un clip selectat.");
+        await navigator.clipboard.writeText(generateSummary(clip, formatConfig()));
+        toast("Sumarul a fost copiat.");
+      });
+
+      $("downloadJsonBtn").addEventListener("click", () => {
+        const clip = getSelectedClip();
+        if (!clip) return toast("Nu există date de exportat.");
+        downloadFile(`${slugify(clip.shortTitle)}-video-plan.json`, JSON.stringify({ clip, config: formatConfig() }, null, 2), "application/json;charset=utf-8");
+      });
+
+      $("downloadHtmlBtn").addEventListener("click", () => {
+        const clip = getSelectedClip();
+        if (!clip) return toast("Nu există raport de exportat.");
+        const html = `<!DOCTYPE html><html lang="ro"><head><meta charset="UTF-8"><title>${escapeHtml(clip.shortTitle)}</title></head><body><pre>${escapeHtml(generateSummary(clip, formatConfig()))}</pre></body></html>`;
+        downloadFile(`${slugify(clip.shortTitle)}-raport.html`, html, "text/html;charset=utf-8");
+      });
+
+      $("downloadAutomationBtn").addEventListener("click", () => {
+        const clip = getSelectedClip();
+        if (!clip) return toast("Nu există un clip selectat.");
+        downloadFile(`${slugify(clip.shortTitle)}-automation-pack.json`, JSON.stringify({ clip, config: formatConfig() }, null, 2), "application/json;charset=utf-8");
+      });
+
+      $("copyCliBtn").addEventListener("click", async () => {
+        await navigator.clipboard.writeText(["npm install", "npx playwright install chromium", "node runner.mjs"].join("\n"));
+        toast("Comenzile CLI au fost copiate.");
+      });
+
+      $("resetBtn").addEventListener("click", () => {
+        state.clips = [];
+        state.selectedClipId = null;
+        $("projectUrl").value = "";
+        $("projectName").value = "";
+        $("visualMessage").value = "";
+        $("duration").value = "40";
+        renderAll();
+        toast("Editorul a fost resetat.");
+      });
+
+      document.addEventListener("click", (e) => {
+        const clipButton = e.target.closest("[data-clip-id]");
+        if (clipButton) {
+          state.selectedClipId = clipButton.dataset.clipId;
+          renderAll();
         }
-      };
+        const viewButton = e.target.closest("[data-view]");
+        if (viewButton) setActiveView(viewButton.dataset.view);
+      });
+
+      document.addEventListener("change", (e) => {
+        if (e.target.matches("select")) renderSelectedClip();
+      });
     }
 
-    function downloadJsonFile(filename, data) {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = filename.split('/').pop();
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(link.href);
-    }
-
-    function setStatus(text) {
-      $('status').textContent = text;
-    }
-
-    async function healthCheck() {
-      try {
-        const data = await apiFetch('/api/health');
-        setStatus(JSON.stringify(data, null, 2));
-      } catch (error) {
-        setStatus(`Health check eșuat: ${error.message}\nTip: completează "Backend URL" (ex: http://localhost:3000).`);
-      }
-    }
-
-    async function poll(jobId) {
-      if (pollHandle) clearInterval(pollHandle);
-      pollHandle = setInterval(async () => {
-        try {
-          const data = await apiFetch(`/api/render/${jobId}`);
-          setStatus(JSON.stringify(data, null, 2));
-          if (['completed', 'failed'].includes(data.state)) {
-            clearInterval(pollHandle);
-            pollHandle = null;
-          }
-        } catch (error) {
-          setStatus(`Polling oprit: ${error.message}`);
-          clearInterval(pollHandle);
-          pollHandle = null;
-        }
-      }, 1500);
-    }
-
-    async function runJob() {
-      try {
-        const payload = payloadFromForm();
-        const data = await apiFetch('/api/render', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        setStatus(JSON.stringify(data, null, 2));
-        await poll(data.jobId);
-      } catch (error) {
-        setStatus(`Eroare: ${error.message}\nTip: pe GitHub Pages trebuie un backend separat (ex: local/Render).`);
-      }
-    }
-
-    function exportPlan() {
-      try {
-        const { filename, data } = buildPlanFromForm();
-        downloadJsonFile(filename, data);
-        setStatus(`Plan exportat: ${filename}\n\n${JSON.stringify(data, null, 2)}`);
-      } catch (error) {
-        setStatus(`Export eșuat: ${error.message}`);
-        alert(error.message);
-      }
-    }
-
-    $('loadPreset1').addEventListener('click', () => applyPreset(0));
-    $('loadPreset2').addEventListener('click', () => applyPreset(1));
-    $('loadPreset3').addEventListener('click', () => applyPreset(2));
-    $('runBtn').addEventListener('click', runJob);
-    $('healthBtn').addEventListener('click', healthCheck);
-    $('exportPlanBtn').addEventListener('click', exportPlan);
-
-    $('backendUrl').addEventListener('change', () => {
-      localStorage.setItem('backendUrl', $('backendUrl').value.trim());
-    });
-
-    $('backendUrl').value = localStorage.getItem('backendUrl') || '';
-
-    if (location.hostname.endsWith('github.io') && !$('backendUrl').value) {
-      setStatus('Ești pe GitHub Pages (static). Completează "Backend URL" pentru health/render.');
-    }
-
-    loadPresets().then(() => { if (presets[0]) applyPreset(0); });
+    buildConfigGrid();
+    renderDirectionRules();
+    attachEvents();
+    renderAll();
+    setActiveView("timeline");
   </script>
 </body>
 </html>
