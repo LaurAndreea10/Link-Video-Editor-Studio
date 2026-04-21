@@ -130,6 +130,7 @@
 
     .badge.success { color: #08140e; background: rgba(120,239,171,.95); border-color: transparent; }
     .badge.warn { color: #241705; background: rgba(255,211,108,.95); border-color: transparent; }
+    .badge.ai { color: #0a0820; background: linear-gradient(135deg, rgba(124,156,255,.95), rgba(137,240,213,.95)); border-color: transparent; }
 
     .field { display: grid; gap: 6px; }
     .field label { color: var(--muted); font-size: .82rem; }
@@ -199,7 +200,8 @@
       transition: transform .12s ease, opacity .12s ease, box-shadow .12s ease;
     }
 
-    .btn:hover { transform: translateY(-1px); }
+    .btn:hover:not(:disabled) { transform: translateY(-1px); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; }
 
     .btn-primary {
       color: #071225;
@@ -224,6 +226,71 @@
       background: rgba(255,143,143,.14);
       border: 1px solid rgba(255,143,143,.28);
     }
+
+    /* Mode toggle */
+    .mode-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 4px;
+      background: rgba(8,12,24,.7);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+    }
+
+    .mode-toggle button {
+      padding: 10px 8px;
+      border-radius: 10px;
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: .85rem;
+      transition: .15s ease;
+    }
+
+    .mode-toggle button.active {
+      background: linear-gradient(135deg, rgba(124,156,255,.22), rgba(137,240,213,.16));
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px rgba(124,156,255,.35);
+    }
+
+    .settings-body {
+      display: grid;
+      gap: 10px;
+    }
+    .settings-body.collapsed { display: none; }
+
+    .api-key-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 6px;
+    }
+
+    .tiny-btn {
+      padding: 9px 10px;
+      border-radius: 10px;
+      font-size: .78rem;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: var(--muted);
+    }
+
+    .status-dot.ok { background: var(--good); }
+    .status-dot.warn { background: var(--warn); }
+    .status-dot.err { background: var(--danger); }
 
     .main {
       display: grid;
@@ -365,7 +432,7 @@
     }
 
     .clip-title { font-weight: 800; }
-    .clip-meta { color: var(--muted); font-size: .83rem; }
+    .clip-meta { color: var(--muted); font-size: .83rem; word-break: break-all; }
 
     .pill-row {
       display: flex;
@@ -381,6 +448,9 @@
       border: 1px solid rgba(255,255,255,.08);
     }
 
+    .pill.ai { background: linear-gradient(135deg, rgba(124,156,255,.22), rgba(137,240,213,.18)); border-color: rgba(124,156,255,.35); }
+    .pill.mock { background: rgba(255,211,108,.14); border-color: rgba(255,211,108,.28); color: #ffe6a8; }
+
     .preview-note,
     .output-box {
       border-radius: 16px;
@@ -393,6 +463,18 @@
       border: 1px solid rgba(255,211,108,.24);
       color: #ffe6a8;
       font-size: .87rem;
+    }
+
+    .preview-note.err {
+      background: rgba(255,143,143,.12);
+      border-color: rgba(255,143,143,.28);
+      color: #ffc9c9;
+    }
+
+    .preview-note.ok {
+      background: rgba(120,239,171,.12);
+      border-color: rgba(120,239,171,.28);
+      color: #c7f5d9;
     }
 
     .output-box {
@@ -436,6 +518,7 @@
 
     .shot h4 { font-size: .95rem; margin-bottom: 4px; }
     .shot p { color: var(--muted); font-size: .9rem; line-height: 1.48; }
+    .shot .shot-meta { color: var(--muted); font-size: .78rem; margin-top: 6px; font-family: ui-monospace, monospace; }
 
     .slide-deck {
       display: grid;
@@ -473,6 +556,44 @@
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .84rem; }
     .hidden { display: none !important; }
 
+    /* Loading spinner in button */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(7,18,37,.25);
+      border-top-color: #071225;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      vertical-align: -2px;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    .toast-stack {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: grid;
+      gap: 10px;
+      z-index: 50;
+      max-width: 360px;
+    }
+    .toast-item {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(22, 33, 61, 0.96);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--text);
+      box-shadow: 0 18px 40px rgba(0,0,0,.4);
+      font-size: .88rem;
+      animation: toastIn .2s ease;
+    }
+    .toast-item.ok { border-color: rgba(120,239,171,.4); }
+    .toast-item.err { border-color: rgba(255,143,143,.4); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
     @media (max-width: 1180px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { position: static; max-height: none; }
@@ -501,6 +622,42 @@
 
       <section class="section">
         <div class="section-title">
+          <h2>Mod de generare</h2>
+          <span class="badge ai" id="modeBadge">Mock</span>
+        </div>
+        <div class="mode-toggle">
+          <button id="modeMockBtn" class="active" data-mode="mock">🎭 Mock</button>
+          <button id="modeRealBtn" data-mode="real">✨ AI real</button>
+        </div>
+        <div class="hint" id="modeHint">
+          Mock generează planuri deterministe, plauzibile, fără costuri. Varianta AI reală folosește cheia ta Anthropic pentru planuri personalizate.
+        </div>
+
+        <div class="settings-body collapsed" id="realSettings">
+          <div class="field">
+            <label for="apiKey">Anthropic API Key</label>
+            <div class="api-key-row">
+              <input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off" />
+              <button class="tiny-btn" id="clearKeyBtn" type="button">Șterge</button>
+            </div>
+          </div>
+          <div class="hint">
+            <span class="status-dot" id="keyStatus"></span>
+            <span id="keyStatusText">Cheia rămâne în browser (localStorage). Nu o trimitem nicăieri în afară de api.anthropic.com.</span>
+          </div>
+          <div class="field">
+            <label for="aiModel">Model</label>
+            <select id="aiModel">
+              <option value="claude-opus-4-7">Claude Opus 4.7 (cel mai bun)</option>
+              <option value="claude-sonnet-4-6" selected>Claude Sonnet 4.6 (rapid & echilibrat)</option>
+              <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (ieftin)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
           <h2>Input produs</h2>
           <span class="badge success">Fast setup</span>
         </div>
@@ -513,8 +670,8 @@
           <input id="projectName" type="text" placeholder="Ex: Alpis Fusion CRM Premium" />
         </div>
         <div class="field">
-          <label for="objective">Obiectiv</label>
-          <textarea id="objective" placeholder="Ex: demo premium pentru sales, 40 sec, accent pe claritate și flow."></textarea>
+          <label for="objective">Obiectiv demo</label>
+          <textarea id="objective" placeholder="Ex: demo premium de 40 sec pentru sales, accent pe claritate, profunzime de produs și payoff vizual."></textarea>
         </div>
         <div class="field">
           <label for="duration">Durată țintă</label>
@@ -631,9 +788,18 @@
     </main>
   </div>
 
+  <div class="toast-stack" id="toastStack"></div>
+
   <script>
+    // ====================================================================
+    // CONSTANTS & CONFIG
+    // ====================================================================
+
     const NL = "\n";
     const NL2 = "\n\n";
+    const STORAGE_KEY_API = "lves.anthropic.apiKey";
+    const STORAGE_KEY_MODE = "lves.mode";
+    const STORAGE_KEY_MODEL = "lves.aiModel";
 
     const optionSets = {
       outputMode: ["Simple", "Advanced", "Advanced+"],
@@ -667,52 +833,23 @@
       "Arată payoff-ul vizual înainte de final."
     ];
 
-    function createId() {
-      if (window.crypto && typeof window.crypto.randomUUID === "function") {
-        return window.crypto.randomUUID();
-      }
-      return "clip-" + Date.now() + "-" + Math.random().toString(16).slice(2);
-    }
-
-    const presetClips = [
-      {
-        id: createId(),
-        title: "CLIP 1 — Alpis Fusion CRM Premium",
-        shortTitle: "Alpis Fusion CRM Premium",
-        duration: 40,
-        url: "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
-        message: "Acest produs are profunzime și workflow fluid într-un singur ecran.",
-        preroll: ["Deschide URL-ul.", "Așteaptă încărcarea completă.", "Poziționează-te pe dashboard."],
-        avoid: ["Nu intra în setări.", "Nu scrie text lung."],
-        shots: [
-          { time: "00:00 – 00:04", action: "Stai pe Dashboard.", purpose: "Prima impresie." },
-          { time: "00:04 – 00:08", action: "Hover pe un KPI card.", purpose: "Interactivitate." },
-          { time: "00:08 – 00:12", action: "Intră în Clienți.", purpose: "Structură de date." },
-          { time: "00:12 – 00:18", action: "Deschide un client și panelul lateral.", purpose: "Bogăție funcțională." }
-        ]
-      },
-      {
-        id: createId(),
-        title: "CLIP 2 — ClientFlow SaaS",
-        shortTitle: "ClientFlow SaaS",
-        duration: 30,
-        url: "https://laurandreea10.github.io/ClientFlow-SaaS-CRM-task-manager-automation-suite/",
-        message: "Un singur ecran pentru task-uri, clienți și invoicing.",
-        preroll: ["Deschide URL-ul.", "Asigură date demo.", "Poziționează-te pe Dashboard."],
-        avoid: ["Nu intra în zone secundare."],
-        shots: [
-          { time: "00:00 – 00:03", action: "Stai pe Dashboard.", purpose: "Claritate." },
-          { time: "00:03 – 00:07", action: "Schimbă statusul unui task.", purpose: "Task workflow." },
-          { time: "00:07 – 00:12", action: "Intră în Calendar.", purpose: "Vizibilitate." }
-        ]
-      }
-    ];
+    // ====================================================================
+    // STATE
+    // ====================================================================
 
     const state = {
       clips: [],
       selectedClipId: null,
-      activeView: "timeline"
+      activeView: "timeline",
+      mode: "mock",     // "mock" | "real"
+      apiKey: "",
+      aiModel: "claude-sonnet-4-6",
+      busy: false
     };
+
+    // ====================================================================
+    // UTILITIES
+    // ====================================================================
 
     const $ = (id) => document.getElementById(id);
     const preview = $("sitePreview");
@@ -737,6 +874,555 @@
         .replace(/^-+|-+$/g, "") || "clip";
     }
 
+    function createId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return "clip-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    }
+
+    // Deterministic PRNG seeded from a string → consistent "randomness"
+    function seededRandom(seed) {
+      let h = 2166136261 >>> 0;
+      for (let i = 0; i < seed.length; i++) {
+        h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
+      }
+      return function () {
+        h += 0x6D2B79F5;
+        let t = h;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function pick(arr, rng) {
+      return arr[Math.floor(rng() * arr.length)];
+    }
+
+    function safeParseUrl(value) {
+      try {
+        const u = new URL(value);
+        return u;
+      } catch {
+        return null;
+      }
+    }
+
+    function toast(message, kind) {
+      // Update inline preview-note for continuity with existing UX
+      previewNote.classList.remove("hidden", "err", "ok");
+      if (kind === "err") previewNote.classList.add("err");
+      if (kind === "ok") previewNote.classList.add("ok");
+      previewNote.textContent = message;
+
+      // Also push a floating toast for visibility
+      const stack = $("toastStack");
+      const item = document.createElement("div");
+      item.className = "toast-item" + (kind ? " " + kind : "");
+      item.textContent = message;
+      stack.appendChild(item);
+      setTimeout(() => {
+        item.style.opacity = "0";
+        item.style.transition = "opacity .25s ease";
+      }, 3200);
+      setTimeout(() => item.remove(), 3600);
+    }
+
+    function downloadFile(filename, content, mime) {
+      const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    function formatConfig() {
+      const cfg = {};
+      Object.keys(optionSets).forEach((key) => { cfg[key] = $(key).value; });
+      return cfg;
+    }
+
+    function setButtonLoading(btn, isLoading, loadingLabel) {
+      if (!btn) return;
+      if (isLoading) {
+        if (!btn.dataset.originalLabel) btn.dataset.originalLabel = btn.textContent;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner"></span>${escapeHtml(loadingLabel || "Se procesează...")}`;
+      } else {
+        btn.disabled = false;
+        if (btn.dataset.originalLabel) {
+          btn.textContent = btn.dataset.originalLabel;
+          delete btn.dataset.originalLabel;
+        }
+      }
+    }
+
+    // ====================================================================
+    // URL ANALYSIS (heuristic, no network — works offline)
+    // ====================================================================
+
+    // Pattern → hints. Used by both mock generator and the AI prompt.
+    const URL_PATTERNS = [
+      { re: /crm|client|lead/i, type: "CRM", value: "gestiune clienți, pipeline, activități" },
+      { re: /booking|rezervar|calendar|appointment|schedul/i, type: "Booking", value: "rezervări, calendar, conflicte" },
+      { re: /invoice|billing|factura|plati|payment/i, type: "Billing", value: "facturi, plăți, recurență" },
+      { re: /kanban|task|project|board/i, type: "Project tool", value: "task-uri, board, flow" },
+      { re: /dashboard|analytics|metric|report|insight/i, type: "Analytics", value: "dashboard, KPI, trend" },
+      { re: /shop|store|ecommerce|commerce|product/i, type: "E-commerce", value: "catalog, produs, checkout" },
+      { re: /blog|article|news|post|journal/i, type: "Content", value: "articole, lecturi, arhivă" },
+      { re: /portfolio|resume|cv|about|me/i, type: "Portfolio", value: "prezentare, proiecte, identitate" },
+      { re: /saas|platform|studio|app|suite/i, type: "SaaS platform", value: "modular, multi-feature, workflow" },
+      { re: /landing|home|hero|launch/i, type: "Landing", value: "hero, CTA, conversie" }
+    ];
+
+    function analyzeUrl(url, productName, objective) {
+      const u = safeParseUrl(url);
+      const hostname = u ? u.hostname.replace(/^www\./, "") : "";
+      const path = u ? u.pathname : "";
+      const searchString = [url, productName, objective].filter(Boolean).join(" ");
+
+      const detected = URL_PATTERNS.filter((p) => p.re.test(searchString)).map((p) => ({ type: p.type, value: p.value }));
+      const primary = detected[0] || { type: "Produs web", value: "structură generică" };
+
+      // Path segments can hint at sections
+      const segments = path.split("/").filter(Boolean);
+
+      return {
+        hostname,
+        path,
+        segments,
+        detected,
+        primary,
+        raw: url
+      };
+    }
+
+    // Build candidate shot "archetypes" from heuristics — the same idea as
+    // buildCandidateShots() from the planning doc, but driven off URL + text.
+    const SHOT_ARCHETYPES = {
+      CRM: ["dashboard-overview", "client-list", "client-detail", "kanban-flow", "timeline-activity"],
+      Booking: ["calendar-month", "time-slot-pick", "conflict-detection", "confirmation-state"],
+      Billing: ["invoice-list", "invoice-detail", "pdf-preview", "payment-state"],
+      "Project tool": ["board-overview", "card-drag", "card-detail", "filter-apply"],
+      Analytics: ["kpi-row", "chart-hover", "filter-change", "drilldown"],
+      "E-commerce": ["catalog-grid", "product-detail", "cart-state", "checkout-flow"],
+      Content: ["hero-read", "article-scroll", "related-browse"],
+      Portfolio: ["hero-identity", "project-showcase", "detail-dive", "contact-payoff"],
+      "SaaS platform": ["hero-identity", "module-tour", "feature-depth", "integration-hint", "payoff-metric"],
+      Landing: ["hero-identity", "feature-row", "social-proof", "cta-payoff"],
+      "Produs web": ["hero-view", "navigation-tour", "primary-feature", "detail-panel", "payoff-final"]
+    };
+
+    const ARCHETYPE_COPY = {
+      "dashboard-overview": { action: "Stai pe dashboard pentru prima impresie.", purpose: "Densitate utilă și claritate.", selectorHint: "main, .dashboard, [data-view='dashboard']" },
+      "client-list": { action: "Scroll prin lista de clienți.", purpose: "Structură de date și scale.", selectorHint: ".clients, [data-section='clients'], table" },
+      "client-detail": { action: "Deschide un client și side panel-ul.", purpose: "Profunzime funcțională.", selectorHint: ".client-detail, .drawer, .panel" },
+      "kanban-flow": { action: "Drag un card între coloane.", purpose: "Workflow interactiv.", selectorHint: ".kanban, .board, .column" },
+      "timeline-activity": { action: "Expandează timeline-ul de activitate.", purpose: "Context istoric vizibil.", selectorHint: ".timeline, .activity" },
+      "calendar-month": { action: "Navighează luna în calendar.", purpose: "Orientare temporală.", selectorHint: ".calendar, [role='grid']" },
+      "time-slot-pick": { action: "Selectează un slot disponibil.", purpose: "Acțiune concretă.", selectorHint: ".slot, .available, button" },
+      "conflict-detection": { action: "Declanșează un conflict de booking.", purpose: "Inteligența produsului.", selectorHint: ".conflict, .warning, .alert" },
+      "confirmation-state": { action: "Arată starea de confirmare.", purpose: "Payoff vizual clar.", selectorHint: ".success, .confirmed, .toast" },
+      "invoice-list": { action: "Scroll prin lista de facturi.", purpose: "Volum și organizare.", selectorHint: ".invoices, table" },
+      "invoice-detail": { action: "Deschide o factură.", purpose: "Detaliu structurat.", selectorHint: ".invoice, .detail" },
+      "pdf-preview": { action: "Declanșează preview PDF.", purpose: "Feature tangibil.", selectorHint: ".pdf, .preview, .export" },
+      "payment-state": { action: "Schimbă statusul de plată.", purpose: "Tranziție de stare.", selectorHint: ".status, .badge" },
+      "board-overview": { action: "Privire de ansamblu asupra board-ului.", purpose: "Breadth funcțional.", selectorHint: ".board, .columns" },
+      "card-drag": { action: "Mută un card între coloane.", purpose: "Interactivitate fluidă.", selectorHint: ".card, .draggable" },
+      "card-detail": { action: "Deschide un card în detaliu.", purpose: "Profunzime.", selectorHint: ".card-detail, .modal" },
+      "filter-apply": { action: "Aplică un filtru sau search.", purpose: "Control granular.", selectorHint: ".filter, [type='search']" },
+      "kpi-row": { action: "Hover pe KPI cards.", purpose: "Valoare tangibilă.", selectorHint: ".kpi, .stat, .metric" },
+      "chart-hover": { action: "Hover pe un chart pentru tooltip.", purpose: "Profunzime a datelor.", selectorHint: ".chart, svg" },
+      "filter-change": { action: "Modifică un filtru temporal.", purpose: "Dinamică de date.", selectorHint: ".date-range, select" },
+      "drilldown": { action: "Drilldown dintr-un KPI în detaliu.", purpose: "Flow analitic.", selectorHint: ".kpi, .link" },
+      "catalog-grid": { action: "Scroll prin grila de produse.", purpose: "Scale și varietate.", selectorHint: ".products, .grid" },
+      "product-detail": { action: "Deschide un produs.", purpose: "Detaliu și CTA.", selectorHint: ".product, article" },
+      "cart-state": { action: "Adaugă în coș și arată starea.", purpose: "Feedback instant.", selectorHint: ".cart, .basket" },
+      "checkout-flow": { action: "Intră în checkout.", purpose: "Conversie.", selectorHint: ".checkout, form" },
+      "hero-read": { action: "Lectură pe hero.", purpose: "Tonalitate editorială.", selectorHint: "header, .hero" },
+      "article-scroll": { action: "Scroll lent printr-un articol.", purpose: "Densitate de conținut.", selectorHint: "article, main" },
+      "related-browse": { action: "Navighează la articole conexe.", purpose: "Breadth editorial.", selectorHint: ".related, nav" },
+      "hero-identity": { action: "Stai pe hero / heading principal.", purpose: "Identitate și claritate.", selectorHint: "h1, .hero, header" },
+      "project-showcase": { action: "Scroll prin showcase-ul de proiecte.", purpose: "Portofoliu tangibil.", selectorHint: ".projects, .gallery" },
+      "detail-dive": { action: "Deschide un studiu de caz.", purpose: "Profunzime narativă.", selectorHint: "article, .case-study" },
+      "contact-payoff": { action: "Ajungi pe secțiunea de contact.", purpose: "CTA final.", selectorHint: ".contact, footer" },
+      "module-tour": { action: "Navighează între module principale.", purpose: "Arhitectură vizibilă.", selectorHint: "nav, aside, .sidebar" },
+      "feature-depth": { action: "Deschide un feature în detaliu.", purpose: "Profunzime de produs.", selectorHint: ".feature, .detail" },
+      "integration-hint": { action: "Arată o integrare / export.", purpose: "Ecosistem.", selectorHint: ".integration, .export" },
+      "payoff-metric": { action: "Închide pe un număr / KPI memorabil.", purpose: "Payoff cognitiv.", selectorHint: ".kpi, .result" },
+      "feature-row": { action: "Scroll peste rândul de features.", purpose: "Breadth.", selectorHint: ".features, section" },
+      "social-proof": { action: "Oprire scurtă pe social proof.", purpose: "Credibilitate.", selectorHint: ".testimonials, .logos" },
+      "cta-payoff": { action: "Închide pe CTA principal.", purpose: "Call to action clar.", selectorHint: ".cta, button" },
+      "hero-view": { action: "Stai pe view-ul principal.", purpose: "Prima impresie.", selectorHint: "main, body" },
+      "navigation-tour": { action: "Parcurge navigarea principală.", purpose: "Arhitectură.", selectorHint: "nav" },
+      "primary-feature": { action: "Intră în feature-ul principal.", purpose: "Valoare centrală.", selectorHint: "main" },
+      "detail-panel": { action: "Deschide un panou de detaliu.", purpose: "Profunzime.", selectorHint: ".panel, .modal" },
+      "payoff-final": { action: "Arată starea finală / rezultat.", purpose: "Payoff vizual.", selectorHint: ".result, .success" }
+    };
+
+    function formatTimeRange(startSec, endSec) {
+      const fmt = (s) => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+      return fmt(startSec) + " – " + fmt(endSec);
+    }
+
+    function distributeShotDurations(totalSec, count) {
+      // Intro gets a bit more weight; rest is even.
+      const weights = Array.from({ length: count }, (_, i) => (i === 0 ? 1.25 : 1));
+      const sum = weights.reduce((a, b) => a + b, 0);
+      const durations = weights.map((w) => Math.max(2, Math.round((w / sum) * totalSec)));
+      // Adjust last one to match total exactly
+      const diff = totalSec - durations.reduce((a, b) => a + b, 0);
+      durations[durations.length - 1] = Math.max(2, durations[durations.length - 1] + diff);
+      return durations;
+    }
+
+    function buildShotListFromAnalysis(analysis, durationSec) {
+      const archetypeKey = SHOT_ARCHETYPES[analysis.primary.type] ? analysis.primary.type : "Produs web";
+      const archetypes = SHOT_ARCHETYPES[archetypeKey];
+      const count = Math.min(archetypes.length, Math.max(3, Math.round(durationSec / 8)));
+      const chosen = archetypes.slice(0, count);
+      const durations = distributeShotDurations(durationSec, count);
+
+      const shots = [];
+      let cursor = 0;
+      chosen.forEach((key, i) => {
+        const copy = ARCHETYPE_COPY[key] || ARCHETYPE_COPY["hero-view"];
+        const end = cursor + durations[i];
+        shots.push({
+          time: formatTimeRange(cursor, end),
+          action: copy.action,
+          purpose: copy.purpose,
+          selectorHint: copy.selectorHint,
+          reason: `Arhetip "${key}" dedus din tipul ${archetypeKey}.`
+        });
+        cursor = end;
+      });
+      return shots;
+    }
+
+    // ====================================================================
+    // MOCK GENERATOR (deterministic, no API calls)
+    // ====================================================================
+
+    function generateMockPlan({ url, productName, objective, duration }) {
+      const analysis = analyzeUrl(url, productName, objective);
+      const rng = seededRandom(url + "|" + productName + "|" + objective + "|" + duration);
+
+      const visualHooks = [
+        "control, densitate utilă și fluiditate operațională",
+        "claritate imediată și profunzime atunci când intri",
+        "eleganță vizuală și un ritm care ghidează privirea",
+        "senzație de produs matur, cu flow continuu",
+        "răspuns rapid și structură vizibilă la orice pas"
+      ];
+      const visualMessage = `${productName || "Produsul"} transmite ${pick(visualHooks, rng)}.`;
+
+      const preroll = [
+        `Deschide ${analysis.hostname || "URL-ul"}.`,
+        "Așteaptă încărcarea completă și stabilizarea UI-ului.",
+        `Poziționează-te pe ${analysis.primary.type === "Landing" ? "hero" : "view-ul principal"}.`
+      ];
+
+      const shots = buildShotListFromAnalysis(analysis, duration);
+
+      const descriptions = {
+        recruiter: `Demo de ${duration} secunde pentru ${productName || "produsul"}. ${analysis.primary.type} cu accent pe ${analysis.primary.value}. Construit pentru a comunica rapid valoarea și profunzimea.`,
+        portfolio: `Silent product reel — ${productName || "produs web"}. Un singur URL, un flow clar, ritm vizual controlat. Potrivit pentru a deschide conversații cu recruiteri și clienți.`,
+        social: `${productName || "Produs nou"} în 30–40 de secunde. ${analysis.primary.type} cu ${analysis.primary.value}. #producthunt #saas #demo`,
+        technical: `Export web H.264, ${duration}s, ${analysis.primary.type}. Structură: pre-roll → ${shots.length} shot-uri → payoff. Ready pentru LinkedIn, portfolio, outreach.`
+      };
+
+      const voiceover = `Acesta este ${productName || "produsul"}. ${analysis.primary.type === "Landing" ? "Un landing" : "Un produs"} construit pentru ${analysis.primary.value}. În următoarele ${duration} secunde, vezi structura principală, profunzimea funcțională și payoff-ul vizual — totul într-un singur flow.`;
+
+      const summary = `Plan generat în mod ${productName ? "customizat" : "generic"} pentru ${analysis.primary.type}. ${shots.length} shot-uri distribuite pe ${duration} secunde, cu accent pe ${analysis.primary.value}. Obiectiv: ${objective || "demo premium pentru portofoliu"}.`;
+
+      const planJson = {
+        version: 1,
+        productName: productName || "Produs fără nume",
+        url,
+        objective: objective || "Demo video premium",
+        duration,
+        visualMessage,
+        preroll,
+        shots,
+        descriptions,
+        voiceover,
+        summary,
+        analysis: {
+          type: analysis.primary.type,
+          hints: analysis.detected.map((d) => d.type),
+          hostname: analysis.hostname
+        }
+      };
+
+      return {
+        visualMessage,
+        preroll,
+        shots,
+        descriptions,
+        voiceover,
+        summary,
+        planJson,
+        mode: "mock"
+      };
+    }
+
+    // ====================================================================
+    // REAL AI GENERATOR (direct browser → Anthropic API)
+    // ====================================================================
+
+    const AI_SYSTEM_PROMPT = `Ești un regizor senior de demo-uri video pentru produse digitale.
+Primești: URL, nume produs, obiectiv, durată țintă, și o analiză heuristică a URL-ului.
+Scrii un plan premium de silent product demo, complet în limba română.
+
+REGULI:
+- Răspunzi STRICT cu JSON valid, fără markdown, fără ghilimele invertite, fără text suplimentar.
+- Respecți exact schema din exemplul de output.
+- Shot-urile se distribuie pe durata totală fără goluri și fără suprapuneri.
+- Nu halucinezi feature-uri imposibile — folosești arhetipul detectat pentru a propune shot-uri plauzibile.
+- Preferi shot-uri care arată: hierarhie, navigare, densitate, payoff, tranziții de stare.
+- Tonul este profesional, direct, fără superlative goale.
+
+SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
+{
+  "visualMessage": "string scurt, 1 frază, ce transmite produsul vizual",
+  "preroll": ["string", "string", "string"],
+  "shots": [
+    { "time": "00:00 – 00:04", "action": "string", "purpose": "string", "selectorHint": "string CSS selector", "reason": "string scurt" }
+  ],
+  "descriptions": {
+    "recruiter": "2-3 fraze pentru un recruiter",
+    "portfolio": "2-3 fraze pentru un portfolio",
+    "social": "1-2 fraze pentru LinkedIn/Twitter",
+    "technical": "1-2 fraze tehnice, export-ready"
+  },
+  "voiceover": "string continuu, 3-5 fraze",
+  "summary": "string, 2-3 fraze"
+}`;
+
+    async function generateRealPlan({ url, productName, objective, duration, apiKey, model }) {
+      const analysis = analyzeUrl(url, productName, objective);
+
+      const userPayload = {
+        input: { url, productName, objective, duration },
+        heuristicAnalysis: {
+          hostname: analysis.hostname,
+          path: analysis.path,
+          pathSegments: analysis.segments,
+          detectedTypes: analysis.detected,
+          primaryType: analysis.primary
+        },
+        candidateShotArchetypes: SHOT_ARCHETYPES[analysis.primary.type] || SHOT_ARCHETYPES["Produs web"]
+      };
+
+      const userMessage = `Generează planul demo pentru următorul input:\n\n${JSON.stringify(userPayload, null, 2)}\n\nReturnează DOAR JSON-ul conform schemei.`;
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: model || "claude-sonnet-4-6",
+          max_tokens: 2500,
+          system: AI_SYSTEM_PROMPT,
+          messages: [{ role: "user", content: userMessage }]
+        })
+      });
+
+      if (!response.ok) {
+        let errText = "";
+        try {
+          const errJson = await response.json();
+          errText = errJson.error?.message || JSON.stringify(errJson);
+        } catch {
+          errText = await response.text();
+        }
+        throw new Error(`API ${response.status}: ${errText}`);
+      }
+
+      const data = await response.json();
+      const text = (data.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+
+      // Strip markdown fences if the model ignored instructions
+      const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+
+      let parsed;
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        throw new Error("AI-ul a returnat JSON invalid. Încearcă din nou sau folosește modul Mock.");
+      }
+
+      // Ensure planJson exists / is complete
+      const planJson = {
+        version: 1,
+        productName: productName || "Produs fără nume",
+        url,
+        objective: objective || "Demo video premium",
+        duration,
+        visualMessage: parsed.visualMessage,
+        preroll: parsed.preroll || [],
+        shots: parsed.shots || [],
+        descriptions: parsed.descriptions || {},
+        voiceover: parsed.voiceover || "",
+        summary: parsed.summary || "",
+        analysis: {
+          type: analysis.primary.type,
+          hints: analysis.detected.map((d) => d.type),
+          hostname: analysis.hostname
+        }
+      };
+
+      return {
+        visualMessage: parsed.visualMessage || "",
+        preroll: parsed.preroll || [],
+        shots: parsed.shots || [],
+        descriptions: parsed.descriptions || {},
+        voiceover: parsed.voiceover || "",
+        summary: parsed.summary || "",
+        planJson,
+        mode: "real"
+      };
+    }
+
+    // ====================================================================
+    // PRESET CLIPS (legacy, unchanged)
+    // ====================================================================
+
+    const presetClips = [
+      {
+        id: createId(),
+        title: "CLIP 1 — Alpis Fusion CRM Premium",
+        shortTitle: "Alpis Fusion CRM Premium",
+        duration: 40,
+        url: "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
+        message: "Acest produs are profunzime și workflow fluid într-un singur ecran.",
+        objective: "Demo premium pentru recruiteri, accent pe densitate și claritate.",
+        mode: "preset",
+        preroll: ["Deschide URL-ul.", "Așteaptă încărcarea completă.", "Poziționează-te pe dashboard."],
+        avoid: ["Nu intra în setări.", "Nu scrie text lung."],
+        shots: [
+          { time: "00:00 – 00:04", action: "Stai pe Dashboard.", purpose: "Prima impresie." },
+          { time: "00:04 – 00:08", action: "Hover pe un KPI card.", purpose: "Interactivitate." },
+          { time: "00:08 – 00:12", action: "Intră în Clienți.", purpose: "Structură de date." },
+          { time: "00:12 – 00:18", action: "Deschide un client și panelul lateral.", purpose: "Bogăție funcțională." }
+        ]
+      },
+      {
+        id: createId(),
+        title: "CLIP 2 — ClientFlow SaaS",
+        shortTitle: "ClientFlow SaaS",
+        duration: 30,
+        url: "https://laurandreea10.github.io/ClientFlow-SaaS-CRM-task-manager-automation-suite/",
+        message: "Un singur ecran pentru task-uri, clienți și invoicing.",
+        objective: "Demo scurt pentru outreach, accent pe unified workspace.",
+        mode: "preset",
+        preroll: ["Deschide URL-ul.", "Asigură date demo.", "Poziționează-te pe Dashboard."],
+        avoid: ["Nu intra în zone secundare."],
+        shots: [
+          { time: "00:00 – 00:03", action: "Stai pe Dashboard.", purpose: "Claritate." },
+          { time: "00:03 – 00:07", action: "Schimbă statusul unui task.", purpose: "Task workflow." },
+          { time: "00:07 – 00:12", action: "Intră în Calendar.", purpose: "Vizibilitate." }
+        ]
+      }
+    ];
+
+    // ====================================================================
+    // CLIP CREATION
+    // ====================================================================
+
+    function buildClipFromPlan(plan, inputs) {
+      return {
+        id: createId(),
+        title: `CLIP ${plan.mode === "real" ? "AI" : "MOCK"} — ${inputs.productName || "Produs"}`,
+        shortTitle: inputs.productName || plan.planJson.analysis?.hostname || "Produs",
+        url: inputs.url,
+        message: plan.visualMessage,
+        objective: inputs.objective,
+        duration: inputs.duration,
+        mode: plan.mode,
+        preroll: plan.preroll,
+        avoid: [
+          "Nu accelera tranzițiile inutil.",
+          "Nu umple ecranul cu interacțiuni fără payoff."
+        ],
+        shots: plan.shots,
+        aiDescriptions: plan.descriptions,
+        aiVoiceover: plan.voiceover,
+        aiSummary: plan.summary,
+        aiPlanJson: plan.planJson
+      };
+    }
+
+    async function handleGenerate(triggerBtn) {
+      if (state.busy) return;
+
+      const url = $("projectUrl").value.trim();
+      const productName = $("projectName").value.trim();
+      const objective = $("objective").value.trim();
+      const duration = Number($("duration").value || 40);
+
+      if (!url) {
+        toast("Adaugă un link valid înainte de generare.", "err");
+        return;
+      }
+      if (!safeParseUrl(url)) {
+        toast("URL-ul nu pare valid. Folosește formatul https://...", "err");
+        return;
+      }
+
+      state.busy = true;
+      const heroBtn = $("heroGenerateBtn");
+      const sideBtn = $("generateBtn");
+      setButtonLoading(heroBtn, true, "Generez...");
+      setButtonLoading(sideBtn, true, "Generez...");
+
+      const inputs = { url, productName, objective, duration };
+
+      try {
+        let plan;
+        if (state.mode === "real") {
+          const apiKey = state.apiKey;
+          if (!apiKey) {
+            toast("Nu ai setat cheia Anthropic. Completează-o în secțiunea Mod de generare.", "err");
+            return;
+          }
+          toast("Generez cu Claude... poate dura 5-15 secunde.");
+          plan = await generateRealPlan({ ...inputs, apiKey, model: state.aiModel });
+        } else {
+          // Artificial "thinking" delay so mock feels plausible, not instant
+          await new Promise((r) => setTimeout(r, 450));
+          plan = generateMockPlan(inputs);
+        }
+
+        const clip = buildClipFromPlan(plan, inputs);
+        state.clips.unshift(clip);
+        state.selectedClipId = clip.id;
+        renderAll();
+        toast(`Demo-ul a fost generat (${plan.mode === "real" ? "AI real" : "mock determinist"}).`, "ok");
+      } catch (error) {
+        console.error(error);
+        toast("Eroare: " + (error.message || "ceva nu a mers"), "err");
+      } finally {
+        state.busy = false;
+        setButtonLoading(heroBtn, false);
+        setButtonLoading(sideBtn, false);
+      }
+    }
+
+    // ====================================================================
+    // RENDERING
+    // ====================================================================
+
     function buildConfigGrid() {
       const grid = $("configGrid");
       grid.innerHTML = Object.keys(optionSets).map((key) => {
@@ -753,36 +1439,42 @@
       $("directionRules").innerHTML = directionRules.map((rule) => `<span class="chip">${escapeHtml(rule)}</span>`).join("");
     }
 
-    function formatConfig() {
-      const cfg = {};
-      Object.keys(optionSets).forEach((key) => {
-        cfg[key] = $(key).value;
-      });
-      return cfg;
-    }
-
     function getSelectedClip() {
       return state.clips.find((clip) => clip.id === state.selectedClipId) || null;
     }
 
     function generateSlides(clip) {
       return [
-        { title: "Hook vizual", bullets: [`Produs: ${clip.shortTitle}`, `Durată demo: ${clip.duration} sec`, `Promisiune: ${clip.message || "Demo premium generat automat"}`] },
-        { title: "Pre-roll", bullets: clip.preroll?.length ? clip.preroll : ["Deschide produsul.", "Așteaptă încărcarea.", "Intră în view-ul principal."] },
-        { title: "Execuție", bullets: (clip.shots || []).slice(0, 4).map((s) => `${s.time}: ${s.action}`) }
+        {
+          title: "Hook vizual",
+          bullets: [
+            `Produs: ${clip.shortTitle}`,
+            `Durată demo: ${clip.duration} sec`,
+            `Promisiune: ${clip.message || "Demo premium"}`
+          ]
+        },
+        {
+          title: "Pre-roll",
+          bullets: clip.preroll?.length ? clip.preroll : ["Deschide produsul.", "Așteaptă încărcarea.", "Intră în view-ul principal."]
+        },
+        {
+          title: "Execuție",
+          bullets: (clip.shots || []).slice(0, 4).map((s) => `${s.time}: ${s.action}`)
+        }
       ];
     }
 
     function generateDescriptions(clip) {
-      if (clip.aiDescriptions) {
+      if (clip.aiDescriptions && Object.keys(clip.aiDescriptions).length) {
+        const d = clip.aiDescriptions;
         return [
-          `1) Descriere recruiter${NL}${clip.aiDescriptions.recruiter || ""}`,
-          `2) Descriere portofoliu${NL}${clip.aiDescriptions.portfolio || ""}`,
-          `3) Descriere social${NL}${clip.aiDescriptions.social || ""}`,
-          `4) Notă tehnică${NL}${clip.aiDescriptions.technical || ""}`
+          `1) Descriere recruiter${NL}${d.recruiter || ""}`,
+          `2) Descriere portofoliu${NL}${d.portfolio || ""}`,
+          `3) Descriere social${NL}${d.social || ""}`,
+          `4) Notă tehnică${NL}${d.technical || ""}`
         ].join(NL2);
       }
-
+      // Legacy path (preset clips)
       return [
         `1) Descriere recruiter${NL}${clip.shortTitle} comunică un produs matur și ușor de urmărit.`,
         `2) Descriere portofoliu${NL}Demo silențios, orientat pe valoarea vizuală a produsului.`,
@@ -792,20 +1484,18 @@
     }
 
     function generateSummary(clip, config) {
-      if (clip.aiSummary) {
-        return [
-          clip.aiSummary,
-          "",
-          "CONFIG",
-          JSON.stringify(config, null, 2)
-        ].join(NL);
-      }
-
-      return [
+      const lines = [
         `PROIECT: ${clip.title}`,
         `URL: ${clip.url}`,
         `DURATĂ: ${clip.duration} secunde`,
-        `MESAJ VIZUAL: ${clip.message}`,
+        `MESAJ VIZUAL: ${clip.message || "-"}`,
+        `OBIECTIV: ${clip.objective || "-"}`,
+        `MOD: ${clip.mode || "preset"}`
+      ];
+      if (clip.aiSummary) {
+        lines.push("", "SUMAR AI", clip.aiSummary);
+      }
+      lines.push(
         "",
         "EXPORT ÎN REPO",
         `- salvează JSON-ul în plans/${slugify(clip.shortTitle)}.plan.json`,
@@ -814,7 +1504,8 @@
         "",
         "CONFIG",
         JSON.stringify(config, null, 2)
-      ].join(NL);
+      );
+      return lines.join(NL);
     }
 
     function generateVoiceover(clip) {
@@ -822,10 +1513,9 @@
     }
 
     function generateExport(clip, config) {
-      const plan = clip.aiPlanJson && Object.keys(clip.aiPlanJson).length
+      const plan = (clip.aiPlanJson && Object.keys(clip.aiPlanJson).length)
         ? clip.aiPlanJson
         : { clip, config };
-
       return [
         "# Encode final sugerat",
         `ffmpeg -i input.${config.recordingFormat} -c:v libx264 -crf ${config.crf} output-final.mp4`,
@@ -834,11 +1524,22 @@
       ].join(NL);
     }
 
+    function clipBadge(clip) {
+      if (clip.mode === "real") return `<span class="pill ai">✨ AI real</span>`;
+      if (clip.mode === "mock") return `<span class="pill mock">🎭 Mock</span>`;
+      return `<span class="pill">Preset</span>`;
+    }
+
     function renderClipTabs() {
-      $("clipTabs").innerHTML = state.clips.map((clip, i) => {
+      const tabs = $("clipTabs");
+      if (!state.clips.length) {
+        tabs.innerHTML = `<span class="hint">Niciun clip încă.</span>`;
+        return;
+      }
+      tabs.innerHTML = state.clips.map((clip, i) => {
         const active = clip.id === state.selectedClipId ? "active" : "";
         return `<button class="tab ${active}" data-clip-id="${clip.id}">${i + 1}. ${escapeHtml(clip.shortTitle)}</button>`;
-      }).join("") || `<span class="hint">Niciun clip încă.</span>`;
+      }).join("");
     }
 
     function renderClipList() {
@@ -851,21 +1552,22 @@
                 <div class="clip-title">${escapeHtml(clip.title)}</div>
                 <div class="clip-meta">${clip.duration}s · ${escapeHtml(clip.url)}</div>
               </div>
-              <span class="badge">${clip.shots.length} shot-uri</span>
+              <span class="badge">${(clip.shots || []).length} shot-uri</span>
             </div>
             <div class="pill-row">
-              <span class="pill">Pre-roll: ${clip.preroll.length}</span>
+              ${clipBadge(clip)}
+              <span class="pill">Pre-roll: ${(clip.preroll || []).length}</span>
               <span class="pill">Slides: 3</span>
               <span class="pill">Silent demo</span>
             </div>
-            <p class="hint">${escapeHtml(clip.message)}</p>
+            <p class="hint">${escapeHtml(clip.message || "")}</p>
           </article>
         `;
       }).join("");
     }
 
     function updateStats(slides, descriptions) {
-      const totalShots = state.clips.reduce((sum, clip) => sum + clip.shots.length, 0);
+      const totalShots = state.clips.reduce((sum, clip) => sum + (clip.shots?.length || 0), 0);
       $("statShots").textContent = String(totalShots);
       $("statSlides").textContent = String(slides ? slides.length : 0);
       $("statDescriptions").textContent = String(descriptions ? descriptions.split(NL2).length : 0);
@@ -882,7 +1584,7 @@
         $("voiceover").textContent = "";
         $("exportBox").textContent = "";
         preview.classList.add("hidden");
-        previewNote.classList.remove("hidden");
+        previewNote.classList.remove("hidden", "err", "ok");
         previewNote.textContent = "Adaugă un proiect sau încarcă preseturile pentru a genera materialele.";
         updateStats(null, "");
         return;
@@ -896,8 +1598,20 @@
       const exportText = generateExport(clip, config);
 
       $("timeline").innerHTML = [
-        `<div class="preview-note"><strong>Pre-roll</strong><br>${clip.preroll.map((item, i) => `${i + 1}. ${escapeHtml(item)}`).join("<br>")}</div>`,
-        ...clip.shots.map((shot) => `<article class="shot"><div><span class="time">${escapeHtml(shot.time)}</span></div><div><h4>${escapeHtml(shot.action)}</h4><p>${escapeHtml(shot.purpose)}</p></div></article>`)
+        `<div class="preview-note"><strong>Pre-roll</strong><br>${(clip.preroll || []).map((item, i) => `${i + 1}. ${escapeHtml(item)}`).join("<br>")}</div>`,
+        ...(clip.shots || []).map((shot) => {
+          const metaLine = shot.selectorHint
+            ? `<div class="shot-meta">selector: ${escapeHtml(shot.selectorHint)}${shot.reason ? " · " + escapeHtml(shot.reason) : ""}</div>`
+            : "";
+          return `<article class="shot">
+            <div><span class="time">${escapeHtml(shot.time)}</span></div>
+            <div>
+              <h4>${escapeHtml(shot.action)}</h4>
+              <p>${escapeHtml(shot.purpose)}</p>
+              ${metaLine}
+            </div>
+          </article>`;
+        })
       ].join("");
 
       $("slides").innerHTML = slides.map((slide, i) => `
@@ -915,7 +1629,7 @@
 
       if (clip.url) {
         preview.classList.remove("hidden");
-        previewNote.classList.remove("hidden");
+        previewNote.classList.remove("hidden", "err", "ok");
         previewNote.innerHTML = `Preview-ul depinde de politica site-ului țintă. Dacă pagina blochează iframe, deschide-o direct: <a href="${escapeHtml(clip.url)}" target="_blank" rel="noreferrer">${escapeHtml(clip.url)}</a>.`;
         preview.src = clip.url;
       }
@@ -937,149 +1651,146 @@
       renderSelectedClip();
     }
 
-    function toast(message) {
-      previewNote.classList.remove("hidden");
-      previewNote.textContent = message;
+    // ====================================================================
+    // MODE & SETTINGS
+    // ====================================================================
+
+    function updateModeUI() {
+      $("modeMockBtn").classList.toggle("active", state.mode === "mock");
+      $("modeRealBtn").classList.toggle("active", state.mode === "real");
+      $("modeBadge").textContent = state.mode === "real" ? "AI real" : "Mock";
+      $("realSettings").classList.toggle("collapsed", state.mode !== "real");
+
+      const hint = $("modeHint");
+      if (state.mode === "real") {
+        hint.innerHTML = `Folosește cheia ta Anthropic pentru planuri generate de AI. Cheia rămâne în browser-ul tău; noi facem call direct la <span class="mono">api.anthropic.com</span>.`;
+      } else {
+        hint.textContent = "Mock generează planuri deterministe, plauzibile, fără costuri. Aceeași intrare produce mereu același plan.";
+      }
+
+      // Key status
+      const dot = $("keyStatus");
+      const txt = $("keyStatusText");
+      dot.className = "status-dot";
+      if (state.mode === "real") {
+        if (!state.apiKey) {
+          dot.classList.add("warn");
+          txt.textContent = "Nu ai setat încă o cheie. Adaug-o mai sus ca să poți genera cu AI.";
+        } else if (!state.apiKey.startsWith("sk-ant-")) {
+          dot.classList.add("err");
+          txt.textContent = "Cheia nu arată ca o cheie Anthropic validă (trebuie să înceapă cu sk-ant-).";
+        } else {
+          dot.classList.add("ok");
+          txt.textContent = "Cheia e setată și stocată doar local (localStorage).";
+        }
+      } else {
+        txt.textContent = "Cheia rămâne în browser (localStorage). Nu o trimitem nicăieri în afară de api.anthropic.com.";
+      }
     }
 
-    function downloadFile(filename, content, mime) {
-      const blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    function setMode(mode) {
+      state.mode = mode;
+      localStorage.setItem(STORAGE_KEY_MODE, mode);
+      updateModeUI();
     }
 
-    function runSelfTests() {
-      console.assert(slugify("Alpis Fusion CRM Premium") === "alpis-fusion-crm-premium", "slugify should normalize spaces");
-      console.assert(escapeHtml('<tag>') === '&lt;tag&gt;', "escapeHtml should escape angle brackets");
-      console.assert(generateDescriptions({ shortTitle: "Demo" }).includes("Demo"), "generateDescriptions should include shortTitle");
+    function loadSettings() {
+      try {
+        state.apiKey = localStorage.getItem(STORAGE_KEY_API) || "";
+        state.mode = localStorage.getItem(STORAGE_KEY_MODE) || "mock";
+        state.aiModel = localStorage.getItem(STORAGE_KEY_MODEL) || "claude-sonnet-4-6";
+      } catch {
+        // localStorage blocked
+      }
+      $("apiKey").value = state.apiKey;
+      $("aiModel").value = state.aiModel;
     }
+
+    // ====================================================================
+    // EVENTS
+    // ====================================================================
 
     function attachEvents() {
-      const generateWithAI = async () => {
-        const url = $("projectUrl").value.trim();
-        const productName = $("projectName").value.trim();
-        const objective = $("objective").value.trim();
-        const duration = Number($("duration").value || 40);
-        if (!url) {
-          toast("Adaugă un link valid.");
-          return;
-        }
-
-        const btn = $("generateBtn");
-        const heroBtn = $("heroGenerateBtn");
-        const oldText = btn.textContent;
-        const oldHeroText = heroBtn.textContent;
-
-        btn.disabled = true;
-        heroBtn.disabled = true;
-        btn.textContent = "Generez...";
-        heroBtn.textContent = "Generez...";
-        toast("Analizez pagina și construiesc demo-ul automat...");
-
-        try {
-          const response = await fetch("/api/generate-demo", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ url, productName, objective, duration })
-          });
-          const data = await response.json();
-          if (!response.ok || !data.ok) {
-            throw new Error(data.error || "Generarea a eșuat.");
-          }
-
-          const clip = {
-            id: createId(),
-            title: `CLIP AI — ${data.input.productName || productName || "Produs"}`,
-            shortTitle: data.input.productName || productName || "Produs",
-            url: data.input.url,
-            message: data.visualMessage,
-            duration: data.input.duration || duration,
-            preroll: Array.isArray(data.preroll) ? data.preroll : [],
-            avoid: [
-              "Nu accelera tranzițiile inutil.",
-              "Nu umple ecranul cu interacțiuni fără payoff."
-            ],
-            shots: Array.isArray(data.shots) ? data.shots : [],
-            aiDescriptions: data.descriptions || {},
-            aiVoiceover: data.voiceover || "",
-            aiSummary: data.summary || "",
-            aiPlanJson: data.planJson || {}
-          };
-
-          state.clips.unshift(clip);
-          state.selectedClipId = clip.id;
-          renderAll();
-          toast("Demo-ul a fost generat automat.");
-        } catch (error) {
-          toast(`Eroare: ${error.message}`);
-        } finally {
-          btn.disabled = false;
-          heroBtn.disabled = false;
-          btn.textContent = oldText;
-          heroBtn.textContent = oldHeroText;
-        }
-      };
+      $("generateBtn").addEventListener("click", (e) => handleGenerate(e.currentTarget));
+      $("heroGenerateBtn").addEventListener("click", (e) => handleGenerate(e.currentTarget));
 
       const triggerPresets = () => {
         state.clips = JSON.parse(JSON.stringify(presetClips));
         state.selectedClipId = state.clips[0] ? state.clips[0].id : null;
         renderAll();
-        toast("Am încărcat clipurile presetate.");
+        toast("Am încărcat clipurile presetate.", "ok");
       };
 
-      $("generateBtn").addEventListener("click", generateWithAI);
       $("loadPresetBtn").addEventListener("click", triggerPresets);
-      $("heroGenerateBtn").addEventListener("click", generateWithAI);
       $("heroPresetBtn").addEventListener("click", triggerPresets);
+
+      // Mode toggle
+      $("modeMockBtn").addEventListener("click", () => setMode("mock"));
+      $("modeRealBtn").addEventListener("click", () => setMode("real"));
+
+      // API key persistence
+      $("apiKey").addEventListener("input", (e) => {
+        state.apiKey = e.target.value.trim();
+        try { localStorage.setItem(STORAGE_KEY_API, state.apiKey); } catch {}
+        updateModeUI();
+      });
+
+      $("clearKeyBtn").addEventListener("click", () => {
+        $("apiKey").value = "";
+        state.apiKey = "";
+        try { localStorage.removeItem(STORAGE_KEY_API); } catch {}
+        updateModeUI();
+        toast("Cheia API a fost ștearsă.", "ok");
+      });
+
+      $("aiModel").addEventListener("change", (e) => {
+        state.aiModel = e.target.value;
+        try { localStorage.setItem(STORAGE_KEY_MODEL, state.aiModel); } catch {}
+      });
 
       $("copySummaryBtn").addEventListener("click", async () => {
         const clip = getSelectedClip();
-        if (!clip) {
-          toast("Nu există un clip selectat.");
-          return;
+        if (!clip) { toast("Nu există un clip selectat.", "err"); return; }
+        try {
+          await navigator.clipboard.writeText(generateSummary(clip, formatConfig()));
+          toast("Sumarul a fost copiat.", "ok");
+        } catch {
+          toast("Nu am putut copia în clipboard.", "err");
         }
-        await navigator.clipboard.writeText(generateSummary(clip, formatConfig()));
-        toast("Sumarul a fost copiat.");
       });
 
       $("downloadJsonBtn").addEventListener("click", () => {
         const clip = getSelectedClip();
-        if (!clip) {
-          toast("Nu există date de exportat.");
-          return;
-        }
-        const plan = clip.aiPlanJson && Object.keys(clip.aiPlanJson).length ? clip.aiPlanJson : { clip, config: formatConfig() };
-        downloadFile(`${slugify(clip.shortTitle)}.plan.json`, JSON.stringify(plan, null, 2), "application/json;charset=utf-8");
+        if (!clip) { toast("Nu există date de exportat.", "err"); return; }
+        const content = clip.aiPlanJson && Object.keys(clip.aiPlanJson).length
+          ? JSON.stringify(clip.aiPlanJson, null, 2)
+          : JSON.stringify({ clip, config: formatConfig() }, null, 2);
+        downloadFile(`${slugify(clip.shortTitle)}.plan.json`, content, "application/json;charset=utf-8");
+        toast("Plan JSON descărcat.", "ok");
       });
 
       $("downloadHtmlBtn").addEventListener("click", () => {
         const clip = getSelectedClip();
-        if (!clip) {
-          toast("Nu există raport de exportat.");
-          return;
-        }
+        if (!clip) { toast("Nu există raport de exportat.", "err"); return; }
         const html = `<!DOCTYPE html><html lang="ro"><head><meta charset="UTF-8"><title>${escapeHtml(clip.shortTitle)}</title></head><body><pre>${escapeHtml(generateSummary(clip, formatConfig()))}</pre></body></html>`;
         downloadFile(`${slugify(clip.shortTitle)}-raport.html`, html, "text/html;charset=utf-8");
+        toast("Raport HTML descărcat.", "ok");
       });
 
       $("downloadAutomationBtn").addEventListener("click", () => {
         const clip = getSelectedClip();
-        if (!clip) {
-          toast("Nu există un clip selectat.");
-          return;
-        }
+        if (!clip) { toast("Nu există un clip selectat.", "err"); return; }
         downloadFile(`${slugify(clip.shortTitle)}-automation-pack.json`, JSON.stringify({ clip, config: formatConfig() }, null, 2), "application/json;charset=utf-8");
+        toast("Automation Pack descărcat.", "ok");
       });
 
       $("copyCliBtn").addEventListener("click", async () => {
-        await navigator.clipboard.writeText(["npm install", "npx playwright install chromium", "node runner.mjs"].join(NL));
-        toast("Comenzile CLI au fost copiate.");
+        try {
+          await navigator.clipboard.writeText(["npm install", "npx playwright install chromium", "node runner.mjs"].join(NL));
+          toast("Comenzile CLI au fost copiate.", "ok");
+        } catch {
+          toast("Nu am putut copia în clipboard.", "err");
+        }
       });
 
       $("resetBtn").addEventListener("click", () => {
@@ -1090,7 +1801,7 @@
         $("objective").value = "";
         $("duration").value = "40";
         renderAll();
-        toast("Editorul a fost resetat.");
+        toast("Editorul a fost resetat.", "ok");
       });
 
       document.addEventListener("click", (e) => {
@@ -1104,15 +1815,45 @@
       });
 
       document.addEventListener("change", (e) => {
-        if (e.target.matches("select")) {
+        if (e.target.matches("select") && e.target.id !== "aiModel" && e.target.id !== "duration") {
           renderSelectedClip();
         }
       });
     }
 
+    // ====================================================================
+    // SELF-TESTS
+    // ====================================================================
+
+    function runSelfTests() {
+      console.assert(slugify("Alpis Fusion CRM Premium") === "alpis-fusion-crm-premium", "slugify should normalize spaces");
+      console.assert(escapeHtml('<tag>') === '&lt;tag&gt;', "escapeHtml should escape angle brackets");
+
+      // Deterministic generator: same input → same output
+      const inp = { url: "https://example.com/crm/dashboard", productName: "Test CRM", objective: "demo", duration: 40 };
+      const p1 = generateMockPlan(inp);
+      const p2 = generateMockPlan(inp);
+      console.assert(p1.visualMessage === p2.visualMessage, "mock generator must be deterministic");
+      console.assert(Array.isArray(p1.shots) && p1.shots.length >= 3, "mock plan should have at least 3 shots");
+
+      // URL analysis detects CRM
+      const a = analyzeUrl("https://example.com/crm/clients", "", "");
+      console.assert(a.primary.type === "CRM", "analyzeUrl should detect CRM from path");
+
+      // Shot durations sum to target
+      const d = distributeShotDurations(40, 4);
+      console.assert(d.reduce((x, y) => x + y, 0) === 40, "durations must sum to target");
+    }
+
+    // ====================================================================
+    // BOOTSTRAP
+    // ====================================================================
+
+    loadSettings();
     buildConfigGrid();
     renderDirectionRules();
     attachEvents();
+    updateModeUI();
     renderAll();
     setActiveView("timeline");
     runSelfTests();
