@@ -23,6 +23,7 @@
     }
 
     * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       min-height: 100%;
@@ -130,6 +131,7 @@
 
     .field { display: grid; gap: 6px; }
     .field label { color: var(--muted); font-size: .82rem; }
+
     .field input, .field select, .field textarea {
       width: 100%;
       color: var(--text);
@@ -147,7 +149,9 @@
       line-height: 1.45;
     }
 
-    .field input:focus, .field select:focus, .field textarea:focus {
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
       border-color: rgba(124,156,255,.75);
       box-shadow: 0 0 0 4px rgba(124,156,255,.13);
     }
@@ -194,16 +198,19 @@
     }
 
     .btn:hover { transform: translateY(-1px); }
+
     .btn-primary {
       color: #071225;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       box-shadow: 0 18px 40px rgba(124,156,255,.26);
     }
+
     .btn-secondary {
       color: var(--text);
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.08);
     }
+
     .btn-danger {
       color: #fff;
       background: rgba(255,143,143,.14);
@@ -223,7 +230,8 @@
       gap: 18px;
     }
 
-    .hero::before, .hero::after {
+    .hero::before,
+    .hero::after {
       content: "";
       position: absolute;
       width: 260px;
@@ -342,7 +350,13 @@
 
     .clip-title { font-weight: 800; }
     .clip-meta { color: var(--muted); font-size: .83rem; }
-    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
     .pill {
       padding: 6px 9px;
       border-radius: 999px;
@@ -351,7 +365,8 @@
       border: 1px solid rgba(255,255,255,.08);
     }
 
-    .preview-note, .output-box {
+    .preview-note,
+    .output-box {
       border-radius: 16px;
       padding: 14px;
       line-height: 1.55;
@@ -516,13 +531,13 @@
       <section class="section">
         <div class="section-title">
           <h2>Acțiuni</h2>
-          <span class="badge">Generare instant</span>
+          <span class="badge">Repo-ready</span>
         </div>
         <div class="actions">
-          <button class="btn btn-primary" id="generateBtn">Generează prezentarea, demo-ul și descrierile</button>
+          <button class="btn btn-primary" id="generateBtn">Generează demo planul</button>
           <button class="btn btn-secondary" id="loadPresetBtn">Încarcă clipuri presetate</button>
           <button class="btn btn-secondary" id="copySummaryBtn">Copiază sumarul proiectului</button>
-          <button class="btn btn-secondary" id="downloadJsonBtn">Descarcă JSON</button>
+          <button class="btn btn-secondary" id="downloadJsonBtn">Descarcă plan JSON pentru repo</button>
           <button class="btn btn-secondary" id="downloadHtmlBtn">Descarcă raport HTML</button>
           <button class="btn btn-secondary" id="downloadAutomationBtn">Descarcă Automation Pack</button>
           <button class="btn btn-secondary" id="copyCliBtn">Copiază comenzi CLI</button>
@@ -530,7 +545,7 @@
         </div>
       </section>
 
-      <p class="footer-note">100% front-end. Generează planul, deck-ul, descrierile și exporturile. Pentru captură MP4 reală ai nevoie de backend sau rulare locală cu Playwright + FFmpeg.</p>
+      <p class="footer-note">Pagina este gândită pentru GitHub Pages ca interfață statică premium. Generează planuri, deck-uri și exporturi locale, iar pentru captură MP4 reală folosești workflow-ul din repo sau Automation Pack-ul rulat local cu Playwright + FFmpeg.</p>
     </aside>
 
     <main class="main">
@@ -595,6 +610,9 @@
   </div>
 
   <script>
+    const NL = "\n";
+    const NL2 = "\n\n";
+
     const optionSets = {
       outputMode: ["Simple", "Advanced", "Advanced+"],
       recordingFormat: ["mp4", "mkv", "mov"],
@@ -622,15 +640,21 @@
     const directionRules = [
       "Niciodată mai mult de 3 acțiuni pe secundă.",
       "Pauză după fiecare acțiune majoră.",
-      "Niciodată scroll rapid.",
       "Nu închide modalele instant.",
       "Nu scrie texte lungi în formulare.",
       "Arată payoff-ul vizual înainte de final."
     ];
 
+    function createId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return "clip-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+    }
+
     const presetClips = [
       {
-        id: crypto.randomUUID(),
+        id: createId(),
         title: "CLIP 1 — Alpis Fusion CRM Premium",
         shortTitle: "Alpis Fusion CRM Premium",
         duration: 40,
@@ -646,7 +670,7 @@
         ]
       },
       {
-        id: crypto.randomUUID(),
+        id: createId(),
         title: "CLIP 2 — ClientFlow SaaS",
         shortTitle: "ClientFlow SaaS",
         duration: 30,
@@ -662,30 +686,56 @@
       }
     ];
 
-    const state = { clips: [], selectedClipId: null, activeView: "timeline" };
+    const state = {
+      clips: [],
+      selectedClipId: null,
+      activeView: "timeline"
+    };
+
     const $ = (id) => document.getElementById(id);
     const preview = $("sitePreview");
     const previewNote = $("previewNote");
 
     function escapeHtml(str) {
-      return String(str ?? "").replace(/[&<>"']/g, (m) => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+      return String(str ?? "").replace(/[&<>"']/g, (m) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[m]));
+    }
+
+    function slugify(str) {
+      return String(str || "clip")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "clip";
     }
 
     function buildConfigGrid() {
       const grid = $("configGrid");
       grid.innerHTML = Object.keys(optionSets).map((key) => {
-        const label = key.replace(/([A-Z])/g, " $1").replace(/^./, c => c.toUpperCase());
-        return `<div class="field"><label for="${key}">${label}</label><select id="${key}">${optionSets[key].map(v => `<option ${v===defaults[key]?"selected":""}>${escapeHtml(v)}</option>`).join("")}</select></div>`;
+        const label = key.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
+        const options = optionSets[key].map((value) => {
+          const selected = value === defaults[key] ? "selected" : "";
+          return `<option value="${escapeHtml(value)}" ${selected}>${escapeHtml(value)}</option>`;
+        }).join("");
+        return `<div class="field"><label for="${key}">${label}</label><select id="${key}">${options}</select></div>`;
       }).join("");
     }
 
     function renderDirectionRules() {
-      $("directionRules").innerHTML = directionRules.map(rule => `<span class="chip">${escapeHtml(rule)}</span>`).join("");
+      $("directionRules").innerHTML = directionRules.map((rule) => `<span class="chip">${escapeHtml(rule)}</span>`).join("");
     }
 
     function formatConfig() {
       const cfg = {};
-      Object.keys(optionSets).forEach(k => cfg[k] = $(k).value);
+      Object.keys(optionSets).forEach((key) => {
+        cfg[key] = $(key).value;
+      });
       return cfg;
     }
 
@@ -694,8 +744,9 @@
       const url = $("projectUrl").value.trim();
       const message = $("visualMessage").value.trim() || "Produsul este fluid și convingător vizual.";
       const duration = Number($("duration").value || 40);
+
       return {
-        id: crypto.randomUUID(),
+        id: createId(),
         title: `CLIP CUSTOM — ${title}`,
         shortTitle: title,
         url,
@@ -706,14 +757,14 @@
         shots: [
           { time: "00:00 – 00:04", action: "Ține ecranul principal în cadru.", purpose: "Prima impresie." },
           { time: "00:04 – 00:08", action: "Hover pe o componentă relevantă.", purpose: "Interactivitate." },
-          { time: "00:08 – 00:14", action: `Intră în zona principală a produsului din ${url}.`, purpose: "Structură și flow." },
+          { time: "00:08 – 00:14", action: "Intră în zona principală a produsului.", purpose: "Structură și flow." },
           { time: "00:14 – 00:20", action: "Arată un detail panel sau modal.", purpose: "Bogăție de informație." }
         ]
       };
     }
 
     function getSelectedClip() {
-      return state.clips.find(c => c.id === state.selectedClipId) || null;
+      return state.clips.find((clip) => clip.id === state.selectedClipId) || null;
     }
 
     function generateSlides(clip) {
@@ -726,11 +777,11 @@
 
     function generateDescriptions(clip) {
       return [
-        `1) Descriere recruiter\n${clip.shortTitle} comunică un produs matur și ușor de urmărit.`,
-        `2) Descriere portofoliu\nDemo silențios, orientat pe valoarea vizuală a produsului.`,
-        `3) Descriere social\nSilent product reel pentru ${clip.shortTitle}.`,
-        `4) Notă tehnică\nIdeal pentru export web și outreach.`
-      ].join("\n\n");
+        `1) Descriere recruiter${NL}${clip.shortTitle} comunică un produs matur și ușor de urmărit.`,
+        `2) Descriere portofoliu${NL}Demo silențios, orientat pe valoarea vizuală a produsului.`,
+        `3) Descriere social${NL}Silent product reel pentru ${clip.shortTitle}.`,
+        `4) Notă tehnică${NL}Ideal pentru export web și outreach.`
+      ].join(NL2);
     }
 
     function generateSummary(clip, config) {
@@ -740,9 +791,14 @@
         `DURATĂ: ${clip.duration} secunde`,
         `MESAJ VIZUAL: ${clip.message}`,
         "",
+        "EXPORT ÎN REPO",
+        `- salvează JSON-ul în plans/${slugify(clip.shortTitle)}.plan.json`,
+        "- comite fișierul în repo",
+        "- rulează workflow-ul Render Video din Actions",
+        "",
         "CONFIG",
         JSON.stringify(config, null, 2)
-      ].join("\n");
+      ].join(NL);
     }
 
     function generateVoiceover(clip) {
@@ -755,39 +811,45 @@
         `ffmpeg -i input.${config.recordingFormat} -c:v libx264 -crf ${config.crf} output-final.mp4`,
         "",
         JSON.stringify({ clip, config }, null, 2)
-      ].join("\n");
+      ].join(NL);
     }
 
     function renderClipTabs() {
-      $("clipTabs").innerHTML = state.clips.map((clip, i) => `<button class="tab ${clip.id===state.selectedClipId?"active":""}" data-clip-id="${clip.id}">${i+1}. ${escapeHtml(clip.shortTitle)}</button>`).join("") || `<span class="hint">Niciun clip încă.</span>`;
+      $("clipTabs").innerHTML = state.clips.map((clip, i) => {
+        const active = clip.id === state.selectedClipId ? "active" : "";
+        return `<button class="tab ${active}" data-clip-id="${clip.id}">${i + 1}. ${escapeHtml(clip.shortTitle)}</button>`;
+      }).join("") || `<span class="hint">Niciun clip încă.</span>`;
     }
 
     function renderClipList() {
-      $("clipList").innerHTML = state.clips.map((clip) => `
-        <article class="clip-card ${clip.id===state.selectedClipId?"active":""}" data-clip-id="${clip.id}">
-          <div class="clip-head">
-            <div>
-              <div class="clip-title">${escapeHtml(clip.title)}</div>
-              <div class="clip-meta">${clip.duration}s · ${escapeHtml(clip.url)}</div>
+      $("clipList").innerHTML = state.clips.map((clip) => {
+        const active = clip.id === state.selectedClipId ? "active" : "";
+        return `
+          <article class="clip-card ${active}" data-clip-id="${clip.id}">
+            <div class="clip-head">
+              <div>
+                <div class="clip-title">${escapeHtml(clip.title)}</div>
+                <div class="clip-meta">${clip.duration}s · ${escapeHtml(clip.url)}</div>
+              </div>
+              <span class="badge">${clip.shots.length} shot-uri</span>
             </div>
-            <span class="badge">${clip.shots.length} shot-uri</span>
-          </div>
-          <div class="pill-row">
-            <span class="pill">Pre-roll: ${clip.preroll.length}</span>
-            <span class="pill">Slides: 3</span>
-            <span class="pill">Silent demo</span>
-          </div>
-          <p class="hint">${escapeHtml(clip.message)}</p>
-        </article>
-      `).join("");
+            <div class="pill-row">
+              <span class="pill">Pre-roll: ${clip.preroll.length}</span>
+              <span class="pill">Slides: 3</span>
+              <span class="pill">Silent demo</span>
+            </div>
+            <p class="hint">${escapeHtml(clip.message)}</p>
+          </article>
+        `;
+      }).join("");
     }
 
     function updateStats(slides, descriptions) {
       const totalShots = state.clips.reduce((sum, clip) => sum + clip.shots.length, 0);
-      $("statShots").textContent = totalShots;
-      $("statSlides").textContent = slides ? slides.length : 0;
-      $("statDescriptions").textContent = descriptions ? descriptions.split("\n\n").length : 0;
-      $("statClips").textContent = state.clips.length;
+      $("statShots").textContent = String(totalShots);
+      $("statSlides").textContent = String(slides ? slides.length : 0);
+      $("statDescriptions").textContent = String(descriptions ? descriptions.split(NL2).length : 0);
+      $("statClips").textContent = String(state.clips.length);
     }
 
     function renderSelectedClip() {
@@ -814,11 +876,18 @@
       const exportText = generateExport(clip, config);
 
       $("timeline").innerHTML = [
-        `<div class="preview-note"><strong>Pre-roll</strong><br>${clip.preroll.map((item, i) => `${i+1}. ${escapeHtml(item)}`).join("<br>")}</div>`,
+        `<div class="preview-note"><strong>Pre-roll</strong><br>${clip.preroll.map((item, i) => `${i + 1}. ${escapeHtml(item)}`).join("<br>")}</div>`,
         ...clip.shots.map((shot) => `<article class="shot"><div><span class="time">${escapeHtml(shot.time)}</span></div><div><h4>${escapeHtml(shot.action)}</h4><p>${escapeHtml(shot.purpose)}</p></div></article>`)
       ].join("");
 
-      $("slides").innerHTML = slides.map((slide, i) => `<article class="slide"><span class="slide-num">Slide ${i+1}</span><h4>${escapeHtml(slide.title)}</h4><ul>${slide.bullets.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul></article>`).join("");
+      $("slides").innerHTML = slides.map((slide, i) => `
+        <article class="slide">
+          <span class="slide-num">Slide ${i + 1}</span>
+          <h4>${escapeHtml(slide.title)}</h4>
+          <ul>${slide.bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        </article>
+      `).join("");
+
       $("descriptions").textContent = descriptions;
       $("summary").textContent = summary;
       $("voiceover").textContent = voiceover;
@@ -836,9 +905,10 @@
 
     function setActiveView(view) {
       state.activeView = view;
-      document.querySelectorAll("[data-view]").forEach(btn => btn.classList.toggle("active", btn.dataset.view === view));
-      document.querySelectorAll(".view-block").forEach(block => block.classList.add("hidden"));
-      document.getElementById(`view-${view}`)?.classList.remove("hidden");
+      document.querySelectorAll("[data-view]").forEach((btn) => btn.classList.toggle("active", btn.dataset.view === view));
+      document.querySelectorAll(".view-block").forEach((block) => block.classList.add("hidden"));
+      const target = document.getElementById(`view-${view}`);
+      if (target) target.classList.remove("hidden");
     }
 
     function renderAll() {
@@ -864,14 +934,19 @@
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
 
-    function slugify(str) {
-      return String(str || "clip").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "clip";
+    function runSelfTests() {
+      console.assert(slugify("Alpis Fusion CRM Premium") === "alpis-fusion-crm-premium", "slugify should normalize spaces");
+      console.assert(escapeHtml('<tag>') === '&lt;tag&gt;', "escapeHtml should escape angle brackets");
+      console.assert(generateDescriptions({ shortTitle: "Demo" }).includes("Demo"), "generateDescriptions should include shortTitle");
     }
 
     function attachEvents() {
       $("generateBtn").addEventListener("click", () => {
         const url = $("projectUrl").value.trim();
-        if (!url) return toast("Adaugă un link valid.");
+        if (!url) {
+          toast("Adaugă un link valid.");
+          return;
+        }
         state.clips.unshift(createClipFromInputs());
         state.selectedClipId = state.clips[0].id;
         renderAll();
@@ -879,39 +954,51 @@
 
       $("loadPresetBtn").addEventListener("click", () => {
         state.clips = JSON.parse(JSON.stringify(presetClips));
-        state.selectedClipId = state.clips[0]?.id || null;
+        state.selectedClipId = state.clips[0] ? state.clips[0].id : null;
         renderAll();
         toast("Am încărcat clipurile presetate.");
       });
 
       $("copySummaryBtn").addEventListener("click", async () => {
         const clip = getSelectedClip();
-        if (!clip) return toast("Nu există un clip selectat.");
+        if (!clip) {
+          toast("Nu există un clip selectat.");
+          return;
+        }
         await navigator.clipboard.writeText(generateSummary(clip, formatConfig()));
         toast("Sumarul a fost copiat.");
       });
 
       $("downloadJsonBtn").addEventListener("click", () => {
         const clip = getSelectedClip();
-        if (!clip) return toast("Nu există date de exportat.");
-        downloadFile(`${slugify(clip.shortTitle)}-video-plan.json`, JSON.stringify({ clip, config: formatConfig() }, null, 2), "application/json;charset=utf-8");
+        if (!clip) {
+          toast("Nu există date de exportat.");
+          return;
+        }
+        downloadFile(`${slugify(clip.shortTitle)}.plan.json`, JSON.stringify({ clip, config: formatConfig() }, null, 2), "application/json;charset=utf-8");
       });
 
       $("downloadHtmlBtn").addEventListener("click", () => {
         const clip = getSelectedClip();
-        if (!clip) return toast("Nu există raport de exportat.");
+        if (!clip) {
+          toast("Nu există raport de exportat.");
+          return;
+        }
         const html = `<!DOCTYPE html><html lang="ro"><head><meta charset="UTF-8"><title>${escapeHtml(clip.shortTitle)}</title></head><body><pre>${escapeHtml(generateSummary(clip, formatConfig()))}</pre></body></html>`;
         downloadFile(`${slugify(clip.shortTitle)}-raport.html`, html, "text/html;charset=utf-8");
       });
 
       $("downloadAutomationBtn").addEventListener("click", () => {
         const clip = getSelectedClip();
-        if (!clip) return toast("Nu există un clip selectat.");
+        if (!clip) {
+          toast("Nu există un clip selectat.");
+          return;
+        }
         downloadFile(`${slugify(clip.shortTitle)}-automation-pack.json`, JSON.stringify({ clip, config: formatConfig() }, null, 2), "application/json;charset=utf-8");
       });
 
       $("copyCliBtn").addEventListener("click", async () => {
-        await navigator.clipboard.writeText(["npm install", "npx playwright install chromium", "node runner.mjs"].join("\n"));
+        await navigator.clipboard.writeText(["npm install", "npx playwright install chromium", "node runner.mjs"].join(NL));
         toast("Comenzile CLI au fost copiate.");
       });
 
@@ -937,7 +1024,9 @@
       });
 
       document.addEventListener("change", (e) => {
-        if (e.target.matches("select")) renderSelectedClip();
+        if (e.target.matches("select")) {
+          renderSelectedClip();
+        }
       });
     }
 
@@ -946,6 +1035,7 @@
     attachEvents();
     renderAll();
     setActiveView("timeline");
+    runSelfTests();
   </script>
 </body>
 </html>
