@@ -35,7 +35,7 @@
       color: var(--text);
     }
 
-    body { padding: 24px; }
+    body { padding: 28px; }
     h1, h2, h3, h4, p { margin: 0; }
     button, input, select, textarea { font: inherit; }
     a { color: var(--accent-2); }
@@ -44,8 +44,8 @@
       max-width: 1620px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 400px minmax(0,1fr);
-      gap: 22px;
+      grid-template-columns: 380px minmax(0,1fr);
+      gap: 24px;
       align-items: start;
     }
 
@@ -60,9 +60,9 @@
     .sidebar {
       position: sticky;
       top: 24px;
-      padding: 18px;
+      padding: 20px;
       display: grid;
-      gap: 16px;
+      gap: 18px;
       max-height: calc(100vh - 48px);
       overflow: auto;
     }
@@ -75,13 +75,14 @@
     }
 
     .logo {
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       border-radius: 15px;
       background: linear-gradient(135deg, var(--accent), var(--accent-2));
       box-shadow: 0 16px 38px rgba(124,156,255,.28);
       position: relative;
       overflow: hidden;
+      flex: 0 0 auto;
     }
 
     .logo::after {
@@ -89,12 +90,12 @@
       position: absolute;
       inset: 8px;
       border-radius: 11px;
-      background: rgba(7,12,25,.8);
+      background: rgba(7,12,25,.82);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
     }
 
-    .brand h1 { font-size: 1.08rem; }
-    .brand p { color: var(--muted); font-size: .9rem; margin-top: 3px; }
+    .brand h1 { font-size: 1.12rem; }
+    .brand p { color: var(--muted); font-size: .92rem; margin-top: 4px; line-height: 1.45; }
 
     .section {
       background: var(--panel-2);
@@ -124,6 +125,7 @@
       background: rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.08);
       width: fit-content;
+      white-space: nowrap;
     }
 
     .badge.success { color: #08140e; background: rgba(120,239,171,.95); border-color: transparent; }
@@ -180,7 +182,7 @@
     .hint, .footer-note {
       color: var(--muted);
       font-size: .79rem;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .actions {
@@ -194,7 +196,7 @@
       padding: 12px 14px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform .12s ease, opacity .12s ease;
+      transition: transform .12s ease, opacity .12s ease, box-shadow .12s ease;
     }
 
     .btn:hover { transform: translateY(-1px); }
@@ -208,6 +210,12 @@
     .btn-secondary {
       color: var(--text);
       background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .btn-ghost {
+      color: var(--text);
+      background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.08);
     }
 
@@ -225,9 +233,9 @@
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 24px;
+      padding: 30px;
       display: grid;
-      gap: 18px;
+      gap: 22px;
     }
 
     .hero::before,
@@ -254,30 +262,38 @@
     }
 
     .hero h2 {
-      font-size: clamp(1.4rem, 2vw, 2.1rem);
-      line-height: 1.08;
-      max-width: 860px;
+      font-size: clamp(1.7rem, 2.4vw, 2.8rem);
+      line-height: 1.02;
+      max-width: 900px;
+      letter-spacing: -0.03em;
     }
 
     .hero p {
       color: var(--muted);
-      max-width: 920px;
-      line-height: 1.55;
+      max-width: 840px;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .stat-row {
       display: grid;
       grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: 12px;
+      gap: 14px;
     }
 
     .stat {
-      background: rgba(255,255,255,.05);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
       border: 1px solid rgba(255,255,255,.08);
-      border-radius: 16px;
-      padding: 14px;
+      border-radius: 18px;
+      padding: 16px;
       display: grid;
-      gap: 6px;
+      gap: 8px;
     }
 
     .stat .k { font-size: 1.2rem; font-weight: 800; }
@@ -291,9 +307,9 @@
     }
 
     .pane {
-      padding: 18px;
+      padding: 22px;
       display: grid;
-      gap: 14px;
+      gap: 16px;
     }
 
     .toolbar {
@@ -325,15 +341,15 @@
       border-color: rgba(124,156,255,.38);
     }
 
-    .clip-list { display: grid; gap: 10px; }
+    .clip-list { display: grid; gap: 12px; }
 
     .clip-card {
       border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.045);
-      border-radius: 16px;
-      padding: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+      border-radius: 18px;
+      padding: 16px;
       display: grid;
-      gap: 10px;
+      gap: 12px;
       cursor: pointer;
       transition: .15s ease;
     }
@@ -467,6 +483,8 @@
     @media (max-width: 700px) {
       body { padding: 14px; }
       .grid-2, .stat-row, .shot { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; }
     }
   </style>
 </head>
@@ -483,8 +501,8 @@
 
       <section class="section">
         <div class="section-title">
-          <h2>Input principal</h2>
-          <span class="badge success">Workflow-centric</span>
+          <h2>Input produs</h2>
+          <span class="badge success">Fast setup</span>
         </div>
         <div class="field">
           <label for="projectUrl">Link proiect</label>
@@ -530,7 +548,7 @@
 
       <section class="section">
         <div class="section-title">
-          <h2>Acțiuni</h2>
+          <h2>Acțiuni rapide</h2>
           <span class="badge">Repo-ready</span>
         </div>
         <div class="actions">
@@ -556,6 +574,10 @@
             <p>Introduci URL-ul, alegi direcția vizuală și primești instant un demo plan complet: pre-roll, shot list, deck, descrieri automate și exporturi pregătite pentru portofoliu, outreach sau producție locală.</p>
           </div>
           <div class="badge success">Ready for product reels</div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary" id="heroGenerateBtn" type="button">Generează demo-ul</button>
+          <button class="btn btn-ghost" id="heroPresetBtn" type="button">Vezi exemple presetate</button>
         </div>
         <div class="stat-row">
           <div class="stat"><div class="k" id="statShots">0</div><div class="l">Shot-uri generate</div></div>
@@ -941,7 +963,7 @@
     }
 
     function attachEvents() {
-      $("generateBtn").addEventListener("click", () => {
+      const triggerGenerate = () => {
         const url = $("projectUrl").value.trim();
         if (!url) {
           toast("Adaugă un link valid.");
@@ -950,14 +972,19 @@
         state.clips.unshift(createClipFromInputs());
         state.selectedClipId = state.clips[0].id;
         renderAll();
-      });
+      };
 
-      $("loadPresetBtn").addEventListener("click", () => {
+      const triggerPresets = () => {
         state.clips = JSON.parse(JSON.stringify(presetClips));
         state.selectedClipId = state.clips[0] ? state.clips[0].id : null;
         renderAll();
         toast("Am încărcat clipurile presetate.");
-      });
+      };
+
+      $("generateBtn").addEventListener("click", triggerGenerate);
+      $("loadPresetBtn").addEventListener("click", triggerPresets);
+      $("heroGenerateBtn").addEventListener("click", triggerGenerate);
+      $("heroPresetBtn").addEventListener("click", triggerPresets);
 
       $("copySummaryBtn").addEventListener("click", async () => {
         const clip = getSelectedClip();
