@@ -122,6 +122,7 @@
       <div class="toolbar">
         <button class="primary" id="runBtn">Rulează automatizarea</button>
         <button class="secondary" id="healthBtn">Health check</button>
+        <button class="secondary" id="exportPlanBtn">Export plan</button>
       </div>
 
       <p class="muted">Tipuri suportate pentru shots: <span class="mono">wait, click, clickOptional, hover, type, press, pressAny, drag, scroll, fillSmart, evaluate</span>.</p>
@@ -234,6 +235,76 @@
       };
     }
 
+    function slugify(value) {
+      return String(value || 'latest')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'latest';
+    }
+
+    function parseNumber(value, fallback) {
+      const number = Number(value);
+      return Number.isFinite(number) ? number : fallback;
+    }
+
+    function buildPlanFromForm() {
+      const projectName = $('name').value.trim() || 'latest';
+      const url = $('url').value.trim();
+      const viewportWidth = parseNumber($('width').value, 1280);
+      const viewportHeight = parseNumber($('height').value, 720);
+      const outputResolution = $('outRes').value || '1280x720';
+      const fpsFinal = parseNumber($('fpsFinal').value, 24);
+      const crf = parseNumber($('crf').value, 18);
+      const preset = $('preset').value || 'veryfast';
+      const shotsRaw = $('shots').value.trim() || '[]';
+
+      if (!url) {
+        throw new Error('URL-ul este obligatoriu.');
+      }
+
+      let shots;
+      try {
+        shots = JSON.parse(shotsRaw);
+      } catch (_error) {
+        throw new Error('Shots JSON nu este valid.');
+      }
+
+      if (!Array.isArray(shots)) {
+        throw new Error('Shots JSON trebuie să fie un array.');
+      }
+
+      return {
+        filename: `plans/${slugify(projectName)}.plan.json`,
+        data: {
+          url,
+          viewport: {
+            width: viewportWidth,
+            height: viewportHeight
+          },
+          output: {
+            outputResolution,
+            fpsFinal,
+            crf,
+            preset
+          },
+          shots
+        }
+      };
+    }
+
+    function downloadJsonFile(filename, data) {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename.split('/').pop();
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+    }
+
     function setStatus(text) {
       $('status').textContent = text;
     }
@@ -280,11 +351,23 @@
       }
     }
 
+    function exportPlan() {
+      try {
+        const { filename, data } = buildPlanFromForm();
+        downloadJsonFile(filename, data);
+        setStatus(`Plan exportat: ${filename}\n\n${JSON.stringify(data, null, 2)}`);
+      } catch (error) {
+        setStatus(`Export eșuat: ${error.message}`);
+        alert(error.message);
+      }
+    }
+
     $('loadPreset1').addEventListener('click', () => applyPreset(0));
     $('loadPreset2').addEventListener('click', () => applyPreset(1));
     $('loadPreset3').addEventListener('click', () => applyPreset(2));
     $('runBtn').addEventListener('click', runJob);
     $('healthBtn').addEventListener('click', healthCheck);
+    $('exportPlanBtn').addEventListener('click', exportPlan);
 
     $('backendUrl').addEventListener('change', () => {
       localStorage.setItem('backendUrl', $('backendUrl').value.trim());
