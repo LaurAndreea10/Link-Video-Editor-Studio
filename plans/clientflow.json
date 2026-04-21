@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "title": "CLIP 2 — ClientFlow Demo",
+    "shortTitle": "ClientFlow Demo",
+    "url": "https://example.com/clientflow",
+    "duration": 35
+  },
+  "config": {
+    "canvasResolution": "1920x1080",
+    "outputResolution": "1280x720",
+    "finalFps": "24",
+    "crf": "18"
+  },
+  "preroll": [
+    "Deschide aplicația ClientFlow.",
+    "Așteaptă încărcarea completă.",
+    "Focalizează pe ecranul principal."
+  ],
+  "shots": [
+    {
+      "index": 1,
+      "time": "00:00 – 00:05",
+      "action": "Afișează dashboard-ul.",
+      "purpose": "Context inițial.",
+      "actions": [
+        { "type": "wait", "ms": 2500 }
+      ]
+    },
+    {
+      "index": 2,
+      "time": "00:05 – 00:09",
+      "action": "Scroll ușor pe pagină.",
+      "purpose": "Arată conținut dinamic.",
+      "actions": [
+        { "type": "scrollBy", "y": 260, "steps": 10, "delay": 70 },
+        { "type": "wait", "ms": 1000 }
+      ]
+    }
+  ]
+}

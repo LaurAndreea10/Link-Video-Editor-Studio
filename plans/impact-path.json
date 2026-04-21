@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "title": "CLIP 3 — Impact Path Walkthrough",
+    "shortTitle": "Impact Path",
+    "url": "https://example.com/impact-path",
+    "duration": 30
+  },
+  "config": {
+    "canvasResolution": "1920x1080",
+    "outputResolution": "1280x720",
+    "finalFps": "24",
+    "crf": "18"
+  },
+  "preroll": [
+    "Intră în pagina principală.",
+    "Așteaptă elementele interactive.",
+    "Pregătește zona pentru interacțiuni."
+  ],
+  "shots": [
+    {
+      "index": 1,
+      "time": "00:00 – 00:04",
+      "action": "Stai pe hero section.",
+      "purpose": "Introducere vizuală.",
+      "actions": [
+        { "type": "wait", "ms": 2200 }
+      ]
+    },
+    {
+      "index": 2,
+      "time": "00:04 – 00:08",
+      "action": "Click pe CTA principal.",
+      "purpose": "Evidențiază fluxul utilizatorului.",
+      "actions": [
+        { "type": "click", "selector": "button, a.btn, [data-demo-cta]" },
+        { "type": "wait", "ms": 1200 }
+      ]
+    }
+  ]
+}

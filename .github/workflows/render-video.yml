@@ -1,34 +1,21 @@
-name: Render Video
+name: Render Video From Plan
 
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Tag release existent sau nou, ex: v1.0.0"
+        description: "Tag release, ex: v1.0.0"
         required: true
         type: string
-      clip_url:
-        description: "URL demo"
+      plan_path:
+        description: "Calea către planul JSON din repo, ex: plans/alpis-fusion.json"
         required: true
-        type: string
-      clip_title:
-        description: "Titlu clip"
-        required: true
-        type: string
-      duration:
-        description: "Durată"
-        required: true
-        default: "40"
         type: string
       create_release_if_missing:
-        description: "Creează release dacă nu există"
+        description: "Creează tag și release dacă lipsesc"
         required: false
         default: true
         type: boolean
-
-  push:
-    tags:
-      - "v*"
 
 permissions:
   contents: write
@@ -44,32 +31,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve vars
+      - name: Resolve inputs
         id: vars
         shell: bash
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG="${{ github.event.inputs.tag }}"
-            CLIP_URL="${{ github.event.inputs.clip_url }}"
-            CLIP_TITLE="${{ github.event.inputs.clip_title }}"
-            DURATION="${{ github.event.inputs.duration }}"
-          else
-            TAG="${GITHUB_REF_NAME}"
-            CLIP_URL="https://example.com"
-            CLIP_TITLE="Tagged render"
-            DURATION="40"
-          fi
+          echo "tag=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          echo "plan_path=${{ github.event.inputs.plan_path }}" >> "$GITHUB_OUTPUT"
 
-          SAFE_TITLE="$(echo "$CLIP_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//')"
-
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "clip_url=$CLIP_URL" >> "$GITHUB_OUTPUT"
-          echo "clip_title=$CLIP_TITLE" >> "$GITHUB_OUTPUT"
-          echo "duration=$DURATION" >> "$GITHUB_OUTPUT"
-          echo "safe_title=$SAFE_TITLE" >> "$GITHUB_OUTPUT"
+      - name: Ensure plan exists
+        shell: bash
+        run: |
+          test -f "${{ steps.vars.outputs.plan_path }}"
 
       - name: Ensure tag exists
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event.inputs.create_release_if_missing == 'true' }}
         shell: bash
         run: |
           TAG="${{ steps.vars.outputs.tag }}"
@@ -100,42 +75,23 @@ jobs:
       - name: Install Chromium
         run: npx playwright install chromium
 
-      - name: Write plan.json
+      - name: Copy selected plan
+        run: cp "${{ steps.vars.outputs.plan_path }}" ./plan.json
+
+      - name: Extract metadata from plan
+        id: planmeta
         shell: bash
         run: |
-          cat > plan.json <<EOF
-          {
-            "meta": {
-              "title": "${{ steps.vars.outputs.clip_title }}",
-              "shortTitle": "${{ steps.vars.outputs.clip_title }}",
-              "url": "${{ steps.vars.outputs.clip_url }}",
-              "duration": ${{ steps.vars.outputs.duration }},
-              "generatedAt": "${{ github.run_id }}"
-            },
-            "config": {
-              "canvasResolution": "1920x1080",
-              "outputResolution": "1280x720",
-              "finalFps": "24",
-              "crf": "18"
-            },
-            "preroll": [
-              "Deschide URL-ul.",
-              "Așteaptă să se încarce complet.",
-              "Poziționează-te pe view-ul principal."
-            ],
-            "shots": [
-              {
-                "index": 1,
-                "time": "00:00 – 00:04",
-                "action": "Ține dashboard-ul în cadru.",
-                "purpose": "Prima impresie.",
-                "actions": [
-                  { "type": "wait", "ms": 2500 }
-                ]
-              }
-            ]
-          }
-          EOF
+          node -e "
+          const fs=require('fs');
+          const plan=JSON.parse(fs.readFileSync('./plan.json','utf8'));
+          const title=(plan.meta?.shortTitle || plan.meta?.title || 'render').toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+            .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'render';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, \`safe_title=\${title}\n\`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, \`clip_title=\${plan.meta?.title || 'Untitled'}\n\`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, \`clip_url=\${plan.meta?.url || ''}\n\`);
+          "
 
       - name: Write runner.mjs
         shell: bash
@@ -151,6 +107,98 @@ jobs:
           const plan = JSON.parse(fs.readFileSync("./plan.json", "utf8"));
 
           const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+          async function findFirst(page, selectors) {
+            const list = String(selectors || "").split(",").map(s => s.trim()).filter(Boolean);
+            for (const selector of list) {
+              const locator = page.locator(selector).first();
+              if (await locator.count()) return locator;
+            }
+            return null;
+          }
+
+          async function doAction(page, action) {
+            switch (action.type) {
+              case "wait":
+                await sleep(action.ms || 1000);
+                return;
+
+              case "hover": {
+                const el = await findFirst(page, action.selector);
+                if (el) {
+                  await el.hover({ force: true });
+                  await sleep(400);
+                }
+                return;
+              }
+
+              case "click": {
+                const el = await findFirst(page, action.selector);
+                if (el) {
+                  await el.click({ force: true });
+                  await sleep(400);
+                }
+                return;
+              }
+
+              case "press":
+                await page.keyboard.press(action.key);
+                await sleep(300);
+                return;
+
+              case "pressCombo": {
+                const keys = action.keys || [];
+                if (keys.length === 2) {
+                  await page.keyboard.press(`${keys[0]}+${keys[1]}`);
+                  await sleep(300);
+                }
+                return;
+              }
+
+              case "type": {
+                const el = await findFirst(page, action.selector);
+                if (el) {
+                  await el.click({ force: true });
+                  await el.fill("");
+                  await el.type(action.text || "", { delay: action.delay || 120 });
+                }
+                return;
+              }
+
+              case "fillSmart": {
+                const el = await findFirst(page, action.selector);
+                if (el) {
+                  await el.click({ force: true });
+                  await el.fill(action.text || "Demo");
+                }
+                return;
+              }
+
+              case "scrollBy": {
+                const steps = action.steps || 10;
+                const totalY = action.y || 120;
+                const stepY = totalY / steps;
+                for (let i = 0; i < steps; i++) {
+                  await page.mouse.wheel(action.x || 0, stepY);
+                  await sleep(action.delay || 60);
+                }
+                return;
+              }
+
+              case "drag": {
+                const from = await findFirst(page, action.from);
+                const to = await findFirst(page, action.to);
+                if (from && to) {
+                  await from.dragTo(to, { force: true });
+                  await sleep(500);
+                }
+                return;
+              }
+
+              default:
+                await sleep(800);
+            }
+          }
 
           async function transcode(inputPath, outputPath, fps, crf, resolution) {
             const [w, h] = String(resolution || "1280x720").split("x");
@@ -170,12 +218,14 @@ jobs:
           const outDir = path.resolve("./output");
           fs.mkdirSync(outDir, { recursive: true });
 
+          const [vw, vh] = String(plan.config?.canvasResolution || "1920x1080").split("x").map(Number);
+
           const browser = await chromium.launch({ headless: true });
           const context = await browser.newContext({
-            viewport: { width: 1920, height: 1080 },
+            viewport: { width: vw || 1920, height: vh || 1080 },
             recordVideo: {
               dir: outDir,
-              size: { width: 1920, height: 1080 }
+              size: { width: vw || 1920, height: vh || 1080 }
             }
           });
 
@@ -183,12 +233,11 @@ jobs:
           await page.goto(plan.meta.url, { waitUntil: "networkidle" });
           await sleep(3000);
 
-          for (const shot of plan.shots) {
-            for (const action of shot.actions) {
-              if (action.type === "wait") {
-                await sleep(action.ms || 1000);
-              }
+          for (const shot of plan.shots || []) {
+            for (const action of shot.actions || []) {
+              await doAction(page, action);
             }
+            await sleep(500);
           }
 
           const video = page.video();
@@ -201,9 +250,9 @@ jobs:
           await transcode(
             rawPath,
             finalPath,
-            plan.config.finalFps || 24,
-            plan.config.crf || 18,
-            plan.config.outputResolution || "1280x720"
+            plan.config?.finalFps || 24,
+            plan.config?.crf || 18,
+            plan.config?.outputResolution || "1280x720"
           );
 
           console.log("Done:", finalPath);
@@ -212,16 +261,16 @@ jobs:
       - name: Run render
         run: node runner.mjs
 
-      - name: Rename output for release
+      - name: Rename output
         shell: bash
         run: |
           mkdir -p release
-          cp output/final.mp4 "release/${{ steps.vars.outputs.safe_title }}-${{ steps.vars.outputs.tag }}.mp4"
+          cp output/final.mp4 "release/${{ steps.planmeta.outputs.safe_title }}-${{ steps.vars.outputs.tag }}.mp4"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
-          name: rendered-video-${{ steps.vars.outputs.safe_title }}-${{ steps.vars.outputs.tag }}
+          name: rendered-video-${{ steps.planmeta.outputs.safe_title }}-${{ steps.vars.outputs.tag }}
           path: release/*.mp4
 
       - name: Publish MP4 to GitHub Release
@@ -232,7 +281,8 @@ jobs:
           append_body: true
           body: |
             Automated render generated by GitHub Actions.
-            Clip: ${{ steps.vars.outputs.clip_title }}
-            Source: ${{ steps.vars.outputs.clip_url }}
+            Clip: ${{ steps.planmeta.outputs.clip_title }}
+            Source: ${{ steps.planmeta.outputs.clip_url }}
+            Plan: ${{ steps.vars.outputs.plan_path }}
           files: |
             release/*.mp4

@@ -16,7 +16,7 @@ Repo-ul este pregătit pentru un model „produs GitHub”:
 
 1. **GitHub Pages** — publică aplicația statică din `public/index.html` prin workflow-ul `pages.yml`.
 2. **GitHub Actions** — validează aplicația (`validate.yml`), rulează randări manuale Playwright (`render-video.yml`) și creează pachete distribuibile (`release-pack.yml`).
-3. **Artifacts / Releases** — output-urile (MP4, ZIP) sunt publicate ca artifacte și, la tag-uri `v*`, ca release assets.
+3. **Artifacts / Releases** — output-urile (MP4, ZIP) sunt publicate ca artifacte și atașate la release-uri.
 
 > Limitare importantă: GitHub Pages este static hosting; randarea video rămâne în workflow-uri Actions (nu în browser).
 
@@ -49,7 +49,7 @@ http://localhost:3000
 
 - `.github/workflows/pages.yml` — deploy GitHub Pages (push pe `main` + `workflow_dispatch`)
 - `.github/workflows/validate.yml` — validare `public/index.html` + sintaxă JavaScript inline
-- `.github/workflows/render-video.yml` — randare manuală (`workflow_dispatch`) cu input-uri `clip_url`, `clip_title`, `duration`
+- `.github/workflows/render-video.yml` — randare manuală (`workflow_dispatch`) cu input-uri `tag` și `plan_path` (plan JSON versionat în `plans/`)
 - `.github/workflows/release-pack.yml` — generează ZIP și îl publică în Release pentru tag-uri `v*`
 
 ## Activare GitHub Pages + randare MP4 din Actions
@@ -57,24 +57,25 @@ http://localhost:3000
 1. În GitHub repo: **Settings → Pages**.
 2. La **Source**, selectezi **GitHub Actions**.
 3. Faci push pe branch-ul `main` (workflow-ul `Deploy Pages` pornește automat).
-4. Când vrei un MP4 artifact, intri în tab-ul **Actions** și rulezi manual workflow-ul **Render Video**.
-5. După finalizare, descarci artifact-ul `rendered-video-<run_id>` din run summary.
+4. Când vrei un MP4 artifact, intri în tab-ul **Actions** și rulezi manual workflow-ul **Render Video From Plan**.
+5. Completezi `tag` și `plan_path` (ex: `plans/alpis-fusion.json`).
+6. După finalizare, descarci artifact-ul `rendered-video-<safe_title>-<tag>` din run summary.
 
 ## Randare manuală în Actions
 
 1. Deschizi tab-ul **Actions**.
-2. Rulezi workflow-ul **Render Video**.
+2. Rulezi workflow-ul **Render Video From Plan**.
 3. Completezi input-urile:
-   - `clip_url`
-   - `clip_title`
-   - `duration`
-4. Descarci artifact-ul `rendered-video-<run_id>` din run summary.
+   - `tag` (ex: `v1.0.2`)
+   - `plan_path` (ex: `plans/alpis-fusion.json`)
+   - opțional `create_release_if_missing`
+4. Descarci artifact-ul `rendered-video-<safe_title>-<tag>` din run summary.
 
 ### Notițe importante despre `render-video.yml`
 
-- Trigger-ul `push.tags` nu are input-uri interactive în GitHub Actions. Din acest motiv, workflow-ul folosește valori fallback (`https://example.com`, `Tagged render`, `40`) când pornește din push pe tag.
-- Pentru clipuri reale (URL + titlu + durată corectă), rulează workflow-ul din **Actions → Render Video → Run workflow** (trigger `workflow_dispatch`).
-- Dacă vrei mai multe shot-uri reale, înlocuiește blocul `plan.json` generat în workflow cu planul exportat din aplicație.
+- Workflow-ul citește planul JSON direct din repo (`plans/*.json`), ceea ce permite versionare + review prin pull request.
+- Poți adăuga oricâte planuri separate (de ex. `plans/alpis-fusion.json`, `plans/clientflow.json`, `plans/impact-path.json`) fără să mai modifici YAML-ul.
+- Runner-ul este generic; pentru rezultate mai bune rafinezi selectorii din `shots[].actions` pentru fiecare proiect.
 - Artifactele de workflow și release assets sunt mecanisme diferite și pot coexista fără probleme:
   - artifactul este atașat rulării din Actions;
   - release asset-ul este atașat release-ului/tag-ului.
