@@ -701,7 +701,7 @@
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
-        '"': "&quot;",
+        "\"": "&quot;",
         "'": "&#39;"
       }[m]));
     }
@@ -936,7 +936,7 @@
 
     function runSelfTests() {
       console.assert(slugify("Alpis Fusion CRM Premium") === "alpis-fusion-crm-premium", "slugify should normalize spaces");
-      console.assert(escapeHtml('<tag>') === '&lt;tag&gt;', "escapeHtml should escape angle brackets");
+      console.assert(escapeHtml("<tag>") === "&lt;tag&gt;", "escapeHtml should escape angle brackets");
       console.assert(generateDescriptions({ shortTitle: "Demo" }).includes("Demo"), "generateDescriptions should include shortTitle");
     }
 
