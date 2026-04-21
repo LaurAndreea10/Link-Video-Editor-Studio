@@ -1333,6 +1333,36 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
           { time: "00:03 – 00:07", action: "Schimbă statusul unui task.", purpose: "Task workflow." },
           { time: "00:07 – 00:12", action: "Intră în Calendar.", purpose: "Vizibilitate." }
         ]
+      },
+      {
+        id: createId(),
+        title: "CLIP 3 — Alpis Impact Path",
+        shortTitle: "Alpis Impact Path",
+        duration: 35,
+        url: "https://laurandreea10.github.io/ALPIS-ImpactPath/",
+        message: "Transformare UX pură: un mesaj static devine un parcurs ghidat, cu progres vizibil și CTA contextual.",
+        objective: "Demo de 35 sec care arată contrastul între static și interactiv — accent pe ritm, progres și payoff contextual.",
+        mode: "preset",
+        preroll: [
+          "Deschide demo-ul live.",
+          "Resetează parcursul la început (pas 1 din N, 0% progres).",
+          "Dacă ai versiunea veche statică, o poți folosi la începutul clipului pentru contrast; dacă nu, sari la shot-ul 2."
+        ],
+        avoid: [
+          "Nu scroll-a pe o pagină statică lungă mai mult de 3s — plictisește.",
+          "Nu sări peste pași — esența e exact că parcurgi toți N pașii.",
+          "Nu explica nimic cu subtitluri on-screen (videoul e silent)."
+        ],
+        shots: [
+          { time: "00:00 – 00:04", action: "Opțional: scroll rapid peste versiunea statică lungă (fără progres, CTA la final).", purpose: "Contrast clar — așa arăta înainte.", selectorHint: ".static, .legacy, body" },
+          { time: "00:04 – 00:08", action: "Tranziție la versiunea interactivă. Pas 1/N vizibil, bara de progres la 0%, titlu pas + CTA central.", purpose: "Versiunea nouă: focus pe un singur pas.", selectorHint: ".step-1, .progress, .cta" },
+          { time: "00:08 – 00:13", action: "Click Continuă / acțiunea din pas 1. Progresul sare la ~20%, tranziție fluidă la pas 2.", purpose: "Feedback imediat: ai avansat.", selectorHint: "button.continue, .progress-bar" },
+          { time: "00:13 – 00:18", action: "Pe pasul 2, interacțiune scurtă (selectare opțiune, input scurt). Click Continuă, progres ~40%.", purpose: "Ritm controlat.", selectorHint: ".step-2, input, .option" },
+          { time: "00:18 – 00:23", action: "Pas 3: micro-interacțiune diferită — comparație sau alegere vizuală. Progres ~60%.", purpose: "Varietate, nu doar click-uri repetate.", selectorHint: ".step-3, .compare, .choice" },
+          { time: "00:23 – 00:28", action: "Pas 4: aproape de final. Progres ~80%. Un moment de decision point dacă există.", purpose: "Aproape la final — user investit.", selectorHint: ".step-4, .decision" },
+          { time: "00:28 – 00:32", action: "Pas final: progres 100%. Apare CTA-ul principal, contextual, proeminent. Stai 1s, nu îl apeși încă.", purpose: "Payoff: CTA apare când e logic.", selectorHint: ".step-final, .cta-primary" },
+          { time: "00:32 – 00:35", action: "Click pe CTA final. Confirmation / thank you state.", purpose: "Închidere satisfăcătoare.", selectorHint: ".confirmation, .thank-you, .success" }
+        ]
       }
     ];
 
