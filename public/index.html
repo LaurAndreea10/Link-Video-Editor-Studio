@@ -256,6 +256,117 @@
       box-shadow: inset 0 0 0 1px rgba(124,156,255,.35);
     }
 
+    /* Style picker */
+    .style-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .style-card {
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(8,12,24,.55);
+      border: 1px solid rgba(255,255,255,.08);
+      cursor: pointer;
+      text-align: left;
+      display: grid;
+      gap: 4px;
+      transition: .15s ease;
+      color: var(--text);
+      font: inherit;
+    }
+
+    .style-card:hover {
+      border-color: rgba(124,156,255,.5);
+      transform: translateY(-1px);
+    }
+
+    .style-card.active {
+      border-color: rgba(137,240,213,.55);
+      background: linear-gradient(135deg, rgba(124,156,255,.18), rgba(137,240,213,.12));
+      box-shadow: 0 10px 24px rgba(124,156,255,.15);
+    }
+
+    .style-card .s-emoji { font-size: 1.1rem; line-height: 1; }
+    .style-card .s-label { font-weight: 700; font-size: .85rem; }
+    .style-card .s-tag { color: var(--muted); font-size: .72rem; line-height: 1.35; }
+
+    /* Readiness card */
+    .readiness-card {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(8,12,24,.55);
+      border: 1px solid rgba(255,255,255,.08);
+      display: grid;
+      gap: 10px;
+    }
+    .readiness-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .readiness-label {
+      font-size: .78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .readiness-score {
+      font-weight: 800;
+      font-size: 1rem;
+      font-feature-settings: "tnum";
+    }
+    .readiness-score.low { color: var(--danger); }
+    .readiness-score.mid { color: var(--warn); }
+    .readiness-score.high { color: var(--good); }
+
+    .readiness-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      overflow: hidden;
+    }
+    .readiness-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--danger), var(--warn), var(--good));
+      transition: width .3s ease;
+    }
+
+    .readiness-checks {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 5px;
+    }
+    .readiness-checks li {
+      font-size: .78rem;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      line-height: 1.4;
+    }
+    .readiness-checks li .ic {
+      flex: 0 0 auto;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-top: 3px;
+      font-size: 10px;
+      line-height: 14px;
+      text-align: center;
+      font-weight: 800;
+    }
+    .readiness-checks li.ok .ic { background: rgba(120,239,171,.25); color: var(--good); }
+    .readiness-checks li.ok { color: var(--text); }
+    .readiness-checks li.warn .ic { background: rgba(255,211,108,.22); color: var(--warn); }
+    .readiness-checks li.fail .ic { background: rgba(255,143,143,.22); color: var(--danger); }
+
     .settings-body {
       display: grid;
       gap: 10px;
@@ -365,6 +476,105 @@
 
     .stat .k { font-size: 1.2rem; font-weight: 800; }
     .stat .l { color: var(--muted); font-size: .82rem; }
+
+    /* Onboarding 1 → 2 → 3 strip */
+    .onboarding-strip {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 12px;
+      align-items: stretch;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(8,12,24,.5);
+      border: 1px solid rgba(255,255,255,.07);
+    }
+
+    .onb-step {
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      transition: background .2s ease, border-color .2s ease, transform .2s ease;
+      min-width: 0;
+    }
+
+    .onb-step.active {
+      background: linear-gradient(135deg, rgba(124,156,255,.18), rgba(137,240,213,.12));
+      border-color: rgba(137,240,213,.4);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 30px rgba(124,156,255,.18);
+    }
+
+    .onb-step.done {
+      background: rgba(120,239,171,.08);
+      border-color: rgba(120,239,171,.28);
+    }
+
+    .onb-num {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 800;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--muted);
+    }
+    .onb-step.active .onb-num {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #071225;
+      border-color: transparent;
+    }
+    .onb-step.done .onb-num {
+      background: rgba(120,239,171,.4);
+      color: #08140e;
+      border-color: transparent;
+    }
+
+    .onb-body { min-width: 0; display: grid; gap: 2px; }
+    .onb-label { font-weight: 700; font-size: .92rem; }
+    .onb-hint { color: var(--muted); font-size: .76rem; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .onb-step.active .onb-hint { white-space: normal; }
+
+    .onb-check {
+      color: var(--good);
+      font-weight: 800;
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    .onb-step.done .onb-check { opacity: 1; }
+
+    .onb-arrow {
+      align-self: center;
+      color: var(--muted);
+      font-size: 1.1rem;
+      opacity: .6;
+    }
+
+    /* Trust strip */
+    .trust-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 6px;
+    }
+
+    .trust-chip {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(8,12,24,.55);
+      border: 1px solid rgba(255,255,255,.08);
+      font-size: .76rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
 
     .workbench {
       display: grid;
@@ -503,7 +713,102 @@
       border: 1px solid rgba(255,255,255,.08);
       border-radius: 16px;
       padding: 12px;
+      transition: background .25s ease, border-color .25s ease, transform .25s ease;
     }
+
+    .shot.playing {
+      background: linear-gradient(180deg, rgba(124,156,255,.18), rgba(137,240,213,.1));
+      border-color: rgba(137,240,213,.5);
+      transform: translateX(3px);
+      box-shadow: 0 10px 30px rgba(124,156,255,.18);
+    }
+
+    .shot.done {
+      opacity: .55;
+    }
+
+    /* Reel player */
+    .reel-bar {
+      display: none;
+      grid-template-columns: auto 1fr auto auto auto;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(124,156,255,.18), rgba(137,240,213,.12));
+      border: 1px solid rgba(137,240,213,.35);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 14px 40px rgba(124,156,255,.22);
+    }
+
+    .reel-bar.visible { display: grid; }
+
+    .reel-now {
+      display: grid;
+      gap: 2px;
+    }
+    .reel-now .r-label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; }
+    .reel-now .r-title { font-weight: 800; font-size: .95rem; }
+
+    .reel-progress-wrap {
+      display: grid;
+      gap: 6px;
+    }
+
+    .reel-progress {
+      height: 6px;
+      background: rgba(8,12,24,.6);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .reel-progress-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width .3s linear;
+    }
+    .reel-progress.total .reel-progress-fill {
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    }
+
+    .reel-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: .76rem;
+      font-family: ui-monospace, monospace;
+    }
+
+    .reel-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(8,12,24,.7);
+      border: 1px solid rgba(255,255,255,.08);
+      font-family: ui-monospace, monospace;
+      font-size: .78rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .reel-btn {
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(8,12,24,.6);
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: .82rem;
+      transition: .15s ease;
+    }
+    .reel-btn:hover { background: rgba(8,12,24,.9); transform: translateY(-1px); }
+    .reel-btn.stop { border-color: rgba(255,143,143,.4); color: #ffc9c9; }
+
+    /* When in reel mode, dim the non-essential parts */
+    body.reel-playing .sidebar { opacity: .4; pointer-events: none; transition: opacity .3s ease; }
+    body.reel-playing .hero-actions { opacity: .4; pointer-events: none; }
 
     .time {
       display: inline-flex;
@@ -606,6 +911,8 @@
       .grid-2, .stat-row, .shot { grid-template-columns: 1fr; }
       .hero-actions { flex-direction: column; }
       .hero-actions .btn { width: 100%; }
+      .onboarding-strip { grid-template-columns: 1fr; }
+      .onb-arrow { display: none; }
     }
   </style>
 </head>
@@ -658,6 +965,15 @@
 
       <section class="section">
         <div class="section-title">
+          <h2>Stil de demo</h2>
+          <span class="badge" id="styleBadge">SaaS Clean</span>
+        </div>
+        <div class="style-grid" id="styleGrid"></div>
+        <div class="hint" id="styleHint">Stilul ales modifică ritm, shot-urile, voiceover-ul și regulile de regie.</div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
           <h2>Input produs</h2>
           <span class="badge success">Fast setup</span>
         </div>
@@ -683,6 +999,15 @@
             <option value="45">45 sec</option>
             <option value="60">60 sec</option>
           </select>
+        </div>
+
+        <div class="readiness-card" id="readinessCard">
+          <div class="readiness-head">
+            <span class="readiness-label">Project readiness</span>
+            <span class="readiness-score" id="readinessScore">0/100</span>
+          </div>
+          <div class="readiness-bar"><div class="readiness-bar-fill" id="readinessBarFill"></div></div>
+          <ul class="readiness-checks" id="readinessChecks"></ul>
         </div>
       </section>
 
@@ -715,6 +1040,7 @@
           <button class="btn btn-secondary" id="downloadJsonBtn">Descarcă plan JSON pentru repo</button>
           <button class="btn btn-secondary" id="downloadHtmlBtn">Descarcă raport HTML</button>
           <button class="btn btn-secondary" id="downloadAutomationBtn">Descarcă Automation Pack</button>
+          <button class="btn btn-secondary" id="downloadRunnerBtn">Descarcă runner Playwright</button>
           <button class="btn btn-secondary" id="copyCliBtn">Copiază comenzi CLI</button>
           <button class="btn btn-danger" id="resetBtn">Reset</button>
         </div>
@@ -732,9 +1058,40 @@
           </div>
           <div class="badge success">Ready for product reels</div>
         </div>
+
+        <div class="onboarding-strip" id="onboardingStrip">
+          <div class="onb-step" data-step="1">
+            <span class="onb-num">1</span>
+            <div class="onb-body">
+              <div class="onb-label">Pune URL-ul</div>
+              <div class="onb-hint" id="onbHint1">Link către produsul tău web.</div>
+            </div>
+            <span class="onb-check">✓</span>
+          </div>
+          <div class="onb-arrow">→</div>
+          <div class="onb-step" data-step="2">
+            <span class="onb-num">2</span>
+            <div class="onb-body">
+              <div class="onb-label">Alege stil + durată</div>
+              <div class="onb-hint" id="onbHint2">SaaS Clean, Teaser, Enterprise...</div>
+            </div>
+            <span class="onb-check">✓</span>
+          </div>
+          <div class="onb-arrow">→</div>
+          <div class="onb-step" data-step="3">
+            <span class="onb-num">3</span>
+            <div class="onb-body">
+              <div class="onb-label">Generează și exportă</div>
+              <div class="onb-hint" id="onbHint3">Plan, reel, runner Playwright.</div>
+            </div>
+            <span class="onb-check">✓</span>
+          </div>
+        </div>
+
         <div class="hero-actions">
           <button class="btn btn-primary" id="heroGenerateBtn" type="button">Generează demo-ul</button>
           <button class="btn btn-ghost" id="heroPresetBtn" type="button">Vezi exemple presetate</button>
+          <button class="btn btn-ghost" id="heroReelBtn" type="button">▶ Rulează demo reel</button>
         </div>
         <div class="stat-row">
           <div class="stat"><div class="k" id="statShots">0</div><div class="l">Shot-uri generate</div></div>
@@ -742,7 +1099,34 @@
           <div class="stat"><div class="k" id="statDescriptions">0</div><div class="l">Descrieri produse</div></div>
           <div class="stat"><div class="k" id="statClips">0</div><div class="l">Clipuri în proiect</div></div>
         </div>
+
+        <div class="trust-strip">
+          <span class="trust-chip">🔒 Cheia API rămâne în browser</span>
+          <span class="trust-chip">🌐 No backend required</span>
+          <span class="trust-chip">📦 GitHub Pages compatible</span>
+          <span class="trust-chip">💻 Runs locally</span>
+          <span class="trust-chip">🆓 Mock mode, fără costuri</span>
+        </div>
       </section>
+
+      <div class="reel-bar" id="reelBar">
+        <div class="reel-now">
+          <span class="r-label" id="reelLabel">Demo reel</span>
+          <span class="r-title" id="reelTitle">—</span>
+        </div>
+        <div class="reel-progress-wrap">
+          <div class="reel-progress"><div class="reel-progress-fill" id="reelClipFill"></div></div>
+          <div class="reel-meta">
+            <span id="reelShotInfo">Shot —</span>
+            <span id="reelClipTime">00:00 / 00:00</span>
+          </div>
+          <div class="reel-progress total"><div class="reel-progress-fill" id="reelTotalFill"></div></div>
+        </div>
+        <span class="reel-chip" id="reelTotalTime">00:00 / 00:00</span>
+        <button class="reel-btn" id="reelPauseBtn" type="button">⏸ Pauză</button>
+        <button class="reel-btn" id="reelSkipBtn" type="button">⏭ Skip</button>
+        <button class="reel-btn stop" id="reelStopBtn" type="button">■ Stop</button>
+      </div>
 
       <section class="workbench">
         <div class="panel pane">
@@ -833,6 +1217,175 @@
       "Arată payoff-ul vizual înainte de final."
     ];
 
+    // Style templates — each one shapes the plan tone, shot preferences,
+    // voiceover voice, description flavor, and specific direction rules.
+    const STYLES = {
+      "saas-clean": {
+        id: "saas-clean",
+        label: "SaaS Clean",
+        tagline: "Ritm calm, claritate funcțională, show don't tell.",
+        emoji: "🪟",
+        suggestedDuration: 40,
+        lockDuration: false,
+        preferredArchetypes: ["dashboard-overview", "filter-apply", "detail-panel", "kpi-row", "payoff-metric"],
+        visualHooks: [
+          "control, densitate utilă și fluiditate operațională",
+          "claritate imediată și profunzime atunci când intri",
+          "senzație de produs matur, cu flow continuu"
+        ],
+        voiceoverTone: (p, a, d) => `Acesta este ${p}. Un ${a.primary.type.toLowerCase()} construit pentru ${a.primary.value}. În următoarele ${d} de secunde, vezi structura principală, profunzimea funcțională și payoff-ul vizual — totul într-un singur flow.`,
+        descriptions: (p, a, d, shots) => ({
+          recruiter: `Demo SaaS de ${d} secunde pentru ${p}. ${a.primary.type} cu accent pe ${a.primary.value}. Construit pentru a comunica rapid valoarea și profunzimea produsului.`,
+          portfolio: `Silent product reel — ${p}. Un singur URL, un flow clar, ritm vizual controlat. Potrivit pentru a deschide conversații cu recruiteri și clienți.`,
+          social: `${p} în ${d} de secunde. ${a.primary.type} cu ${a.primary.value}. #saas #producthunt #demo`,
+          technical: `Export web H.264, ${d}s, ${a.primary.type}. Structură: pre-roll → ${shots.length} shot-uri → payoff. Ready pentru LinkedIn, portfolio, outreach.`
+        }),
+        directionRules: [
+          "Ritm calm: cel mult 2 acțiuni pe secundă.",
+          "Pauză de 400ms după fiecare interacțiune majoră.",
+          "Show, don't tell — niciun text suprapus peste UI.",
+          "Payoff-ul final: un număr, un KPI, o confirmare vizuală clară."
+        ]
+      },
+      "launch-teaser": {
+        id: "launch-teaser",
+        label: "Launch Teaser",
+        tagline: "Tempo ridicat, hook în 2s, mystery → reveal → payoff.",
+        emoji: "🚀",
+        suggestedDuration: 20,
+        lockDuration: false,
+        preferredArchetypes: ["hero-identity", "module-tour", "feature-depth", "payoff-metric"],
+        visualHooks: [
+          "impact imediat și o promisiune vizuală memorabilă",
+          "un produs care se prezintă cu încredere și ritm",
+          "arc narativ clar: mystery, reveal, payoff"
+        ],
+        voiceoverTone: (p, a, d) => `${p}. ${d} de secunde. Un ${a.primary.type.toLowerCase()} care își arată valoarea fără să explice. Urmărește ritmul. Urmărește payoff-ul.`,
+        descriptions: (p, a, d, shots) => ({
+          recruiter: `Launch teaser de ${d}s pentru ${p}. Hook vizual rapid, reveal în mijloc, payoff la final. Format gândit pentru atenție scurtă.`,
+          portfolio: `Product launch reel — ${p}. Construcție narativă în trei acte: hook, reveal, payoff. Ritm ridicat, impact vizual.`,
+          social: `${p} — e aici. ${d} de secunde de produs. #launch #newproduct #reveal`,
+          technical: `Format teaser H.264, ${d}s, ${shots.length} shot-uri cu tăieturi scurte. Optimizat pentru LinkedIn, X, landing hero video.`
+        }),
+        directionRules: [
+          "Hook vizual în primele 2 secunde.",
+          "Fiecare shot sub 4 secunde.",
+          "Tranziții rapide, fără pauze lungi.",
+          "Rezervă ultimele 3 secunde pentru reveal vizual."
+        ]
+      },
+      "investor-deck": {
+        id: "investor-deck",
+        label: "Investor Deck",
+        tagline: "Problem → solution → proof. Date, cifre, autoritate.",
+        emoji: "📊",
+        suggestedDuration: 45,
+        lockDuration: false,
+        preferredArchetypes: ["hero-identity", "kpi-row", "chart-hover", "drilldown", "payoff-metric"],
+        visualHooks: [
+          "o teză de produs argumentată prin dovezi vizuale",
+          "metrici și flow care justifică investiția",
+          "traseu clar de la problemă la dovada de tracțiune"
+        ],
+        voiceoverTone: (p, a, d) => `${p} rezolvă ${a.primary.value}. În următoarele ${d} de secunde: problema, soluția, dovada. ${a.primary.type} cu tracțiune măsurabilă și arhitectură scalabilă.`,
+        descriptions: (p, a, d, shots) => ({
+          recruiter: `Investor-ready demo pentru ${p}. ${d} secunde structurate: problem-solution-proof. ${a.primary.type} cu accent pe metrici.`,
+          portfolio: `Demo tip pitch pentru ${p}. Narativ construit pentru investitori: problemă, soluție, tracțiune. Format potrivit pentru deck-uri și conversații seed/Series A.`,
+          social: `${p} — construit pentru scale. ${a.primary.value} în ${d}s. #startups #saas #investor`,
+          technical: `Format pitch deck H.264, ${d}s. Structură: hook (10%), problem (20%), solution (40%), proof (30%). Ready pentru Notion, Pitch, investor email.`
+        }),
+        directionRules: [
+          "Fiecare shot susține o teză: problemă, soluție, sau dovadă.",
+          "Arată cel puțin un KPI sau număr concret.",
+          "Încheie pe o metrică, nu pe un CTA emoțional.",
+          "Voiceover cu ritm de prezentare, nu de reclamă."
+        ]
+      },
+      "social-reel": {
+        id: "social-reel",
+        label: "Social Reel",
+        tagline: "Micro-hook, text on-screen, 20-30s, optimizat vertical.",
+        emoji: "📱",
+        suggestedDuration: 25,
+        lockDuration: true, // force 20-30s regardless of user input
+        preferredArchetypes: ["hero-identity", "card-drag", "filter-apply", "payoff-metric", "cta-payoff"],
+        visualHooks: [
+          "gest imediat, payoff rapid, atenție capturată",
+          "format scurt care respectă atenția limitată a scroll-ului",
+          "micro-hook și final satisfăcător"
+        ],
+        voiceoverTone: (p, a, d) => `${p} în ${d} de secunde. ${a.primary.type}, construit pentru oameni care fac scroll rapid. Ritm scurt, payoff clar.`,
+        descriptions: (p, a, d, shots) => ({
+          recruiter: `Social reel de ${d}s pentru ${p}. Format optimizat pentru LinkedIn video, X, Reels. Atenție scurtă, impact direct.`,
+          portfolio: `Micro-demo pentru ${p}. Format social-first, ritm ridicat, zero fluff. Ideal pentru outreach și awareness.`,
+          social: `${p} în ${d}s ⚡ ${a.primary.value}. Scroll-stopper. #saas #tech #demo`,
+          technical: `Format 9:16 sau 1:1, ${d}s, H.264. Captions recomandate (audio off default pe social). Export pentru Reels, Shorts, TikTok-style.`
+        }),
+        directionRules: [
+          "Hook vizual în prima secundă — fără ezitare.",
+          "Fiecare shot sub 4 secunde, fără excepții.",
+          "Presupune că utilizatorul se uită fără sunet.",
+          "Include un micro-CTA vizual în ultima secundă."
+        ]
+      },
+      "tutorial": {
+        id: "tutorial",
+        label: "Tutorial Walkthrough",
+        tagline: "Didactic: first → then → finally. Fără skip-uri.",
+        emoji: "🧭",
+        suggestedDuration: 50,
+        lockDuration: false,
+        preferredArchetypes: ["hero-identity", "filter-apply", "detail-panel", "confirmation-state", "payoff-final"],
+        visualHooks: [
+          "un flow predictibil care ghidează privirea pas cu pas",
+          "structură secvențială clară, fără salturi vizuale",
+          "educativ: arată, explică, confirmă"
+        ],
+        voiceoverTone: (p, a, d) => `Îți arăt ${p} în ${d} de secunde. Mai întâi deschizi ${a.primary.type.toLowerCase()}. Apoi parcurgi pașii principali. La final, vezi rezultatul complet.`,
+        descriptions: (p, a, d, shots) => ({
+          recruiter: `Tutorial walkthrough pentru ${p}, ${d} secunde. Structură secvențială: first → then → finally. Ideal pentru onboarding sau help center.`,
+          portfolio: `Produs explicat pas cu pas — ${p}. Flow didactic, fără skip-uri, ritm controlat. Potrivit pentru documentație video sau onboarding.`,
+          social: `Cum folosești ${p} în ${d}s 🎯 ${a.primary.value}. Tutorial scurt. #howto #tutorial #saas`,
+          technical: `Format tutorial H.264, ${d}s, ${shots.length} pași numerotați. Subtitrări recomandate. Potrivit pentru YouTube, help center, documentație.`
+        }),
+        directionRules: [
+          "Respectă ordinea pașilor — niciun salt.",
+          "Pauză de 500ms înainte de fiecare acțiune nouă.",
+          "Confirmă vizual fiecare pas finalizat.",
+          "Încheie arătând rezultatul complet, nu doar ultimul click."
+        ]
+      },
+      "enterprise": {
+        id: "enterprise",
+        label: "Enterprise Polished",
+        tagline: "Lent, autoritar. Fiabilitate, scale, integrări.",
+        emoji: "🏛️",
+        suggestedDuration: 55,
+        lockDuration: false,
+        preferredArchetypes: ["dashboard-overview", "client-list", "drilldown", "integration-hint", "confirmation-state"],
+        visualHooks: [
+          "fiabilitate, scale și maturitate de produs",
+          "arhitectură solidă vizibilă în fiecare detaliu",
+          "ton corporate, atenție la densitate și guvernanță"
+        ],
+        voiceoverTone: (p, a, d) => `${p}. O platformă ${a.primary.type.toLowerCase()} construită pentru scale și guvernanță. ${d} de secunde care arată arhitectura, profunzimea datelor și integrările principale.`,
+        descriptions: (p, a, d, shots) => ({
+          recruiter: `Enterprise demo pentru ${p}, ${d} secunde. Accent pe scale, guvernanță și integrări. Format potrivit pentru procurement, RFP, security review.`,
+          portfolio: `Platformă enterprise — ${p}. Ton sobru, ritm controlat, atenție la densitate. Ready pentru conversații B2B și comitete de decizie.`,
+          social: `${p} — enterprise-ready. ${a.primary.value} la scale. #enterprise #b2b #saas`,
+          technical: `Format enterprise H.264, ${d}s, 1080p minimum. Ready pentru pitch-uri comerciale, RFP-uri, security walkthroughs.`
+        }),
+        directionRules: [
+          "Ritm lent: maximum 1 acțiune la fiecare 2 secunde.",
+          "Shot-uri mai lungi, pauze de 600ms între acțiuni.",
+          "Demonstrează cel puțin o integrare sau export enterprise.",
+          "Voiceover sobru, fără superlative comerciale."
+        ]
+      }
+    };
+
+    const DEFAULT_STYLE_ID = "saas-clean";
+
     // ====================================================================
     // STATE
     // ====================================================================
@@ -844,7 +1397,8 @@
       mode: "mock",     // "mock" | "real"
       apiKey: "",
       aiModel: "claude-sonnet-4-6",
-      busy: false
+      busy: false,
+      styleId: DEFAULT_STYLE_ID
     };
 
     // ====================================================================
@@ -1081,11 +1635,29 @@
       return durations;
     }
 
-    function buildShotListFromAnalysis(analysis, durationSec) {
+    function buildShotListFromAnalysis(analysis, durationSec, style) {
       const archetypeKey = SHOT_ARCHETYPES[analysis.primary.type] ? analysis.primary.type : "Produs web";
-      const archetypes = SHOT_ARCHETYPES[archetypeKey];
-      const count = Math.min(archetypes.length, Math.max(3, Math.round(durationSec / 8)));
-      const chosen = archetypes.slice(0, count);
+      const typeArchetypes = SHOT_ARCHETYPES[archetypeKey];
+
+      // Blend: first try the style's preferred archetypes (that actually have copy),
+      // then fill with type-specific ones. This way SaaS Clean applied to a CRM keeps
+      // some CRM-native shots but leans into its style preferences.
+      let candidateArchetypes = [];
+      if (style && Array.isArray(style.preferredArchetypes)) {
+        const stylePrefs = style.preferredArchetypes.filter((k) => ARCHETYPE_COPY[k]);
+        // Interleave: style first, then type, dedup
+        const merged = [];
+        const seen = new Set();
+        const pushUnique = (k) => { if (!seen.has(k)) { seen.add(k); merged.push(k); } };
+        stylePrefs.forEach(pushUnique);
+        typeArchetypes.forEach(pushUnique);
+        candidateArchetypes = merged;
+      } else {
+        candidateArchetypes = typeArchetypes.slice();
+      }
+
+      const count = Math.min(candidateArchetypes.length, Math.max(3, Math.round(durationSec / 8)));
+      const chosen = candidateArchetypes.slice(0, count);
       const durations = distributeShotDurations(durationSec, count);
 
       const shots = [];
@@ -1098,7 +1670,9 @@
           action: copy.action,
           purpose: copy.purpose,
           selectorHint: copy.selectorHint,
-          reason: `Arhetip "${key}" dedus din tipul ${archetypeKey}.`
+          reason: style
+            ? `Arhetip "${key}" — preferat de stilul "${style.label}" pentru un ${archetypeKey}.`
+            : `Arhetip "${key}" dedus din tipul ${archetypeKey}.`
         });
         cursor = end;
       });
@@ -1109,18 +1683,20 @@
     // MOCK GENERATOR (deterministic, no API calls)
     // ====================================================================
 
-    function generateMockPlan({ url, productName, objective, duration }) {
+    function generateMockPlan({ url, productName, objective, duration, styleId }) {
       const analysis = analyzeUrl(url, productName, objective);
-      const rng = seededRandom(url + "|" + productName + "|" + objective + "|" + duration);
+      const style = STYLES[styleId] || STYLES[DEFAULT_STYLE_ID];
 
-      const visualHooks = [
-        "control, densitate utilă și fluiditate operațională",
-        "claritate imediată și profunzime atunci când intri",
-        "eleganță vizuală și un ritm care ghidează privirea",
-        "senzație de produs matur, cu flow continuu",
-        "răspuns rapid și structură vizibilă la orice pas"
-      ];
-      const visualMessage = `${productName || "Produsul"} transmite ${pick(visualHooks, rng)}.`;
+      // If the style locks duration (e.g. Social Reel), constrain it to 20-30s
+      let effectiveDuration = Number(duration) || style.suggestedDuration;
+      if (style.lockDuration) {
+        effectiveDuration = Math.max(20, Math.min(30, effectiveDuration));
+      }
+
+      const rng = seededRandom([url, productName, objective, effectiveDuration, style.id].join("|"));
+      const pName = productName || "Produsul";
+
+      const visualMessage = `${pName} transmite ${pick(style.visualHooks, rng)}.`;
 
       const preroll = [
         `Deschide ${analysis.hostname || "URL-ul"}.`,
@@ -1128,31 +1704,26 @@
         `Poziționează-te pe ${analysis.primary.type === "Landing" ? "hero" : "view-ul principal"}.`
       ];
 
-      const shots = buildShotListFromAnalysis(analysis, duration);
+      const shots = buildShotListFromAnalysis(analysis, effectiveDuration, style);
 
-      const descriptions = {
-        recruiter: `Demo de ${duration} secunde pentru ${productName || "produsul"}. ${analysis.primary.type} cu accent pe ${analysis.primary.value}. Construit pentru a comunica rapid valoarea și profunzimea.`,
-        portfolio: `Silent product reel — ${productName || "produs web"}. Un singur URL, un flow clar, ritm vizual controlat. Potrivit pentru a deschide conversații cu recruiteri și clienți.`,
-        social: `${productName || "Produs nou"} în 30–40 de secunde. ${analysis.primary.type} cu ${analysis.primary.value}. #producthunt #saas #demo`,
-        technical: `Export web H.264, ${duration}s, ${analysis.primary.type}. Structură: pre-roll → ${shots.length} shot-uri → payoff. Ready pentru LinkedIn, portfolio, outreach.`
-      };
-
-      const voiceover = `Acesta este ${productName || "produsul"}. ${analysis.primary.type === "Landing" ? "Un landing" : "Un produs"} construit pentru ${analysis.primary.value}. În următoarele ${duration} secunde, vezi structura principală, profunzimea funcțională și payoff-ul vizual — totul într-un singur flow.`;
-
-      const summary = `Plan generat în mod ${productName ? "customizat" : "generic"} pentru ${analysis.primary.type}. ${shots.length} shot-uri distribuite pe ${duration} secunde, cu accent pe ${analysis.primary.value}. Obiectiv: ${objective || "demo premium pentru portofoliu"}.`;
+      const descriptions = style.descriptions(pName, analysis, effectiveDuration, shots);
+      const voiceover = style.voiceoverTone(pName, analysis, effectiveDuration);
+      const summary = `Plan generat în stilul "${style.label}" pentru ${analysis.primary.type}. ${shots.length} shot-uri distribuite pe ${effectiveDuration} secunde, cu accent pe ${analysis.primary.value}. Obiectiv: ${objective || "demo premium pentru portofoliu"}.`;
 
       const planJson = {
         version: 1,
-        productName: productName || "Produs fără nume",
+        productName: pName,
         url,
         objective: objective || "Demo video premium",
-        duration,
+        duration: effectiveDuration,
+        style: { id: style.id, label: style.label },
         visualMessage,
         preroll,
         shots,
         descriptions,
         voiceover,
         summary,
+        directionRules: style.directionRules,
         analysis: {
           type: analysis.primary.type,
           hints: analysis.detected.map((d) => d.type),
@@ -1168,7 +1739,10 @@
         voiceover,
         summary,
         planJson,
-        mode: "mock"
+        mode: "mock",
+        effectiveDuration,
+        styleId: style.id,
+        directionRules: style.directionRules
       };
     }
 
@@ -1371,15 +1945,19 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
     // ====================================================================
 
     function buildClipFromPlan(plan, inputs) {
+      const style = STYLES[plan.styleId] || STYLES[inputs.styleId] || STYLES[DEFAULT_STYLE_ID];
+      const styleTag = plan.mode === "real" ? "AI" : plan.mode === "mock" ? "MOCK" : "PRESET";
       return {
         id: createId(),
-        title: `CLIP ${plan.mode === "real" ? "AI" : "MOCK"} — ${inputs.productName || "Produs"}`,
+        title: `CLIP ${styleTag} · ${style.label} — ${inputs.productName || "Produs"}`,
         shortTitle: inputs.productName || plan.planJson.analysis?.hostname || "Produs",
         url: inputs.url,
         message: plan.visualMessage,
         objective: inputs.objective,
-        duration: inputs.duration,
+        duration: plan.effectiveDuration || inputs.duration,
         mode: plan.mode,
+        styleId: style.id,
+        styleLabel: style.label,
         preroll: plan.preroll,
         avoid: [
           "Nu accelera tranzițiile inutil.",
@@ -1389,7 +1967,8 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         aiDescriptions: plan.descriptions,
         aiVoiceover: plan.voiceover,
         aiSummary: plan.summary,
-        aiPlanJson: plan.planJson
+        aiPlanJson: plan.planJson,
+        directionRules: plan.directionRules || style.directionRules
       };
     }
 
@@ -1400,6 +1979,7 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
       const productName = $("projectName").value.trim();
       const objective = $("objective").value.trim();
       const duration = Number($("duration").value || 40);
+      const styleId = state.styleId || DEFAULT_STYLE_ID;
 
       if (!url) {
         toast("Adaugă un link valid înainte de generare.", "err");
@@ -1416,7 +1996,7 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
       setButtonLoading(heroBtn, true, "Generez...");
       setButtonLoading(sideBtn, true, "Generez...");
 
-      const inputs = { url, productName, objective, duration };
+      const inputs = { url, productName, objective, duration, styleId };
 
       try {
         let plan;
@@ -1438,7 +2018,10 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         state.clips.unshift(clip);
         state.selectedClipId = clip.id;
         renderAll();
-        toast(`Demo-ul a fost generat (${plan.mode === "real" ? "AI real" : "mock determinist"}).`, "ok");
+        updateReadiness();
+        updateOnboarding();
+        const styleLabel = (STYLES[plan.styleId || styleId] || STYLES[DEFAULT_STYLE_ID]).label;
+        toast(`Demo-ul a fost generat (${plan.mode === "real" ? "AI real" : "mock determinist"}, stil: ${styleLabel}).`, "ok");
       } catch (error) {
         console.error(error);
         toast("Eroare: " + (error.message || "ceva nu a mers"), "err");
@@ -1724,16 +2307,576 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
       updateModeUI();
     }
 
+    // Style picker
+    const STORAGE_KEY_STYLE = "lves.styleId";
+
+    function renderStylePicker() {
+      const grid = $("styleGrid");
+      if (!grid) return;
+      grid.innerHTML = Object.values(STYLES).map((style) => {
+        const active = style.id === state.styleId ? "active" : "";
+        return `<button type="button" class="style-card ${active}" data-style-id="${escapeHtml(style.id)}">
+          <span class="s-emoji">${escapeHtml(style.emoji)}</span>
+          <span class="s-label">${escapeHtml(style.label)}</span>
+          <span class="s-tag">${escapeHtml(style.tagline)}</span>
+        </button>`;
+      }).join("");
+
+      const current = STYLES[state.styleId] || STYLES[DEFAULT_STYLE_ID];
+      const badge = $("styleBadge");
+      if (badge) badge.textContent = `${current.emoji} ${current.label}`;
+      const hint = $("styleHint");
+      if (hint) hint.textContent = current.tagline;
+    }
+
+    function setStyle(styleId) {
+      if (!STYLES[styleId]) return;
+      state.styleId = styleId;
+      try { localStorage.setItem(STORAGE_KEY_STYLE, styleId); } catch {}
+      renderStylePicker();
+      // If Social Reel locks duration, nudge the duration select
+      const style = STYLES[styleId];
+      const durSelect = $("duration");
+      if (style.lockDuration && durSelect) {
+        const current = Number(durSelect.value || 40);
+        if (current < 20 || current > 30) {
+          // pick nearest available option within 20-30
+          const opts = Array.from(durSelect.options).map((o) => Number(o.value));
+          const legal = opts.filter((v) => v >= 20 && v <= 30);
+          const target = legal.length ? legal.reduce((a, b) => Math.abs(b - current) < Math.abs(a - current) ? b : a) : 30;
+          durSelect.value = String(target);
+        }
+      }
+      updateReadiness();
+      updateOnboarding();
+    }
+
     function loadSettings() {
       try {
         state.apiKey = localStorage.getItem(STORAGE_KEY_API) || "";
         state.mode = localStorage.getItem(STORAGE_KEY_MODE) || "mock";
         state.aiModel = localStorage.getItem(STORAGE_KEY_MODEL) || "claude-sonnet-4-6";
+        const savedStyle = localStorage.getItem(STORAGE_KEY_STYLE);
+        if (savedStyle && STYLES[savedStyle]) state.styleId = savedStyle;
       } catch {
         // localStorage blocked
       }
       $("apiKey").value = state.apiKey;
       $("aiModel").value = state.aiModel;
+    }
+
+    // ====================================================================
+    // PROJECT READINESS SCORE
+    // ====================================================================
+
+    // Each check returns { id, label, status: "ok"|"warn"|"fail", weight }
+    // weight contributes to the final 0-100 score only when status === "ok".
+    function computeReadinessChecks() {
+      const url = ($("projectUrl")?.value || "").trim();
+      const productName = ($("projectName")?.value || "").trim();
+      const objective = ($("objective")?.value || "").trim();
+      const duration = Number($("duration")?.value || 40);
+      const style = STYLES[state.styleId] || STYLES[DEFAULT_STYLE_ID];
+      const analysis = url ? analyzeUrl(url, productName, objective) : null;
+
+      const checks = [];
+
+      // 1) Valid URL (25 pts)
+      if (!url) {
+        checks.push({ id: "url", label: "Adaugă URL-ul proiectului", status: "fail", weight: 25 });
+      } else if (!safeParseUrl(url)) {
+        checks.push({ id: "url", label: "URL-ul nu pare valid. Folosește https://...", status: "fail", weight: 25 });
+      } else {
+        checks.push({ id: "url", label: `URL detectat (${analysis.hostname})`, status: "ok", weight: 25 });
+      }
+
+      // 2) Product name (15 pts)
+      if (!productName) {
+        checks.push({ id: "name", label: "Adaugă un nume de produs — personalizează outputul", status: "warn", weight: 15 });
+      } else if (productName.length < 3) {
+        checks.push({ id: "name", label: "Numele e foarte scurt — minimum 3 caractere ajută", status: "warn", weight: 15 });
+      } else {
+        checks.push({ id: "name", label: `Nume produs: „${productName}"`, status: "ok", weight: 15 });
+      }
+
+      // 3) Objective quality (25 pts)
+      const words = objective ? objective.split(/\s+/).filter(Boolean).length : 0;
+      if (words === 0) {
+        checks.push({ id: "obj", label: "Adaugă un obiectiv — schimbă tonul planului", status: "warn", weight: 25 });
+      } else if (words < 5) {
+        checks.push({ id: "obj", label: `Obiectivul e scurt (${words} cuvinte). 10-20 de cuvinte = context mai bun.`, status: "warn", weight: 25 });
+      } else if (words > 50) {
+        checks.push({ id: "obj", label: `Obiectivul e foarte lung (${words} cuvinte) — rafinează la esență.`, status: "warn", weight: 25 });
+      } else {
+        checks.push({ id: "obj", label: `Obiectiv clar (${words} cuvinte)`, status: "ok", weight: 25 });
+      }
+
+      // 4) Duration appropriate for detected type + style (20 pts)
+      if (!url) {
+        checks.push({ id: "dur", label: `Durată: ${duration}s`, status: "warn", weight: 20 });
+      } else {
+        const primary = analysis.primary.type;
+        const idealRanges = {
+          "Landing": [15, 30],
+          "Portfolio": [25, 45],
+          "Content": [20, 40],
+          "E-commerce": [25, 45],
+          "SaaS platform": [30, 50],
+          "CRM": [35, 55],
+          "Booking": [25, 40],
+          "Billing": [30, 50],
+          "Project tool": [30, 50],
+          "Analytics": [30, 50],
+          "Produs web": [25, 45]
+        };
+        const [lo, hi] = idealRanges[primary] || [25, 45];
+        // Style override for locked duration
+        const effectiveLo = style.lockDuration ? 20 : lo;
+        const effectiveHi = style.lockDuration ? 30 : hi;
+
+        if (duration < effectiveLo) {
+          checks.push({ id: "dur", label: `${duration}s ar putea fi scurt pentru ${primary} + stil ${style.label}. Încearcă ${effectiveLo}-${effectiveHi}s.`, status: "warn", weight: 20 });
+        } else if (duration > effectiveHi) {
+          checks.push({ id: "dur", label: `${duration}s ar putea fi lung pentru ${primary} + stil ${style.label}. Încearcă ${effectiveLo}-${effectiveHi}s.`, status: "warn", weight: 20 });
+        } else {
+          checks.push({ id: "dur", label: `Durata ${duration}s se potrivește pentru ${primary}`, status: "ok", weight: 20 });
+        }
+      }
+
+      // 5) Style matches detected type (15 pts) — soft check
+      if (url && analysis) {
+        const primary = analysis.primary.type;
+        const goodMatches = {
+          "Landing": ["launch-teaser", "social-reel"],
+          "Portfolio": ["saas-clean", "social-reel"],
+          "CRM": ["saas-clean", "enterprise", "investor-deck"],
+          "Booking": ["saas-clean", "tutorial"],
+          "Billing": ["saas-clean", "enterprise"],
+          "Project tool": ["saas-clean", "tutorial"],
+          "Analytics": ["investor-deck", "enterprise"],
+          "E-commerce": ["launch-teaser", "social-reel", "saas-clean"],
+          "Content": ["saas-clean", "tutorial"],
+          "SaaS platform": ["saas-clean", "launch-teaser", "investor-deck"],
+          "Produs web": ["saas-clean"]
+        };
+        const matches = goodMatches[primary] || [];
+        if (matches.length === 0) {
+          checks.push({ id: "style", label: `Stil: ${style.label}`, status: "ok", weight: 15 });
+        } else if (matches.includes(style.id)) {
+          checks.push({ id: "style", label: `Stilul ${style.label} se potrivește cu ${primary}`, status: "ok", weight: 15 });
+        } else {
+          const suggestion = STYLES[matches[0]];
+          checks.push({ id: "style", label: `Stilul ${style.label} e OK, dar „${suggestion.label}" ar fi mai potrivit pentru ${primary}`, status: "warn", weight: 15 });
+        }
+      } else {
+        checks.push({ id: "style", label: `Stil ales: ${style.label}`, status: "warn", weight: 15 });
+      }
+
+      return checks;
+    }
+
+    function updateReadiness() {
+      const card = $("readinessCard");
+      const scoreEl = $("readinessScore");
+      const fillEl = $("readinessBarFill");
+      const listEl = $("readinessChecks");
+      if (!card || !scoreEl || !fillEl || !listEl) return;
+
+      const checks = computeReadinessChecks();
+      const earned = checks.filter((c) => c.status === "ok").reduce((a, c) => a + c.weight, 0);
+      const total = 100;
+      const score = Math.round((earned / total) * 100);
+
+      scoreEl.textContent = `${score}/100`;
+      scoreEl.classList.remove("low", "mid", "high");
+      if (score < 40) scoreEl.classList.add("low");
+      else if (score < 75) scoreEl.classList.add("mid");
+      else scoreEl.classList.add("high");
+
+      if (fillEl.style) fillEl.style.width = `${score}%`;
+
+      listEl.innerHTML = checks.map((c) => {
+        const icon = c.status === "ok" ? "✓" : c.status === "warn" ? "!" : "×";
+        return `<li class="${c.status}"><span class="ic">${icon}</span><span>${escapeHtml(c.label)}</span></li>`;
+      }).join("");
+    }
+
+    // Onboarding strip: decide which of the 3 steps is active/done based on state.
+    function updateOnboarding() {
+      const strip = $("onboardingStrip");
+      if (!strip) return;
+
+      const url = $("projectUrl") ? $("projectUrl").value.trim() : "";
+      const urlValid = url && safeParseUrl(url);
+      const styleChosen = !!(state.styleId && STYLES[state.styleId]);
+      const hasClip = state.clips.length > 0;
+
+      // Derive step: step 1 active until URL is valid; step 2 active until clip generated; step 3 when generated.
+      let current = 1;
+      if (urlValid && !hasClip) current = 2;
+      if (hasClip) current = 3;
+
+      strip.querySelectorAll(".onb-step").forEach((el) => {
+        const step = Number(el.dataset.step);
+        el.classList.toggle("active", step === current);
+        el.classList.toggle("done", step < current || (step === 3 && hasClip));
+      });
+
+      // Contextual hint per step
+      const h1 = $("onbHint1"), h2 = $("onbHint2"), h3 = $("onbHint3");
+      if (h1) h1.textContent = urlValid ? `✓ ${new URL(url).hostname.replace(/^www\./, "")}` : "Link către produsul tău web.";
+      if (h2) {
+        const style = STYLES[state.styleId] || STYLES[DEFAULT_STYLE_ID];
+        h2.textContent = `Stil: ${style.label}`;
+      }
+      if (h3) h3.textContent = hasClip ? `✓ ${state.clips.length} clip${state.clips.length > 1 ? "uri" : ""} generate` : "Plan, reel, runner Playwright.";
+    }
+
+    // ====================================================================
+    // DEMO REEL (auto-play carousel)
+    // ====================================================================
+
+    // Parses "00:12 – 00:18" (or "00:12 - 00:18") into [startSec, endSec]
+    function parseShotTime(timeStr) {
+      const parts = String(timeStr || "").split(/\s+[–-]\s+/);
+      const toSec = (t) => {
+        const m = /^(\d+):(\d+)$/.exec((t || "").trim());
+        if (!m) return 0;
+        return Number(m[1]) * 60 + Number(m[2]);
+      };
+      return [toSec(parts[0]), toSec(parts[1])];
+    }
+
+    function formatMMSS(totalSec) {
+      const s = Math.max(0, Math.round(totalSec));
+      return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+    }
+
+    const reel = {
+      running: false,
+      paused: false,
+      clips: [],
+      clipIndex: 0,
+      clipStartMs: 0,
+      pausedAt: 0,
+      rafId: null,
+      totalPlannedSec: 0
+    };
+
+    function reelBar() { return $("reelBar"); }
+
+    function startReel() {
+      // Pre-condition: need 3 preset clips loaded
+      if (!state.clips.length) {
+        // Auto-load presets if empty
+        state.clips = JSON.parse(JSON.stringify(presetClips));
+        state.selectedClipId = state.clips[0].id;
+        renderAll();
+      }
+
+      reel.clips = state.clips.slice(0, 3); // cap at 3 for a reel feel
+      if (!reel.clips.length) {
+        toast("Nu există clipuri de redat.", "err");
+        return;
+      }
+
+      reel.running = true;
+      reel.paused = false;
+      reel.clipIndex = 0;
+      reel.totalPlannedSec = reel.clips.reduce((a, c) => a + (Number(c.duration) || 0), 0);
+
+      document.body.classList.add("reel-playing");
+      reelBar().classList.add("visible");
+      setActiveView("timeline");
+      startReelClip();
+    }
+
+    function startReelClip() {
+      if (!reel.running) return;
+      if (reel.clipIndex >= reel.clips.length) { finishReel(true); return; }
+
+      const clip = reel.clips[reel.clipIndex];
+      state.selectedClipId = clip.id;
+      renderAll();
+      setActiveView("timeline");
+
+      // Update bar UI
+      $("reelLabel").textContent = `Clip ${reel.clipIndex + 1} din ${reel.clips.length}`;
+      $("reelTitle").textContent = clip.shortTitle;
+
+      reel.clipStartMs = performance.now();
+      reel.pausedAt = 0;
+      cancelAnimationFrame(reel.rafId);
+      reel.rafId = requestAnimationFrame(tickReel);
+    }
+
+    function tickReel() {
+      if (!reel.running || reel.paused) return;
+
+      const clip = reel.clips[reel.clipIndex];
+      const elapsedMs = performance.now() - reel.clipStartMs;
+      const elapsedSec = elapsedMs / 1000;
+      const clipDuration = Number(clip.duration) || 1;
+
+      // Per-clip progress
+      const clipPct = Math.min(100, (elapsedSec / clipDuration) * 100);
+      $("reelClipFill").style.width = clipPct + "%";
+      $("reelClipTime").textContent = `${formatMMSS(elapsedSec)} / ${formatMMSS(clipDuration)}`;
+
+      // Aggregate progress across all clips
+      const priorDuration = reel.clips.slice(0, reel.clipIndex).reduce((a, c) => a + (Number(c.duration) || 0), 0);
+      const totalElapsed = priorDuration + Math.min(elapsedSec, clipDuration);
+      const totalPct = Math.min(100, (totalElapsed / reel.totalPlannedSec) * 100);
+      $("reelTotalFill").style.width = totalPct + "%";
+      $("reelTotalTime").textContent = `${formatMMSS(totalElapsed)} / ${formatMMSS(reel.totalPlannedSec)}`;
+
+      // Highlight current shot
+      highlightActiveShot(clip, elapsedSec);
+
+      if (elapsedSec >= clipDuration) {
+        reel.clipIndex += 1;
+        if (reel.clipIndex < reel.clips.length) {
+          // brief pause between clips for breathing room
+          setTimeout(startReelClip, 350);
+        } else {
+          finishReel(true);
+        }
+        return;
+      }
+
+      reel.rafId = requestAnimationFrame(tickReel);
+    }
+
+    function highlightActiveShot(clip, elapsedSec) {
+      const shotEls = document.querySelectorAll("#timeline .shot");
+      if (!shotEls.length) return;
+
+      let activeIdx = -1;
+      (clip.shots || []).forEach((s, i) => {
+        const [start, end] = parseShotTime(s.time);
+        if (elapsedSec >= start && elapsedSec < end) activeIdx = i;
+      });
+
+      let activeEl = null;
+      shotEls.forEach((el, i) => {
+        el.classList.toggle("playing", i === activeIdx);
+        el.classList.toggle("done", i < activeIdx);
+        if (i === activeIdx) activeEl = el;
+      });
+
+      const currentShot = activeIdx >= 0 ? (clip.shots[activeIdx] || {}) : {};
+      $("reelShotInfo").textContent = activeIdx >= 0
+        ? `Shot ${activeIdx + 1}/${(clip.shots || []).length} · ${currentShot.action ? currentShot.action.slice(0, 48) + (currentShot.action.length > 48 ? "…" : "") : ""}`
+        : "Pre-roll";
+
+      // Smooth scroll the active shot into view (only if actually needed)
+      if (activeEl) {
+        const rect = activeEl.getBoundingClientRect();
+        if (rect.top < 120 || rect.bottom > window.innerHeight - 40) {
+          activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    }
+
+    function pauseReel() {
+      if (!reel.running || reel.paused) return;
+      reel.paused = true;
+      reel.pausedAt = performance.now();
+      cancelAnimationFrame(reel.rafId);
+      $("reelPauseBtn").textContent = "▶ Reia";
+    }
+
+    function resumeReel() {
+      if (!reel.running || !reel.paused) return;
+      const pauseDuration = performance.now() - reel.pausedAt;
+      reel.clipStartMs += pauseDuration;
+      reel.paused = false;
+      $("reelPauseBtn").textContent = "⏸ Pauză";
+      reel.rafId = requestAnimationFrame(tickReel);
+    }
+
+    function togglePauseReel() {
+      if (reel.paused) resumeReel(); else pauseReel();
+    }
+
+    function skipReelClip() {
+      if (!reel.running) return;
+      reel.clipIndex += 1;
+      cancelAnimationFrame(reel.rafId);
+      if (reel.clipIndex < reel.clips.length) startReelClip();
+      else finishReel(true);
+    }
+
+    function finishReel(completed) {
+      reel.running = false;
+      reel.paused = false;
+      cancelAnimationFrame(reel.rafId);
+      document.body.classList.remove("reel-playing");
+      reelBar().classList.remove("visible");
+      $("reelPauseBtn").textContent = "⏸ Pauză";
+
+      // Clear shot highlights
+      document.querySelectorAll("#timeline .shot").forEach((el) => el.classList.remove("playing", "done"));
+
+      if (completed) toast("Demo reel complet. ", "ok");
+    }
+
+    function stopReel() {
+      finishReel(false);
+      toast("Reel oprit.");
+    }
+
+    // ====================================================================
+    // PLAYWRIGHT RUNNER GENERATOR
+    // ====================================================================
+
+    function buildPlaywrightRunner(clips) {
+      const clipsData = clips.map((c) => ({
+        slug: slugify(c.shortTitle),
+        title: c.shortTitle,
+        url: c.url,
+        duration: Number(c.duration) || 30,
+        preroll: c.preroll || [],
+        shots: (c.shots || []).map((s) => ({
+          time: s.time,
+          action: s.action,
+          purpose: s.purpose,
+          selectorHint: s.selectorHint || ""
+        }))
+      }));
+
+      // We emit a single-file .mjs script that assumes `playwright` is installed.
+      return `#!/usr/bin/env node
+/**
+ * Link Video Editor Studio — auto-generated Playwright runner
+ * Generated: ${new Date().toISOString()}
+ *
+ * Usage:
+ *   npm init -y
+ *   npm install playwright
+ *   npx playwright install chromium
+ *   node run-demos.mjs
+ *
+ * Output: ./recordings/<slug>.webm  (one file per clip)
+ *
+ * Note: this script captures the browser context at 1280x720 and plays
+ * through each shot by time window, executing best-effort mouse moves and
+ * clicks on elements matching \`selectorHint\` when present.
+ * For reliable results, replace generic selectors with real ones from your
+ * target pages.
+ */
+
+import { chromium } from "playwright";
+import fs from "node:fs";
+import path from "node:path";
+
+const CLIPS = ${JSON.stringify(clipsData, null, 2)};
+
+const OUT_DIR = "recordings";
+fs.mkdirSync(OUT_DIR, { recursive: true });
+
+function parseTime(t) {
+  const [a, b] = String(t).split(/\\s+[–-]\\s+/);
+  const toSec = (x) => {
+    const m = /^(\\d+):(\\d+)$/.exec((x || "").trim());
+    return m ? Number(m[1]) * 60 + Number(m[2]) : 0;
+  };
+  return [toSec(a), toSec(b)];
+}
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+async function runShot(page, shot) {
+  const [start, end] = parseTime(shot.time);
+  const durationMs = Math.max(500, (end - start) * 1000);
+  const selector = shot.selectorHint;
+
+  console.log(\`  [\${shot.time}] \${shot.action}\`);
+
+  // Try to interact with something matching selectorHint
+  if (selector) {
+    try {
+      const first = selector.split(",")[0].trim();
+      const locator = page.locator(first).first();
+      const count = await locator.count().catch(() => 0);
+      if (count > 0) {
+        const box = await locator.boundingBox().catch(() => null);
+        if (box) {
+          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 24 });
+          await sleep(Math.min(800, durationMs * 0.3));
+          const action = (shot.action || "").toLowerCase();
+          if (/click|apas|deschide|continu|schimb|intr[ăa]/.test(action)) {
+            await locator.click({ timeout: 2500 }).catch(() => {});
+          } else if (/hover/.test(action)) {
+            await locator.hover({ timeout: 2500 }).catch(() => {});
+          }
+        }
+      }
+    } catch (err) {
+      console.warn(\`    (selector fallback: \${err.message})\`);
+    }
+  } else {
+    // No selector: gentle scroll to show life
+    await page.mouse.wheel(0, 80).catch(() => {});
+  }
+
+  // Hold the shot for the remaining time so pacing matches the plan
+  await sleep(durationMs);
+}
+
+async function runClip(clip) {
+  const slug = clip.slug;
+  console.log(\`\\n=== \${clip.title} (\${clip.duration}s) — \${clip.url} ===\`);
+
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext({
+    viewport: { width: 1280, height: 720 },
+    recordVideo: { dir: OUT_DIR, size: { width: 1280, height: 720 } }
+  });
+  const page = await context.newPage();
+
+  try {
+    await page.goto(clip.url, { waitUntil: "networkidle", timeout: 30000 });
+  } catch (err) {
+    console.warn(\`  Navigation slow or blocked: \${err.message}\`);
+  }
+
+  // Pre-roll settle time
+  await sleep(800);
+
+  for (const shot of clip.shots) {
+    await runShot(page, shot);
+  }
+
+  await context.close();
+  await browser.close();
+
+  // Rename the video file to a predictable slug-based name
+  const files = fs.readdirSync(OUT_DIR).filter((f) => f.endsWith(".webm"));
+  const newest = files
+    .map((f) => ({ f, t: fs.statSync(path.join(OUT_DIR, f)).mtimeMs }))
+    .sort((a, b) => b.t - a.t)[0];
+  if (newest) {
+    const target = path.join(OUT_DIR, \`\${slug}.webm\`);
+    fs.renameSync(path.join(OUT_DIR, newest.f), target);
+    console.log(\`  → \${target}\`);
+  }
+}
+
+async function main() {
+  console.log(\`Rulez \${CLIPS.length} clipuri. Videoclipurile ajung în ./\${OUT_DIR}/\`);
+  for (const clip of CLIPS) {
+    await runClip(clip);
+  }
+  console.log("\\nGata. Pentru conversie MP4:");
+  console.log("  ffmpeg -i recordings/<slug>.webm -c:v libx264 -crf 18 recordings/<slug>.mp4");
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
+`;
     }
 
     // ====================================================================
@@ -1748,15 +2891,40 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         state.clips = JSON.parse(JSON.stringify(presetClips));
         state.selectedClipId = state.clips[0] ? state.clips[0].id : null;
         renderAll();
+        updateReadiness();
+        updateOnboarding();
         toast("Am încărcat clipurile presetate.", "ok");
       };
 
       $("loadPresetBtn").addEventListener("click", triggerPresets);
       $("heroPresetBtn").addEventListener("click", triggerPresets);
 
+      // Reel controls
+      $("heroReelBtn").addEventListener("click", startReel);
+      $("reelPauseBtn").addEventListener("click", togglePauseReel);
+      $("reelSkipBtn").addEventListener("click", skipReelClip);
+      $("reelStopBtn").addEventListener("click", stopReel);
+
+      // Keyboard shortcuts during reel
+      document.addEventListener("keydown", (e) => {
+        if (!reel.running) return;
+        if (e.target.matches("input, textarea, select")) return;
+        if (e.code === "Space") { e.preventDefault(); togglePauseReel(); }
+        else if (e.code === "ArrowRight") { e.preventDefault(); skipReelClip(); }
+        else if (e.code === "Escape") { e.preventDefault(); stopReel(); }
+      });
+
       // Mode toggle
       $("modeMockBtn").addEventListener("click", () => setMode("mock"));
       $("modeRealBtn").addEventListener("click", () => setMode("real"));
+
+      // Style picker (event delegation on the grid)
+      $("styleGrid").addEventListener("click", (e) => {
+        const card = e.target.closest("[data-style-id]");
+        if (!card) return;
+        setStyle(card.dataset.styleId);
+        updateReadiness();
+      });
 
       // API key persistence
       $("apiKey").addEventListener("input", (e) => {
@@ -1814,9 +2982,23 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         toast("Automation Pack descărcat.", "ok");
       });
 
+      $("downloadRunnerBtn").addEventListener("click", () => {
+        // If no clips loaded, use presets so the runner always has something to work with
+        const clips = state.clips.length ? state.clips.slice(0, 3) : presetClips;
+        const runner = buildPlaywrightRunner(clips);
+        downloadFile("run-demos.mjs", runner, "text/javascript;charset=utf-8");
+        toast("Runner Playwright descărcat. Vezi comentariile din fișier pentru pași.", "ok");
+      });
+
       $("copyCliBtn").addEventListener("click", async () => {
         try {
-          await navigator.clipboard.writeText(["npm install", "npx playwright install chromium", "node runner.mjs"].join(NL));
+          await navigator.clipboard.writeText([
+            "# După ce ai descărcat run-demos.mjs:",
+            "npm init -y",
+            "npm install playwright",
+            "npx playwright install chromium",
+            "node run-demos.mjs"
+          ].join(NL));
           toast("Comenzile CLI au fost copiate.", "ok");
         } catch {
           toast("Nu am putut copia în clipboard.", "err");
@@ -1831,6 +3013,8 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         $("objective").value = "";
         $("duration").value = "40";
         renderAll();
+        updateReadiness();
+        updateOnboarding();
         toast("Editorul a fost resetat.", "ok");
       });
 
@@ -1848,7 +3032,30 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
         if (e.target.matches("select") && e.target.id !== "aiModel" && e.target.id !== "duration") {
           renderSelectedClip();
         }
+        if (e.target.id === "duration") {
+          updateReadiness();
+          updateOnboarding();
+        }
       });
+
+      // Live readiness + onboarding
+      const watchedInputs = ["projectUrl", "projectName", "objective"];
+      watchedInputs.forEach((id) => {
+        const el = $(id);
+        if (!el) return;
+        el.addEventListener("input", () => {
+          updateReadiness();
+          updateOnboarding();
+        });
+      });
+      // duration is a select, needs "change" not "input"
+      const durEl = $("duration");
+      if (durEl) {
+        durEl.addEventListener("change", () => {
+          updateReadiness();
+          updateOnboarding();
+        });
+      }
     }
 
     // ====================================================================
@@ -1882,8 +3089,21 @@ SCHEMA OUTPUT (toate câmpurile sunt obligatorii):
     loadSettings();
     buildConfigGrid();
     renderDirectionRules();
+    renderStylePicker();
     attachEvents();
     updateModeUI();
+
+    // Homepage 1-click demo: if user has no clips yet, auto-load the first preset
+    // so the timeline, slides, descriptions etc. are populated instantly.
+    // They can still hit Reset or generate their own; this just avoids a cold empty state.
+    if (!state.clips.length) {
+      const firstPreset = JSON.parse(JSON.stringify(presetClips[0]));
+      state.clips = [firstPreset];
+      state.selectedClipId = firstPreset.id;
+    }
+
+    updateReadiness();
+    updateOnboarding();
     renderAll();
     setActiveView("timeline");
     runSelfTests();
