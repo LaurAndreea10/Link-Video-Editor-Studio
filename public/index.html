@@ -513,8 +513,8 @@
           <input id="projectName" type="text" placeholder="Ex: Alpis Fusion CRM Premium" />
         </div>
         <div class="field">
-          <label for="visualMessage">Mesaj vizual</label>
-          <textarea id="visualMessage" placeholder="Ex: produsul transmite claritate, profunzime și fluiditate într-un singur flow."></textarea>
+          <label for="objective">Obiectiv</label>
+          <textarea id="objective" placeholder="Ex: demo premium pentru sales, 40 sec, accent pe claritate și flow."></textarea>
         </div>
         <div class="field">
           <label for="duration">Durată țintă</label>
@@ -761,43 +761,28 @@
       return cfg;
     }
 
-    function createClipFromInputs() {
-      const title = $("projectName").value.trim() || "Clip nou generat";
-      const url = $("projectUrl").value.trim();
-      const message = $("visualMessage").value.trim() || "Produsul este fluid și convingător vizual.";
-      const duration = Number($("duration").value || 40);
-
-      return {
-        id: createId(),
-        title: `CLIP CUSTOM — ${title}`,
-        shortTitle: title,
-        url,
-        message,
-        duration,
-        preroll: ["Deschide URL-ul.", "Așteaptă încărcarea.", "Poziționează-te pe view-ul principal."],
-        avoid: ["Nu scrie text lung.", "Nu intra în zone fără payoff vizual."],
-        shots: [
-          { time: "00:00 – 00:04", action: "Ține ecranul principal în cadru.", purpose: "Prima impresie." },
-          { time: "00:04 – 00:08", action: "Hover pe o componentă relevantă.", purpose: "Interactivitate." },
-          { time: "00:08 – 00:14", action: "Intră în zona principală a produsului.", purpose: "Structură și flow." },
-          { time: "00:14 – 00:20", action: "Arată un detail panel sau modal.", purpose: "Bogăție de informație." }
-        ]
-      };
-    }
-
     function getSelectedClip() {
       return state.clips.find((clip) => clip.id === state.selectedClipId) || null;
     }
 
     function generateSlides(clip) {
       return [
-        { title: "Hook vizual", bullets: [`Produs: ${clip.shortTitle}`, `Durată demo: ${clip.duration} sec`, `Promisiune: ${clip.message}`] },
-        { title: "Pre-roll", bullets: clip.preroll },
-        { title: "Ce evităm", bullets: clip.avoid }
+        { title: "Hook vizual", bullets: [`Produs: ${clip.shortTitle}`, `Durată demo: ${clip.duration} sec`, `Promisiune: ${clip.message || "Demo premium generat automat"}`] },
+        { title: "Pre-roll", bullets: clip.preroll?.length ? clip.preroll : ["Deschide produsul.", "Așteaptă încărcarea.", "Intră în view-ul principal."] },
+        { title: "Execuție", bullets: (clip.shots || []).slice(0, 4).map((s) => `${s.time}: ${s.action}`) }
       ];
     }
 
     function generateDescriptions(clip) {
+      if (clip.aiDescriptions) {
+        return [
+          `1) Descriere recruiter${NL}${clip.aiDescriptions.recruiter || ""}`,
+          `2) Descriere portofoliu${NL}${clip.aiDescriptions.portfolio || ""}`,
+          `3) Descriere social${NL}${clip.aiDescriptions.social || ""}`,
+          `4) Notă tehnică${NL}${clip.aiDescriptions.technical || ""}`
+        ].join(NL2);
+      }
+
       return [
         `1) Descriere recruiter${NL}${clip.shortTitle} comunică un produs matur și ușor de urmărit.`,
         `2) Descriere portofoliu${NL}Demo silențios, orientat pe valoarea vizuală a produsului.`,
@@ -807,6 +792,15 @@
     }
 
     function generateSummary(clip, config) {
+      if (clip.aiSummary) {
+        return [
+          clip.aiSummary,
+          "",
+          "CONFIG",
+          JSON.stringify(config, null, 2)
+        ].join(NL);
+      }
+
       return [
         `PROIECT: ${clip.title}`,
         `URL: ${clip.url}`,
@@ -824,15 +818,19 @@
     }
 
     function generateVoiceover(clip) {
-      return `Acesta este ${clip.shortTitle}. Demo-ul pune accent pe claritate, ritm și payoff vizual.`;
+      return clip.aiVoiceover || `Acesta este ${clip.shortTitle}. Demo-ul pune accent pe claritate, ritm și payoff vizual.`;
     }
 
     function generateExport(clip, config) {
+      const plan = clip.aiPlanJson && Object.keys(clip.aiPlanJson).length
+        ? clip.aiPlanJson
+        : { clip, config };
+
       return [
         "# Encode final sugerat",
         `ffmpeg -i input.${config.recordingFormat} -c:v libx264 -crf ${config.crf} output-final.mp4`,
         "",
-        JSON.stringify({ clip, config }, null, 2)
+        JSON.stringify(plan, null, 2)
       ].join(NL);
     }
 
@@ -963,15 +961,69 @@
     }
 
     function attachEvents() {
-      const triggerGenerate = () => {
+      const generateWithAI = async () => {
         const url = $("projectUrl").value.trim();
+        const productName = $("projectName").value.trim();
+        const objective = $("objective").value.trim();
+        const duration = Number($("duration").value || 40);
         if (!url) {
           toast("Adaugă un link valid.");
           return;
         }
-        state.clips.unshift(createClipFromInputs());
-        state.selectedClipId = state.clips[0].id;
-        renderAll();
+
+        const btn = $("generateBtn");
+        const heroBtn = $("heroGenerateBtn");
+        const oldText = btn.textContent;
+        const oldHeroText = heroBtn.textContent;
+
+        btn.disabled = true;
+        heroBtn.disabled = true;
+        btn.textContent = "Generez...";
+        heroBtn.textContent = "Generez...";
+        toast("Analizez pagina și construiesc demo-ul automat...");
+
+        try {
+          const response = await fetch("/api/generate-demo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url, productName, objective, duration })
+          });
+          const data = await response.json();
+          if (!response.ok || !data.ok) {
+            throw new Error(data.error || "Generarea a eșuat.");
+          }
+
+          const clip = {
+            id: createId(),
+            title: `CLIP AI — ${data.input.productName || productName || "Produs"}`,
+            shortTitle: data.input.productName || productName || "Produs",
+            url: data.input.url,
+            message: data.visualMessage,
+            duration: data.input.duration || duration,
+            preroll: Array.isArray(data.preroll) ? data.preroll : [],
+            avoid: [
+              "Nu accelera tranzițiile inutil.",
+              "Nu umple ecranul cu interacțiuni fără payoff."
+            ],
+            shots: Array.isArray(data.shots) ? data.shots : [],
+            aiDescriptions: data.descriptions || {},
+            aiVoiceover: data.voiceover || "",
+            aiSummary: data.summary || "",
+            aiPlanJson: data.planJson || {}
+          };
+
+          state.clips.unshift(clip);
+          state.selectedClipId = clip.id;
+          renderAll();
+          toast("Demo-ul a fost generat automat.");
+        } catch (error) {
+          toast(`Eroare: ${error.message}`);
+        } finally {
+          btn.disabled = false;
+          heroBtn.disabled = false;
+          btn.textContent = oldText;
+          heroBtn.textContent = oldHeroText;
+        }
       };
 
       const triggerPresets = () => {
@@ -981,9 +1033,9 @@
         toast("Am încărcat clipurile presetate.");
       };
 
-      $("generateBtn").addEventListener("click", triggerGenerate);
+      $("generateBtn").addEventListener("click", generateWithAI);
       $("loadPresetBtn").addEventListener("click", triggerPresets);
-      $("heroGenerateBtn").addEventListener("click", triggerGenerate);
+      $("heroGenerateBtn").addEventListener("click", generateWithAI);
       $("heroPresetBtn").addEventListener("click", triggerPresets);
 
       $("copySummaryBtn").addEventListener("click", async () => {
@@ -1002,7 +1054,8 @@
           toast("Nu există date de exportat.");
           return;
         }
-        downloadFile(`${slugify(clip.shortTitle)}.plan.json`, JSON.stringify({ clip, config: formatConfig() }, null, 2), "application/json;charset=utf-8");
+        const plan = clip.aiPlanJson && Object.keys(clip.aiPlanJson).length ? clip.aiPlanJson : { clip, config: formatConfig() };
+        downloadFile(`${slugify(clip.shortTitle)}.plan.json`, JSON.stringify(plan, null, 2), "application/json;charset=utf-8");
       });
 
       $("downloadHtmlBtn").addEventListener("click", () => {
@@ -1034,7 +1087,7 @@
         state.selectedClipId = null;
         $("projectUrl").value = "";
         $("projectName").value = "";
-        $("visualMessage").value = "";
+        $("objective").value = "";
         $("duration").value = "40";
         renderAll();
         toast("Editorul a fost resetat.");
