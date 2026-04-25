@@ -6,6 +6,14 @@ function getNarrativeRoleAddon(index,total){
   return state.lang==='ro' ? 'Middle beat' : 'Middle beat';
 }
 
+function createEmptyStateAddon(icon,title,body){
+  return `<div class="empty-state micro-fade-up"><div class="empty-state-icon">${icon}</div><h4>${escapeHtml(title)}</h4><p>${escapeHtml(body)}</p></div>`;
+}
+function applyRevealStaggerAddon(id){
+  const el=document.getElementById(id);
+  if(el) el.classList.add('reveal-stagger');
+}
+
 function enrichShortsAddon(clip){
   const shorts = Array.isArray(clip.shorts) ? clip.shorts : [];
   return shorts.map((item,index)=>({
@@ -93,15 +101,30 @@ function ensureKeyframesActionsAddon(){
   });
 }
 
+const __origRenderClipListVisualAddon = renderClipList;
+renderClipList = function(){
+  __origRenderClipListVisualAddon();
+  const clipList = document.getElementById('clipList');
+  if(clipList && !state.clips.length){
+    clipList.innerHTML = createEmptyStateAddon('✨', state.lang==='ro'?'Workspace curat':'Clean workspace', state.lang==='ro'?'Adaugă un URL, un video link sau un fișier pentru a construi primul demo product-grade.':'Add a URL, video link or file to build the first product-grade demo.');
+  }
+  applyRevealStaggerAddon('clipList');
+};
+
 if(typeof renderShorts === 'function'){
   const __origRenderShortsAddon = renderShorts;
   renderShorts = function(clip){
     __origRenderShortsAddon(clip);
     ensureShortsActionsAddon();
     const stack = document.getElementById('shorts');
-    if(!stack || !clip) return;
+    if(!stack) return;
+    if(!clip){
+      stack.innerHTML = createEmptyStateAddon('📱', state.lang==='ro'?'Shorts indisponibile':'Shorts unavailable', state.lang==='ro'?'Alege o sursă și generează pentru a construi shorts premium.':'Choose a source and generate to build premium shorts.');
+      return;
+    }
     const enriched = enrichShortsAddon(clip);
-    stack.innerHTML = enriched.map((item)=>`<article class="short-card"><strong>${escapeHtml(item.title)}</strong><div class="pill-row"><span class="pill">${escapeHtml(item.range)}</span><span class="pill">${escapeHtml(item.format)}</span></div><div class="output-box">Hook: ${escapeHtml(item.hook)}\n\nMiddle: ${escapeHtml(item.middle)}\n\nPayoff: ${escapeHtml(item.payoff)}\n\nText: ${escapeHtml(item.recommendedTextOnScreen)}</div></article>`).join('');
+    stack.innerHTML = enriched.map((item)=>`<article class="short-card micro-fade-up"><strong>${escapeHtml(item.title)}</strong><div class="pill-row"><span class="pill">${escapeHtml(item.range)}</span><span class="pill">${escapeHtml(item.format)}</span></div><div class="output-box">Hook: ${escapeHtml(item.hook)}\n\nMiddle: ${escapeHtml(item.middle)}\n\nPayoff: ${escapeHtml(item.payoff)}\n\nText: ${escapeHtml(item.recommendedTextOnScreen)}</div></article>`).join('');
+    applyRevealStaggerAddon('shorts');
   };
 }
 
@@ -111,11 +134,42 @@ if(typeof renderKeyframes === 'function'){
     __origRenderKeyframesAddon(clip);
     ensureKeyframesActionsAddon();
     const grid = document.getElementById('keyframes');
-    if(!grid || !clip) return;
+    if(!grid) return;
+    if(!clip){
+      grid.innerHTML = createEmptyStateAddon('🖼️', state.lang==='ro'?'Cadre-cheie indisponibile':'Keyframes unavailable', state.lang==='ro'?'După generare vei vedea cadre-cheie, roluri narative și overlay-uri sugerate.':'After generation you will see keyframes, narrative roles and suggested overlays.');
+      return;
+    }
     const enriched = enrichKeyframesAddon(clip);
-    grid.innerHTML = enriched.map((frame)=>`<article class="frame-card">${frame.image?`<img src="${frame.image}" alt="frame ${escapeHtml(frame.label||'')}">`:''}<strong>${escapeHtml(frame.label||'')}</strong><div class="pill-row"><span class="pill">${escapeHtml(frame.role)}</span></div><p class="hint">${escapeHtml(frame.narrative || '')}</p><div class="output-box">Overlay: ${escapeHtml(frame.suggestedOverlay || '')}</div></article>`).join('');
+    grid.innerHTML = enriched.map((frame)=>`<article class="frame-card micro-fade-up">${frame.image?`<img src="${frame.image}" alt="frame ${escapeHtml(frame.label||'')}">`:''}<strong>${escapeHtml(frame.label||'')}</strong><div class="pill-row"><span class="pill">${escapeHtml(frame.role)}</span></div><p class="hint">${escapeHtml(frame.narrative || '')}</p><div class="output-box">Overlay: ${escapeHtml(frame.suggestedOverlay || '')}</div></article>`).join('');
+    applyRevealStaggerAddon('keyframes');
   };
 }
+
+if(typeof renderTranslations === 'function'){
+  const __origRenderTranslationsVisualAddon = renderTranslations;
+  renderTranslations = function(clip){
+    __origRenderTranslationsVisualAddon(clip);
+    const stack = document.getElementById('translations');
+    if(stack && !clip){
+      stack.innerHTML = createEmptyStateAddon('🌍', state.lang==='ro'?'Traduceri indisponibile':'Translations unavailable', state.lang==='ro'?'Activează limbile dorite și generează un plan pentru captions și subtitrări.':'Enable languages and generate a plan for captions and subtitles.');
+    }
+    applyRevealStaggerAddon('translations');
+  };
+}
+
+const __origRenderSelectedClipVisualAddon = renderSelectedClip;
+renderSelectedClip = function(){
+  __origRenderSelectedClipVisualAddon();
+  const clip = getSelectedClip();
+  const timeline = document.getElementById('timeline');
+  const slides = document.getElementById('slides');
+  if(!clip){
+    if(timeline) timeline.innerHTML = createEmptyStateAddon('🎬', state.lang==='ro'?'Niciun demo selectat':'No demo selected', state.lang==='ro'?'Generează un clip nou sau încarcă un preset pentru a vedea timeline-ul premium.':'Generate a new clip or load a preset to see the premium timeline.');
+    if(slides) slides.innerHTML = createEmptyStateAddon('🧩', state.lang==='ro'?'Slide-uri negenerate':'No slides yet', state.lang==='ro'?'Slide-urile apar după prima generare.':'Slides appear after the first generation.');
+  }
+  ['timeline','slides','shorts','keyframes','translations'].forEach(applyRevealStaggerAddon);
+  document.querySelectorAll('.clip-card,.shot,.slide,.short-card,.frame-card,.translation-card,.stat,.section,.tab').forEach((node)=>node.classList.add('micro-fade-up'));
+};
 
 if(typeof generateExport === 'function'){
   const __origGenerateExportKeyframesAddon = generateExport;
