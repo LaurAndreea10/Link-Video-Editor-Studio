@@ -18,19 +18,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate repository
+        run: npm run validate
+
       - uses: actions/configure-pages@v5
+
       - name: Prepare static site
         run: |
           mkdir -p dist
           cp index.html dist/index.html
           cp manifest.webmanifest dist/manifest.webmanifest
           cp service-worker.js dist/service-worker.js
-          cp README.md dist/README.md
+          cp README.md dist/README.md || true
+          cp package.json dist/package.json || true
           cp -r assets dist/assets
           cp -r examples dist/examples || true
           cp -r docs dist/docs || true
           touch dist/.nojekyll
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
