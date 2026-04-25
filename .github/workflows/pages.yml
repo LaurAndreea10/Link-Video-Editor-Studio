@@ -18,20 +18,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - name: Prepare static site
         run: |
           mkdir -p dist
-          cp -R public/. dist/
+          cp index.html dist/index.html
+          cp manifest.webmanifest dist/manifest.webmanifest
+          cp service-worker.js dist/service-worker.js
+          cp README.md dist/README.md
+          cp -r assets dist/assets
+          cp -r examples dist/examples || true
+          cp -r docs dist/docs || true
           touch dist/.nojekyll
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
@@ -42,6 +42,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
