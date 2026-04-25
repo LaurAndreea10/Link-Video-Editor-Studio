@@ -1,14 +1,14 @@
 {
   "name": "link-video-editor-studio",
   "version": "1.0.0",
-  "description": "HTML + Node.js + Playwright + FFmpeg automation for product demo videos",
+  "description": "Static-first GitHub Pages studio with Playwright render workflows",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
     "install:browsers": "playwright install chromium",
-    "validate": "node scripts/validate-inline-scripts.mjs public/index.html",
+    "validate": "node --check assets/app.js && node -e \"JSON.parse(require('fs').readFileSync('assets/presets.json','utf8')); console.log('presets.json valid')\"",
     "render:plan": "node scripts/run-plan.mjs"
   },
   "dependencies": {

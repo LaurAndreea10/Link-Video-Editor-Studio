@@ -1,0 +1,86 @@
+{
+  "styles": [
+    "SaaS Clean",
+    "Launch Teaser",
+    "Investor Deck",
+    "Social Reel",
+    "Tutorial Walkthrough",
+    "Enterprise Polished"
+  ],
+  "directionRules": [
+    "Niciodată mai mult de 3 acțiuni pe secundă.",
+    "Pauză 0.5s după fiecare acțiune majoră.",
+    "Niciodată scroll rapid — 200px pe secundă maxim.",
+    "Stai 1–2 secunde pe modale importante.",
+    "Dacă ai ezitare, refilmezi."
+  ],
+  "clips": [
+    {
+      "id": "alpis-fusion",
+      "title": "CLIP 1 — Alpis Fusion CRM Premium",
+      "shortTitle": "Alpis Fusion CRM Premium",
+      "duration": 40,
+      "url": "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
+      "message": "Produs profund, cu module integrate și flow complet într-un singur ecran.",
+      "preroll": [
+        "Deschide URL-ul.",
+        "Așteaptă încărcarea completă.",
+        "Poziționează-te pe Dashboard."
+      ],
+      "avoid": [
+        "Nu intra în Settings.",
+        "Nu scrie texte lungi."
+      ],
+      "shots": [
+        { "time": "00:00 – 00:04", "action": "Ține Dashboard-ul în cadru.", "purpose": "Prima impresie: produsul e viu." },
+        { "time": "00:04 – 00:08", "action": "Deschide command palette și caută Clienți.", "purpose": "Power-user features." },
+        { "time": "00:08 – 00:14", "action": "Arată lista Clienți și un panel lateral bogat.", "purpose": "Structură de date clară." },
+        { "time": "00:14 – 00:20", "action": "Intră în Pipeline și mută un deal.", "purpose": "Core CRM workflow." },
+        { "time": "00:20 – 00:28", "action": "Arată Bookings și o factură generată.", "purpose": "Flux end-to-end." },
+        { "time": "00:28 – 00:40", "action": "Arată automatizările și revino la overview.", "purpose": "Complexitate bine organizată." }
+      ]
+    },
+    {
+      "id": "clientflow",
+      "title": "CLIP 2 — ClientFlow SaaS",
+      "shortTitle": "ClientFlow SaaS",
+      "duration": 30,
+      "url": "https://laurandreea10.github.io/ClientFlow-SaaS-CRM-task-manager-automation-suite/",
+      "message": "Mobile-first și foarte rapid pentru freelancers.",
+      "preroll": [
+        "Deschide URL-ul.",
+        "Asigură-te că există date demo.",
+        "Poziționează-te pe Dashboard."
+      ],
+      "avoid": ["Nu intra în portalul simulat."],
+      "shots": [
+        { "time": "00:00 – 00:03", "action": "Stai pe Dashboard.", "purpose": "Claritate." },
+        { "time": "00:03 – 00:07", "action": "Schimbă statusul unui task.", "purpose": "Task management rapid." },
+        { "time": "00:07 – 00:11", "action": "Arată Calendarul.", "purpose": "Vizibilitate operațională." },
+        { "time": "00:11 – 00:15", "action": "Deschide un client.", "purpose": "Client-centric view." },
+        { "time": "00:15 – 00:23", "action": "Arată Invoicing și Availability Generator.", "purpose": "Breadth de produs." },
+        { "time": "00:23 – 00:30", "action": "Arată Content Studio și language toggle.", "purpose": "Polish final." }
+      ]
+    },
+    {
+      "id": "impact-path",
+      "title": "CLIP 3 — Alpis Impact Path",
+      "shortTitle": "Alpis Impact Path",
+      "duration": 35,
+      "url": "https://github.com/LaurAndreea10/ALPIS-ImpactPath",
+      "message": "Parcurs ghidat cu progres vizibil și CTA contextual.",
+      "preroll": [
+        "Deschide demo-ul live.",
+        "Resetează parcursul la început."
+      ],
+      "avoid": ["Nu sări peste pași."],
+      "shots": [
+        { "time": "00:00 – 00:04", "action": "Arată versiunea statică veche, dacă există.", "purpose": "Contrast." },
+        { "time": "00:04 – 00:10", "action": "Treci la versiunea interactivă cu progres 0%.", "purpose": "Focus pe un singur pas." },
+        { "time": "00:10 – 00:20", "action": "Parcurge pașii 1 și 2.", "purpose": "Feedback imediat." },
+        { "time": "00:20 – 00:28", "action": "Parcurge pasul 3 și 4.", "purpose": "Ritm controlat." },
+        { "time": "00:28 – 00:35", "action": "Ajungi la CTA final și confirmare.", "purpose": "Payoff final." }
+      ]
+    }
+  ]
+}

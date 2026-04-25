@@ -41,13 +41,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TAG="${{ github.event.inputs.tag }}"
           else
             TAG="${GITHUB_REF_NAME}"
           fi
-
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
       - name: Ensure tag exists
@@ -55,9 +53,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           TAG="${{ steps.vars.outputs.tag }}"
-
           if git rev-parse "$TAG" >/dev/null 2>&1; then
             echo "Tag exists: $TAG"
           else
@@ -72,11 +68,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           INPUT_PLAN="${{ github.event.inputs.plan_path || '' }}"
           PLAN_FILE=""
 
-          # 0) Dacă userul a dat explicit un path la workflow_dispatch, îl folosim
           if [ -n "${INPUT_PLAN}" ]; then
             if [ -f "${INPUT_PLAN}" ]; then
               PLAN_FILE="${INPUT_PLAN}"
@@ -86,27 +80,17 @@ jobs:
             fi
           fi
 
-          # 1) Caută un plan modificat în commitul/tag-ul curent
           if [ -z "${PLAN_FILE}" ]; then
-            PLAN_FILE="$(git diff-tree --no-commit-id --name-only -r HEAD \
-              | grep -E '(^|/)(plan\.json|.*\.plan\.json|output-plan\.json)$' \
-              | head -n 1 || true)"
+            PLAN_FILE="$(git diff-tree --no-commit-id --name-only -r HEAD | grep -E '(^|/)(plan\.json|.*\.plan\.json|output-plan\.json|sample-plan\.json)$' | head -n 1 || true)"
           fi
 
-          # 2) Preferă foldere convenționale dacă nu s-a găsit nimic în commitul curent
           if [ -z "${PLAN_FILE}" ]; then
-            PLAN_FILE="$(git ls-files \
-              | grep -E '^(plans/.*(plan\.json|\.plan\.json)|.*(/plan\.json|\.plan\.json)|output-plan\.json)$' \
-              | head -n 1 || true)"
+            PLAN_FILE="$(git ls-files | grep -E '^(plans/.*(plan\.json|\.plan\.json)|examples/sample-plan\.json|.*(/plan\.json|\.plan\.json)|output-plan\.json)$' | head -n 1 || true)"
           fi
 
           if [ -z "${PLAN_FILE}" ]; then
             echo "Nu am găsit niciun plan JSON în repo."
-            echo "Folosește unul dintre numele/path-urile:"
-            echo "  - plans/latest.plan.json"
-            echo "  - orice *.plan.json"
-            echo "  - plan.json"
-            echo "  - output-plan.json"
+            echo "Sugestii: plans/latest.plan.json, examples/sample-plan.json sau orice *.plan.json"
             exit 1
           fi
 
@@ -114,7 +98,6 @@ jobs:
           STEM="${BASENAME%.json}"
           SAFE_NAME="$(echo "${STEM}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/-\+/-/g' | sed 's/^-//;s/-$//')"
 
-          echo "Plan detectat: ${PLAN_FILE}"
           echo "path=${PLAN_FILE}" >> "$GITHUB_OUTPUT"
           echo "safe_name=${SAFE_NAME}" >> "$GITHUB_OUTPUT"
 
@@ -128,7 +111,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install FFmpeg
         run: |
@@ -136,7 +118,7 @@ jobs:
           sudo apt-get install -y ffmpeg
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Install Chromium
         run: npx playwright install chromium
@@ -144,7 +126,7 @@ jobs:
       - name: Validate detected plan
         shell: bash
         run: |
-          node -e "const fs=require('fs'); JSON.parse(fs.readFileSync('${{ steps.planfile.outputs.path }}','utf8')); console.log('Plan JSON valid')"
+          node -e "JSON.parse(require('fs').readFileSync('${{ steps.planfile.outputs.path }}','utf8')); console.log('Plan JSON valid')"
 
       - name: Run render from detected plan
         shell: bash

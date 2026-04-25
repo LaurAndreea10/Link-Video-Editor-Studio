@@ -9,16 +9,17 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Verify app entrypoint
-        run: test -f public/index.html
-
-      - name: Validate inline JavaScript syntax
-        run: node scripts/validate-inline-scripts.mjs public/index.html
+      - name: Verify required files exist
+        run: |
+          test -f index.html
+          test -f assets/app.js
+          test -f assets/app.css
+          test -f assets/presets.json
+      - name: Validate presets JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('assets/presets.json','utf8')); console.log('presets.json valid')"
+      - name: Validate JS module syntax
+        run: node --check assets/app.js
