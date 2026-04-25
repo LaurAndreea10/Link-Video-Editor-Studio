@@ -8,12 +8,13 @@
     "start": "node server.js",
     "dev": "node server.js",
     "install:browsers": "playwright install chromium",
-    "validate": "node --check assets/app.js && node -e \"JSON.parse(require('fs').readFileSync('assets/presets.json','utf8')); console.log('presets.json valid')\"",
-    "render:plan": "node scripts/run-plan.mjs"
+    "validate": "node scripts/validate.mjs",
+    "render:plan": "node scripts/run-plan.mjs",
+    "render:export": "node scripts/render-export.mjs"
   },
   "dependencies": {
     "express": "^4.21.2",
-    "playwright": "^1.53.0",
+    "playwright": "^1.55.0",
     "uuid": "^11.1.0"
   }
 }
