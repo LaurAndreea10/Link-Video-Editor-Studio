@@ -60,6 +60,7 @@ Link-Video-Editor-Studio/
 │   ├── app.js
 │   └── presets.json
 ├── docs/
+│   ├── PLANNING.md
 │   └── screenshots/
 ├── examples/
 │   ├── sample-plan.json
@@ -123,6 +124,14 @@ Publishes release assets for tagged versions.
 - [#17 — Complete visual proof assets and demo screenshots](https://github.com/LaurAndreea10/Link-Video-Editor-Studio/issues/17)
 - [#18 — Clean up and consolidate GitHub workflows](https://github.com/LaurAndreea10/Link-Video-Editor-Studio/issues/18)
 - [#19 — Bootstrap repo governance: labels, milestones and planning docs](https://github.com/LaurAndreea10/Link-Video-Editor-Studio/issues/19)
+
+## Planning and governance
+See [docs/PLANNING.md](./docs/PLANNING.md) for:
+- label taxonomy
+- milestone buckets
+- decision rules
+- definition of done
+- recommended next execution order
 
 ## Security note
 If you later add direct browser AI integrations, treat them as **development / user-owned-key flows**, not as secure production secret handling.
