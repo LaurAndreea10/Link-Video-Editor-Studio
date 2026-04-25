@@ -3,13 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#0b1020" />
+  <meta name="theme-color" content="#08101f" />
   <title>Link Video Editor Studio</title>
   <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="stylesheet" href="./assets/app.css" />
+  <link rel="stylesheet" href="./assets/premium.css" />
 </head>
 <body>
-  <div id="app">Link Video Editor Studio</div>
-  <script type="module" src="./assets/app.js"></script>
+  <div class="app">
+    <aside class="sidebar panel">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1 id="brandTitle">Link Video Editor Studio</h1>
+          <p id="brandText">Planifici rapid demo-uri video, deck-uri și exporturi pentru produsul tău, pornind de la un singur URL.</p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-title"><h2 id="languageTitle">Limbă / Language</h2><span class="badge">RO / EN</span></div>
+        <div class="lang-toggle"><button id="langRoBtn" class="active" type="button">Română</button><button id="langEnBtn" type="button">English</button></div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><h2 id="modeTitle">Mod de generare</h2><span class="badge ai" id="modeBadge">Mock</span></div>
+        <div class="mode-toggle"><button id="modeMockBtn" class="active" data-mode="mock">🎭 Mock</button><button id="modeRealBtn" data-mode="real">✨ AI real</button></div>
+        <div class="hint" id="modeHint">Mock generează planuri deterministe, plauzibile, fără costuri. Varianta AI reală folosește cheia ta Anthropic pentru planuri personalizate.</div>
+        <div class="settings-body collapsed" id="realSettings">
+          <div class="field"><label for="apiKey">Anthropic API Key</label><div class="api-key-row"><input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off" /><button class="tiny-btn" id="clearKeyBtn" type="button">Șterge</button></div></div>
+          <div class="hint"><span class="status-dot" id="keyStatus"></span><span id="keyStatusText">Cheia rămâne în browser (localStorage). Nu o trimitem nicăieri în afară de api.anthropic.com.</span></div>
+          <div class="field"><label for="aiModel">Model</label><select id="aiModel"><option value="claude-opus-4-7">Claude Opus 4.7</option><option value="claude-sonnet-4-6" selected>Claude Sonnet 4.6</option><option value="claude-haiku-4-5-20251001">Claude Haiku 4.5</option></select></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title"><h2 id="sourceTitle">Sursă media</h2><span class="badge success">Link + video</span></div>
+        <div class="source-toggle"><button id="sourcePageBtn" class="active" type="button">🌐 Pagină</button><button id="sourceVideoUrlBtn" type="button">🔗 Video link</button><button id="sourceUploadBtn" type="button">📁 Atașament</button></div>
+        <div class="field" id="projectUrlField"><label for="projectUrl" id="projectUrlLabel">Link proiect</label><input id="projectUrl" type="url" placeholder="https://exemplu.ro/demo" /></div>
+        <div class="field hidden" id="videoUrlField"><label for="videoUrl" id="videoUrlLabel">Link video</label><input id="videoUrl" type="url" placeholder="https://exemplu.ro/video.mp4" /></div>
+        <div class="field hidden" id="videoFileField"><label for="videoFile" id="videoFileLabel">Atașează video</label><input id="videoFile" type="file" accept="video/*" /></div>
+        <div class="field"><label for="projectName" id="projectNameLabel">Nume produs</label><input id="projectName" type="text" placeholder="Ex: Alpis Fusion CRM Premium" /></div>
+        <div class="field"><label for="objective" id="objectiveLabel">Obiectiv demo</label><textarea id="objective" placeholder="Ex: short premium cu accent pe claritate, hook și payoff vizual."></textarea></div>
+        <div class="grid-2"><div class="field"><label for="duration" id="durationLabel">Durată țintă</label><select id="duration"><option value="20">20 sec</option><option value="30">30 sec</option><option value="35">35 sec</option><option value="40" selected>40 sec</option><option value="45">45 sec</option><option value="60">60 sec</option></select></div><div class="field"><label for="shortCount" id="shortCountLabel">Shorts</label><select id="shortCount"><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div></div>
+        <div class="grid-2"><div class="field"><label for="frameCount" id="frameCountLabel">Cadre cheie</label><select id="frameCount"><option value="3">3</option><option value="4" selected>4</option><option value="6">6</option><option value="8">8</option></select></div><div class="field"><label id="translationLabel">Traduceri</label><div class="translation-grid"><label class="translation-chip"><input type="checkbox" class="translationCheck" value="ro"> RO</label><label class="translation-chip"><input type="checkbox" class="translationCheck" value="en" checked> EN</label><label class="translation-chip"><input type="checkbox" class="translationCheck" value="es"> ES</label><label class="translation-chip"><input type="checkbox" class="translationCheck" value="fr"> FR</label></div></div></div>
+        <div class="hint" id="sourceHint">Indiferent dacă folosești un URL sau un video atașat, aplicația poate genera shorts, timestamp-uri pentru cadre-cheie și texte traduse. Pentru upload local poate extrage miniaturi reale direct în browser.</div>
+      </section>
+
+      <section class="section"><div class="section-title"><h2 id="exportTitle">Configurație export</h2><span class="badge">Web-ready</span></div><div class="grid-2" id="configGrid"></div><div class="hint" id="exportHint">Setările sunt preselectate pentru un export curat, potrivit pentru demo-uri tip SaaS, portofoliu și prezentări comerciale.</div></section>
+      <section class="section"><div class="section-title"><h2 id="directionTitle">Reguli de regie</h2><span class="badge warn">Silent product demo</span></div><div class="chips" id="directionRules"></div></section>
+      <section class="section"><div class="section-title"><h2 id="actionsTitle">Acțiuni rapide</h2><span class="badge">Repo-ready</span></div><div class="actions"><button class="btn btn-primary" id="generateBtn">Generează demo-ul produsului</button><button class="btn btn-secondary" id="loadPresetBtn">Încarcă clipuri presetate</button><button class="btn btn-secondary" id="copySummaryBtn">Copiază sumarul proiectului</button><button class="btn btn-secondary" id="downloadJsonBtn">Descarcă plan JSON pentru repo</button><button class="btn btn-secondary" id="downloadHtmlBtn">Descarcă raport HTML</button><button class="btn btn-secondary" id="downloadAutomationBtn">Descarcă Automation Pack</button><button class="btn btn-secondary" id="copyCliBtn">Copiază comenzi CLI</button><button class="btn btn-danger" id="resetBtn">Reset</button></div></section>
+      <p class="footer-note" id="footerNote">Pagina este gândită pentru GitHub Pages ca interfață statică premium. Generează planuri, deck-uri și exporturi locale, iar pentru captură MP4 reală folosești workflow-ul din repo sau Automation Pack-ul rulat local cu Playwright + FFmpeg.</p>
+    </aside>
+
+    <main class="main">
+      <section class="hero panel">
+        <div class="hero-top"><div><h2 id="heroTitle">Transformă orice produs web sau video într-un demo clar, elegant și ușor de prezentat.</h2><p id="heroText">Introduci URL-ul sau atașezi un video și primești instant: pre-roll, timeline, shorts, cadre-cheie, traduceri și exporturi pentru repo sau producție locală.</p></div><div class="badge success">Ready for product reels</div></div>
+        <div class="hero-actions"><button class="btn btn-primary" id="heroGenerateBtn" type="button">Generează demo-ul</button><button class="btn btn-ghost" id="heroPresetBtn" type="button">Vezi exemple presetate</button></div>
+        <div class="stat-row"><div class="stat"><div class="k" id="statShots">0</div><div class="l" id="statShotsLabel">Shot-uri generate</div></div><div class="stat"><div class="k" id="statSlides">0</div><div class="l" id="statSlidesLabel">Slide-uri generate</div></div><div class="stat"><div class="k" id="statDescriptions">0</div><div class="l" id="statDescriptionsLabel">Descrieri produse</div></div><div class="stat"><div class="k" id="statClips">0</div><div class="l" id="statClipsLabel">Clipuri în proiect</div></div></div>
+      </section>
+
+      <section class="workbench">
+        <div class="panel pane"><div class="toolbar"><div><h3 id="scenesTitle">Scene generate</h3><p class="hint" id="scenesHint">Selectează o scenă pentru a vedea preview-ul, ritmul vizual și materialele generate.</p></div><div class="tabs" id="clipTabs"></div></div><div class="clip-list" id="clipList"></div></div>
+        <div class="panel pane"><div class="toolbar"><div><h3 id="deliverablesTitle">Preview & deliverables</h3><p class="hint" id="deliverablesHint">Vezi rapid structura demo-ului, textele generate și exporturile gata de folosit.</p></div><div class="tabs"><button class="tab active" data-view="timeline">Timeline</button><button class="tab" data-view="shorts">Shorts</button><button class="tab" data-view="keyframes">Keyframes</button><button class="tab" data-view="translations">Translations</button><button class="tab" data-view="slides">Slides</button><button class="tab" data-view="descriptions">Descrieri</button><button class="tab" data-view="summary">Sumar</button><button class="tab" data-view="voiceover">Voice-over</button><button class="tab" data-view="export">Export</button></div></div>
+          <div id="previewWrap"><div class="preview-note" id="previewNote">Adaugă un proiect sau încarcă preseturile pentru a genera materialele.</div><iframe class="preview hidden" id="sitePreview" title="Site preview"></iframe><video class="preview-video hidden" id="videoPreview" controls playsinline></video></div>
+          <div id="view-timeline" class="view-block"><div class="timeline" id="timeline"></div></div>
+          <div id="view-shorts" class="view-block hidden"><div class="stack" id="shorts"></div></div>
+          <div id="view-keyframes" class="view-block hidden"><div class="frame-grid" id="keyframes"></div></div>
+          <div id="view-translations" class="view-block hidden"><div class="stack" id="translations"></div></div>
+          <div id="view-slides" class="view-block hidden"><div class="slide-deck" id="slides"></div></div>
+          <div id="view-descriptions" class="view-block hidden"><div class="output-box" id="descriptions"></div></div>
+          <div id="view-summary" class="view-block hidden"><div class="output-box" id="summary"></div></div>
+          <div id="view-voiceover" class="view-block hidden"><div class="output-box" id="voiceover"></div></div>
+          <div id="view-export" class="view-block hidden"><div class="output-box mono" id="exportBox"></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast-stack" id="toastStack"></div>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="./assets/premium.js"></script>
 </body>
 </html>
