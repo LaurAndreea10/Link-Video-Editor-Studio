@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "CLIP 1 — Alpis Fusion CRM Premium",
+    "shortTitle": "Alpis Fusion CRM Premium",
+    "url": "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
+    "duration": 40
+  },
+  "config": {
+    "canvasResolution": "1920x1080",
+    "outputResolution": "1280x720",
+    "fps": "30",
+    "finalFps": "24",
+    "crf": "18"
+  },
+  "preroll": [
+    "Deschide URL-ul.",
+    "Așteaptă încărcarea completă.",
+    "Poziționează-te pe Dashboard."
+  ],
+  "shots": [
+    {
+      "time": "00:00 – 00:04",
+      "action": "Ține Dashboard-ul în cadru.",
+      "purpose": "Prima impresie: produsul e viu."
+    },
+    {
+      "time": "00:04 – 00:10",
+      "action": "Deschide command palette și intră în Clienți.",
+      "purpose": "Power-user features."
+    }
+  ]
+}
