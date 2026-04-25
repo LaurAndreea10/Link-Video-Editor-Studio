@@ -1,0 +1,59 @@
+name: Render Export
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_path:
+        description: Path to a JSON plan file in the repository
+        required: false
+        default: output-plan.json
+      output_dir:
+        description: Directory for generated artifacts
+        required: false
+        default: workflow-output
+  push:
+    paths:
+      - 'plans/**/*.json'
+      - 'output-plan.json'
+      - 'scripts/render-export.mjs'
+      - '.github/workflows/render-export.yml'
+
+jobs:
+  render-export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Chromium
+        run: npx playwright install chromium
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Validate repository
+        run: npm run validate
+
+      - name: Render export bundle
+        env:
+          PLAN_PATH: ${{ inputs.plan_path || 'output-plan.json' }}
+          OUTPUT_DIR: ${{ inputs.output_dir || 'workflow-output' }}
+        run: npm run render:export -- "$PLAN_PATH" "$OUTPUT_DIR"
+
+      - name: Upload rendered artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: render-export-artifacts
+          path: ${{ inputs.output_dir || 'workflow-output' }}
+          if-no-files-found: error
