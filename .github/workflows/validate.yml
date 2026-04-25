@@ -1,25 +1,36 @@
-name: Validate App
+name: Validate
 
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Verify required files exist
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate repository structure
+        run: npm run validate
+
+      - name: Syntax check browser scripts
         run: |
-          test -f index.html
-          test -f assets/app.js
-          test -f assets/app.css
-          test -f assets/presets.json
-      - name: Validate presets JSON
-        run: node -e "JSON.parse(require('fs').readFileSync('assets/presets.json','utf8')); console.log('presets.json valid')"
-      - name: Validate JS module syntax
-        run: node --check assets/app.js
+          node --check assets/premium.js
+          node --check assets/style-addon.js
+          node --check assets/export-style-addon.js
+          node --check assets/captions-addon.js
+          node --check assets/keyframes-shorts-addon.js
+          node --check scripts/run-plan.mjs
+          node --check scripts/render-export.mjs
