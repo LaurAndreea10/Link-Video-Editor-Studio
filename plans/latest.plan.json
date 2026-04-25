@@ -1,0 +1,32 @@
+{
+  "jobId": "latest-plan",
+  "url": "https://laurandreea10.github.io/Alpis-Fusion-CRM-premium/",
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "output": {
+    "outputResolution": "1280x720",
+    "fpsFinal": 24,
+    "crf": 18,
+    "preset": "veryfast"
+  },
+  "shots": [
+    {
+      "type": "wait",
+      "ms": 2500,
+      "note": "Dashboard hero loading"
+    },
+    {
+      "type": "scroll",
+      "pixels": 120,
+      "speedPxPerSecond": 180,
+      "note": "Small motion for visual life"
+    },
+    {
+      "type": "wait",
+      "ms": 1800,
+      "note": "Hold the overview"
+    }
+  ]
+}
