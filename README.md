@@ -25,9 +25,14 @@ Real capture happens through:
 2. the `Render Video` GitHub Actions workflow.
 
 ## Visual proof
-![Overview](./docs/screenshots/overview.svg)
-![Timeline](./docs/screenshots/timeline.svg)
-![Export](./docs/screenshots/export.svg)
+![Overview mock showing the static planning studio layout](./docs/screenshots/overview.svg)
+![Timeline mock showing readable shot pacing and hold moments](./docs/screenshots/timeline.svg)
+![Export mock showing JSON, PPTX and automation-pack outputs](./docs/screenshots/export.svg)
+
+### Visual gallery
+- [Overview mock](./docs/screenshots/overview.svg)
+- [Timeline mock](./docs/screenshots/timeline.svg)
+- [Export mock](./docs/screenshots/export.svg)
 
 ## Quick start
 ### Run locally
@@ -112,6 +117,12 @@ Publishes release assets for tagged versions.
 - [Sample plan JSON](./examples/sample-plan.json)
 - [Sample report HTML](./examples/sample-report.html)
 - [Sample voice-over](./examples/sample-voiceover.txt)
+
+## Active planning issues
+- [#16 — Polish app shell and expand in-browser planning UX](https://github.com/LaurAndreea10/Link-Video-Editor-Studio/issues/16)
+- [#17 — Complete visual proof assets and demo screenshots](https://github.com/LaurAndreea10/Link-Video-Editor-Studio/issues/17)
+- [#18 — Clean up and consolidate GitHub workflows](https://github.com/LaurAndreea10/Link-Video-Editor-Studio/issues/18)
+- [#19 — Bootstrap repo governance: labels, milestones and planning docs](https://github.com/LaurAndreea10/Link-Video-Editor-Studio/issues/19)
 
 ## Security note
 If you later add direct browser AI integrations, treat them as **development / user-owned-key flows**, not as secure production secret handling.
